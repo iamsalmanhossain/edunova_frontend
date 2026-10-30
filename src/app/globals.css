@@ -1,3 +1,83 @@
 @import "tailwindcss";
 
+:root {
+  --background: #ffffff;
+  --foreground: #0f1f17;
+  --card: #ffffff;
+  --card-foreground: #0f1f17;
+  --popover: #ffffff;
+  --popover-foreground: #0f1f17;
+  --primary: #0a4b32;
+  --primary-hover: #073825;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f7f3;
+  --secondary-foreground: #0a4b32;
+  --muted: #f4f6f5;
+  --muted-foreground: #5a6b62;
+  --accent: #c48b28;
+  --accent-foreground: #ffffff;
+  --gold: #c48b28;
+  --gold-light: #fef8ec;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8e4;
+  --input: #dce3df;
+  --ring: #0a4b32;
+  --radius: 0.5rem;
+}
 
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+/* Hide scrollbar utility across all browsers */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
