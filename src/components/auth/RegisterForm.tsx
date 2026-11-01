@@ -197,7 +197,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
         designation,
         qualification,
       };
-      // Save draft
       sessionStorage.setItem("edunova_register_draft", JSON.stringify(draft));
     } catch {
       // Ignore quota errors
@@ -222,6 +221,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
   ]);
 
   // Clear draft function
+  // Clear form handler
   const handleClearDraft = () => {
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("edunova_register_draft");
