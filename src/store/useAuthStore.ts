@@ -134,7 +134,6 @@ export const useAuthStore = create<AuthState>()(
        * Endpoint: POST /auth/administrator/login
        * Strictly verifies ADMIN or SUPER_ADMIN authorization
        */
-      // adminLogin placeholder
       adminLogin: async (credentials) => {
         set({ isLoading: true });
         try {
@@ -170,6 +169,7 @@ export const useAuthStore = create<AuthState>()(
        * Student Registration
        * Endpoint: POST /auth/register/student
        */
+      // registration actions
       registerStudent: async (payload) => {
         set({ isLoading: true });
         try {
