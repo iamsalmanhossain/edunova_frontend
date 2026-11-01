@@ -25,7 +25,6 @@ import { LoginCredentials } from "@/types/auth";
 
 export default function AdminLoginForm() {
   const router = useRouter();
-  // State for toggling password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
