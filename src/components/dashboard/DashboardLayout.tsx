@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
   GraduationCap,
@@ -17,19 +18,20 @@ import {
   ShieldCheck,
   CheckCircle2,
   ExternalLink,
-  Menu,
   X,
-  Sparkles,
   ChevronRight,
   ClipboardList,
   Layers,
   Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
 import { AuthUser } from "@/types/auth";
+import StudentDashboardHeader from "./header/StudentDashboardHeader";
+import TeacherDashboardHeader from "./header/TeacherDashboardHeader";
+import AdminDashboardHeader from "./header/AdminDashboardHeader";
+import ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
 
 interface NavItem {
   label: string;
@@ -53,6 +55,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
   const handleLogout = async () => {
     await authService.logout();
@@ -80,7 +83,7 @@ export default function DashboardLayout({
 
   const adminNav: NavItem[] = [
     { label: "Admin Console", href: "/dashboard/admin", icon: LayoutDashboard },
-    { label: "Teacher Approvals", href: "#approvals", icon: CheckCircle2, badge: "1" },
+    { label: "Teacher Approvals", href: "#approvals", icon: CheckCircle2, badge: "2" },
     { label: "Student Registry", href: "#students", icon: Users },
     { label: "Departments (4)", href: "#departments", icon: Layers },
     { label: "Institute Management", href: "#institute", icon: Building2 },
@@ -121,14 +124,14 @@ export default function DashboardLayout({
   const currentRoleConfig = roleLabels[role] || roleLabels.STUDENT;
 
   return (
-    <div className="min-h-screen bg-[#f4f7f5] flex">
-      {/* Sidebar for Desktop */}
+    <div className="h-screen w-full overflow-hidden bg-[#f4f7f5] flex select-none">
+      {/* 1. Desktop Fixed Sidebar */}
       <aside
-        className={`hidden lg:flex bg-[#073825] text-white flex-col justify-between shrink-0 border-r border-[#0a4b32] sticky top-0 h-screen select-none transition-all duration-300 ease-in-out ${
+        className={`hidden lg:flex bg-[#073825] text-white flex-col justify-between shrink-0 border-r border-[#0a4b32] h-full transition-all duration-300 ease-in-out ${
           isCollapsed ? "w-20" : "w-64 xl:w-72"
         }`}
       >
-        {/* Brand & Collapse Header */}
+        {/* Brand Header */}
         <div className={`border-b border-[#0a4b32]/80 transition-all ${isCollapsed ? "p-3 flex justify-center" : "p-5 xl:p-6"}`}>
           <Link href="/" className={`flex items-center gap-2.5 group overflow-hidden ${isCollapsed ? "justify-center" : ""}`}>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c48b28] to-[#996b1a] text-white flex items-center justify-center shadow-md shadow-black/20 group-hover:scale-105 transition-transform shrink-0">
@@ -202,71 +205,102 @@ export default function DashboardLayout({
                   />
                   {!isCollapsed && <span className="truncate">{item.label}</span>}
                 </div>
-                {!isCollapsed && (
-                  item.badge ? (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#c48b28] text-white shadow-xs">
-                      {item.badge}
-                    </span>
-                  ) : (
-                    <ChevronRight
-                      className={`w-3 h-3 text-white/30 group-hover:text-white/60 transition-transform ${
-                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                    />
-                  )
+
+                {!isCollapsed && item.badge && (
+                  <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#c48b28] text-white">
+                    {item.badge}
+                  </span>
+                )}
+                {!isCollapsed && !item.badge && isActive && (
+                  <ChevronRight className="w-3.5 h-3.5 text-[#c48b28]" />
                 )}
               </Link>
             );
           })}
         </div>
 
-        {/* User Footer Profile & Logout */}
-        <div className={`border-t border-[#0a4b32]/80 bg-[#05291b] transition-all ${isCollapsed ? "p-2.5" : "p-4"}`}>
+        {/* User Footer Profile & Sign Out */}
+        <div className={`border-t border-[#0a4b32]/80 bg-[#052b1c]/80 transition-all ${isCollapsed ? "p-3 flex flex-col items-center gap-2" : "p-4 space-y-3"}`}>
           {isCollapsed ? (
-            <div className="flex flex-col items-center gap-2.5">
-              <div
-                className="w-9 h-9 rounded-full bg-[#0a4b32] border border-[#c48b28]/40 text-[#c48b28] font-bold text-xs flex items-center justify-center shrink-0 cursor-default"
-                title={`${user.name} (${user.role})`}
+            <>
+              <button
+                type="button"
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="relative w-9 h-9 rounded-full bg-[#0a4b32] text-[#c48b28] font-bold text-xs flex items-center justify-center cursor-pointer shadow-xs border border-[#146c4a] group overflow-hidden"
+                title={`Update profile photo - ${user.name}`}
               >
-                {user.name.charAt(0).toUpperCase()}
-              </div>
+                {user.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    width={36}
+                    height={36}
+                    className="w-full h-full object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  user.name.charAt(0).toUpperCase()
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                  <Camera className="w-3.5 h-3.5" />
+                </div>
+              </button>
               <button
                 type="button"
                 onClick={handleLogout}
                 title="Sign Out"
-                className="w-8 h-8 rounded-lg bg-red-600/90 hover:bg-red-700 text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                className="w-9 h-9 rounded-lg bg-red-600/90 hover:bg-red-700 text-white flex items-center justify-center transition-colors cursor-pointer"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
               </button>
-            </div>
+            </>
           ) : (
             <>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-[#0a4b32] border border-[#c48b28]/40 text-[#c48b28] font-bold text-xs flex items-center justify-center shrink-0">
-                  {user.name.charAt(0).toUpperCase()}
+              <div
+                onClick={() => setIsPhotoModalOpen(true)}
+                className="flex items-center gap-3 p-1.5 -m-1.5 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
+                title="Click to update profile photo"
+              >
+                <div className="relative w-9 h-9 rounded-full bg-[#0a4b32] text-[#c48b28] font-bold text-xs flex items-center justify-center shrink-0 border border-[#146c4a] overflow-hidden">
+                  {user.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      width={36}
+                      height={36}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    user.name.charAt(0).toUpperCase()
+                  )}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                    <Camera className="w-3.5 h-3.5" />
+                  </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                  <p className="text-[10px] text-white/60 truncate">{user.email}</p>
+                  <p className="text-xs font-bold text-white truncate leading-tight group-hover:text-[#e4a838] transition-colors">
+                    {user.name}
+                  </p>
+                  <p className="text-[10px] text-white/50 truncate leading-tight mt-0.5">
+                    {user.email}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="w-1/2 h-8 text-[11px] border-[#0a4b32] bg-[#073825] hover:bg-[#0a4b32] text-white/80 hover:text-white justify-center"
+              <div className="flex items-center gap-2 pt-1">
+                <Link
+                  href="/"
+                  className="flex-1 text-[11px] font-medium text-white/70 hover:text-white hover:bg-white/5 px-2 py-1.5 rounded-lg border border-white/10 flex items-center justify-center gap-1 transition-colors"
                 >
-                  <Link href="/">
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Website
-                  </Link>
-                </Button>
+                  <ExternalLink className="w-3 h-3 text-[#c48b28]" />
+                  Website
+                </Link>
                 <Button
                   onClick={handleLogout}
+                  variant="destructive"
                   size="sm"
-                  className="w-1/2 h-8 text-[11px] bg-red-600/90 hover:bg-red-700 text-white font-semibold justify-center shadow-xs cursor-pointer"
+                  className="h-8 text-[11px] bg-red-600 hover:bg-red-700 text-white px-3 font-semibold shadow-xs cursor-pointer"
                 >
                   <LogOut className="w-3 h-3 mr-1" />
                   Sign Out
@@ -277,7 +311,7 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Mobile Drawer */}
+      {/* 2. Mobile Drawer Navigation */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
@@ -349,90 +383,47 @@ export default function DashboardLayout({
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Top Header */}
-        <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            {/* Desktop Collapse / Expand Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[#5a6b62] hover:text-[#0a4b32] hover:bg-[#f0f4f1] border border-[#dce3df]/80 transition-colors cursor-pointer shrink-0 shadow-2xs"
-            >
-              {isCollapsed ? (
-                <PanelLeftOpen className="w-4 h-4 text-[#0a4b32]" />
-              ) : (
-                <PanelLeftClose className="w-4 h-4 text-[#5a6b62]" />
-              )}
-            </button>
+      {/* 3. Main Dashboard Wrapper (Fixed Header + Scrollable Main Content) */}
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+        {/* Role-Specific Individual Fixed Header */}
+        {role === "STUDENT" ? (
+          <StudentDashboardHeader
+            user={user}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            onOpenMobileNav={() => setMobileOpen(true)}
+            /* onOpenPhotoModal */ onOpenPhotoModal={() => setIsPhotoModalOpen(true)}
+          />
+        ) : role === "TEACHER" ? (
+          <TeacherDashboardHeader
+            user={user}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            onOpenMobileNav={() => setMobileOpen(true)}
+            onOpenPhotoModal={() => setIsPhotoModalOpen(true)}
+          />
+        ) : (
+          <AdminDashboardHeader
+            user={user}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            onOpenMobileNav={() => setMobileOpen(true)}
+            onOpenPhotoModal={() => setIsPhotoModalOpen(true)}
+          />
+        )}
 
-            {/* Mobile Navigation Trigger */}
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-1.5 sm:p-2 rounded-lg text-[#0f1f17] hover:bg-[#f0f4f1] cursor-pointer shrink-0"
-              aria-label="Open Navigation"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <h1 className="text-xs sm:text-base font-bold text-[#0f1f17] truncate">
-                  {currentRoleConfig.title}
-                </h1>
-                <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-[#0a4b32]" />
-                <span className="hidden sm:inline-block text-xs font-semibold text-[#0a4b32] truncate">
-                  Kishoreganj Polytechnic Institute
-                </span>
-              </div>
-              <p className="text-[10px] sm:text-[11px] text-[#5a6b62] truncate">
-                Official Digital Campus Governance System
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
-            {/* Session Pill */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f0f7f3] border border-[#dce3df] text-[11px] font-semibold text-[#0a4b32]">
-              <Sparkles className="w-3 h-3 text-[#c48b28]" />
-              <span>Academic Year 2026–2027</span>
-            </div>
-
-            {/* Notification Bell */}
-            <button
-              type="button"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors relative cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4 text-[#5a6b62]" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#c48b28]" />
-            </button>
-
-            {/* User Mini Avatar & Name */}
-            <div className="flex items-center gap-1.5 sm:gap-2 pl-1 sm:pl-2 border-l border-[#e2e8e4]">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0a4b32] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="hidden md:block text-left">
-                <p className="text-xs font-bold text-[#0f1f17] leading-tight truncate max-w-[120px]">
-                  {user.name}
-                </p>
-                <p className="text-[10px] text-[#5a6b62] leading-tight">
-                  {user.role}
-                </p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Dashboard Body Content */}
-        <main className="flex-1 p-3 sm:p-5 lg:p-7 max-w-[1600px] w-full mx-auto">
+        {/* Scrollable Dashboard Body (Header NEVER scrolls away) */}
+        <main className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>
+
+      {/* Shared Profile Photo Modal */}
+      <ProfilePhotoModal
+        isOpen={isPhotoModalOpen}
+        onClose={() => setIsPhotoModalOpen(false)}
+        user={user}
+      />
     </div>
   );
 }
