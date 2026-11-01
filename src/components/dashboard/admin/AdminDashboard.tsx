@@ -7,42 +7,50 @@ import AdminMetricsGrid from "./AdminMetricsGrid";
 import AdminFacultyApprovals, { PendingFacultyItem } from "./AdminFacultyApprovals";
 import AdminDepartmentList, { DepartmentSummaryItem } from "./AdminDepartmentList";
 import AdminSystemHealth from "./AdminSystemHealth";
+import AdminAdmissionSummary from "./AdminAdmissionSummary";
 
 interface AdminDashboardProps {
   user: AuthUser;
 }
 
 export default function AdminDashboard({ user }: AdminDashboardProps) {
-  const [approvedTeachers, setApprovedTeachers] = useState<Record<string, boolean>>({});
+  const [approvedIds, setApprovedIds] = useState<Record<string, boolean>>({});
 
-  const pendingTeachers: PendingFacultyItem[] = [
+  const handleApprove = (id: string) => {
+    setApprovedIds((prev) => ({ ...prev, [id]: true }));
+  };
+
+  // Pending faculty requests
+  const pendingFaculty: PendingFacultyItem[] = [
     {
-      id: "7cc85e9a-8690-4319-916f-913db8cc9162",
-      name: "Engr. Rafiqul Islam",
-      email: "jitoya7966@agaexpress.com",
-      designation: "Senior Instructor",
-      qualification: "B.Sc. in Computer Science & Engineering",
+      id: "f1",
+      name: "Engr. Mahmudul Hasan",
+      email: "mahmudul.cst@kipi.edu.bd",
+      designation: "Assistant Instructor",
+      qualification: "B.Sc. in CSE, DUET",
       department: "Computer Technology",
-      shift: "1st Shift",
-      phone: "01812345678",
+      shift: "Shift 1",
+      phone: "+880 1712-345678",
+    },
+    {
+      id: "f2",
+      name: "Dr. Farzana Parveen",
+      email: "farzana.et@kipi.edu.bd",
+      designation: "Senior Instructor",
+      qualification: "M.Sc. in EEE, BUET",
+      department: "Electrical Technology",
+      shift: "Shift 2",
+      phone: "+880 1798-765432",
     },
   ];
 
+  // Department distribution
   const departments: DepartmentSummaryItem[] = [
-    { name: "Computer Science & Technology (CST)", code: "CST", students: 380, faculty: 14, head: "Engr. Md. Anisur Rahman" },
-    { name: "Electrical Engineering", code: "EET", students: 320, faculty: 12, head: "Engr. Kabir Hossain" },
-    { name: "Civil Engineering", code: "CET", students: 310, faculty: 12, head: "Engr. Farhana Ahmed" },
-    { name: "Mechanical Engineering", code: "MET", students: 240, faculty: 10, head: "Engr. Tariqul Islam" },
+    { name: "Computer Science & Technology", code: "CST", students: 420, faculty: 14, head: "Engr. Rafiqul Islam" },
+    { name: "Electrical Technology", code: "ET", students: 340, faculty: 12, head: "Dr. Farzana Parveen" },
+    { name: "Civil Technology", code: "CT", students: 280, faculty: 11, head: "Engr. Monir Hossain" },
+    { name: "Mechanical Technology", code: "MT", students: 210, faculty: 11, head: "Engr. Tariqul Islam" },
   ];
-
-  const handleApprove = (id: string) => {
-    setApprovedTeachers((prev) => ({ ...prev, [id]: true }));
-  };
-
-  const pendingCount =
-    Object.values(approvedTeachers).filter(Boolean).length === pendingTeachers.length
-      ? 0
-      : pendingTeachers.length;
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -50,18 +58,24 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
       <AdminWelcomeBanner adminName={user.name} />
 
       {/* 2. KPI Metrics Grid */}
-      <AdminMetricsGrid pendingApprovalsCount={pendingCount} />
-
-      {/* 3. Faculty Verification Approval Box */}
-      <AdminFacultyApprovals
-        teachers={pendingTeachers}
-        approvedIds={approvedTeachers}
-        onApprove={handleApprove}
+      <AdminMetricsGrid
+        totalStudents="1,250+"
+        totalFaculty="48"
+        departmentCount={4}
+        pendingApprovalsCount={2}
       />
 
-      {/* 4. Departments & System Infrastructure Health */}
+      {/* 3. Admission & Revenue Overview */}
+      <AdminAdmissionSummary />
+
+      {/* 4. Operations, Approvals & System Status */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-5 sm:space-y-6">
+          <AdminFacultyApprovals
+            teachers={pendingFaculty}
+            approvedIds={approvedIds}
+            onApprove={handleApprove}
+          />
           <AdminDepartmentList departments={departments} />
         </div>
 
@@ -72,4 +86,3 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     </div>
   );
 }
-
