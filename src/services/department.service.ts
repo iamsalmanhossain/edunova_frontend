@@ -95,7 +95,6 @@ export const departmentService = {
    */
   async getDepartments(instituteId?: string): Promise<Department[]> {
     try {
-      // Query builder
       const url = instituteId
         ? `/departments?instituteId=${encodeURIComponent(instituteId)}&limit=100`
         : "/departments?limit=100";
