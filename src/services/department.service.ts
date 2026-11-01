@@ -1,5 +1,5 @@
 import { apiClient } from "./api-client";
-import { Department, DepartmentResponse } from "@/types/department";
+import { Department } from "@/types/department";
 
 export const VERIFIED_DEPARTMENTS: Department[] = [
   {
@@ -24,7 +24,7 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     },
   },
   {
-    id: "et-dept-002",
+    id: "f14efd3c-2e87-459d-c804-d198b6e64c53",
     name: "Electrical Technology",
     code: "ET",
     slug: "electrical-technology",
@@ -45,7 +45,7 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     },
   },
   {
-    id: "ct-dept-003",
+    id: "a25ffd3c-3f98-460e-d915-e209c7f75d64",
     name: "Civil Technology",
     code: "CT",
     slug: "civil-technology",
@@ -66,7 +66,7 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     },
   },
   {
-    id: "mt-dept-004",
+    id: "b36ffd3c-4a09-471f-ea26-f310d8a86e75",
     name: "Mechanical Technology",
     code: "MT",
     slug: "mechanical-technology",
@@ -90,29 +90,45 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
 
 export const departmentService = {
   /**
-   * Fetch public departments from backend GET /departments
+   * Fetch public departments from backend GET /departments.
+   * If instituteId is passed, returns ONLY the departments offered by that institute!
    */
   async getDepartments(instituteId?: string): Promise<Department[]> {
     try {
+      // Query builder
       const url = instituteId
-        ? `/departments?instituteId=${instituteId}`
-        : "/departments";
-      const response = await apiClient.get<DepartmentResponse>(url);
-      if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
-        return (response.data.data as Department[]).map((dept, index) => {
+        ? `/departments?instituteId=${encodeURIComponent(instituteId)}&limit=100`
+        : "/departments?limit=100";
+      const response = await apiClient.get<unknown>(url, { skipAuth: true });
+
+      const raw = response.data as Record<string, unknown> | unknown[];
+      let items: Department[] = [];
+
+      if (Array.isArray(raw) && raw.length > 0) {
+        items = raw as Department[];
+      } else if (raw && typeof raw === "object") {
+        const nestedData = (raw as { data?: unknown }).data;
+        if (Array.isArray(nestedData) && nestedData.length > 0) {
+          items = nestedData as Department[];
+        }
+      }
+
+      if (items.length > 0) {
+        return items.map((dept, index) => {
           const fallback = VERIFIED_DEPARTMENTS[index % VERIFIED_DEPARTMENTS.length];
           return {
             ...fallback,
             ...dept,
-            slug: dept.code
-              ? dept.code.toLowerCase()
-              : fallback.slug,
+            id: dept.id || fallback.id,
+            slug: dept.code ? dept.code.toLowerCase() : fallback.slug,
           };
         });
       }
-      return VERIFIED_DEPARTMENTS;
-    } catch {
-      return VERIFIED_DEPARTMENTS;
+
+      return instituteId ? [] : VERIFIED_DEPARTMENTS;
+    } catch (error) {
+      console.warn("Could not load departments from backend:", error);
+      return instituteId ? [] : VERIFIED_DEPARTMENTS;
     }
   },
 
