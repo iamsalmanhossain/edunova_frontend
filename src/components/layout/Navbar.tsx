@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
-import /* ProfilePhotoModal Dialog */ ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
+import ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
 
 export default function Navbar() {
   const router = useRouter();
