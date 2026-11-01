@@ -1,5 +1,5 @@
 import { apiClient } from "./api-client";
-import { Institute, InstituteResponse } from "@/types/institute";
+import { Institute } from "@/types/institute";
 
 // Verified institutional fallback data directly from verified backend seed
 export const VERIFIED_INSTITUTES: Institute[] = [
@@ -31,17 +31,28 @@ export const VERIFIED_INSTITUTES: Institute[] = [
 
 export const instituteService = {
   /**
-   * Fetch all institutes (Public)
+   * Fetch all institutes from backend GET /institutes (Public)
    */
   async getInstitutes(): Promise<Institute[]> {
     try {
-      const response = await apiClient.get<InstituteResponse>("/institutes");
-      if (response.data && Array.isArray(response.data.data)) {
-        return response.data.data as Institute[];
+      const response = await apiClient.get<unknown>(
+        "/institutes?limit=100&isActive=true",
+        { skipAuth: true }
+      );
+
+      const raw = response.data as Record<string, unknown> | unknown[];
+      if (Array.isArray(raw) && raw.length > 0) {
+        return raw as Institute[];
+      }
+      if (raw && typeof raw === "object") {
+        const nestedData = (raw as { data?: unknown }).data;
+        if (Array.isArray(nestedData) && nestedData.length > 0) {
+          return nestedData as Institute[];
+        }
       }
       return VERIFIED_INSTITUTES;
-    } catch {
-      // Graceful fallback to verified institutions
+    } catch (error) {
+      console.warn("Could not load institutes from backend, using verified fallback:", error);
       return VERIFIED_INSTITUTES;
     }
   },
@@ -51,11 +62,13 @@ export const instituteService = {
    */
   async getInstituteById(id: string): Promise<Institute> {
     try {
-      const response = await apiClient.get<{ success: boolean; data: Institute }>(
-        `/institutes/${id}`
-      );
-      if (response.data && response.data.data) {
-        return response.data.data;
+      const response = await apiClient.get<unknown>(`/institutes/${id}`, {
+        skipAuth: true,
+      });
+      const raw = response.data as Record<string, unknown>;
+      if (raw && typeof raw === "object") {
+        const inst = (raw.data || raw) as Institute;
+        if (inst && inst.id) return inst;
       }
       const found = VERIFIED_INSTITUTES.find((i) => i.id === id);
       return found || VERIFIED_INSTITUTES[0];
