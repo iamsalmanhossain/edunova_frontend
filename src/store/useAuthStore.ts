@@ -169,7 +169,6 @@ export const useAuthStore = create<AuthState>()(
        * Student Registration
        * Endpoint: POST /auth/register/student
        */
-      // registration actions
       registerStudent: async (payload) => {
         set({ isLoading: true });
         try {
