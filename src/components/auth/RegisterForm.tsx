@@ -221,7 +221,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
   ]);
 
   // Clear draft function
-  // Clear form handler
   const handleClearDraft = () => {
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("edunova_register_draft");
