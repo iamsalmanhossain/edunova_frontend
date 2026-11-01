@@ -175,6 +175,15 @@ export default function MobileNavigation({ items }: MobileNavigationProps) {
                 Create Student/Teacher Account
               </Link>
             </Button>
+            <div className="text-center pt-1">
+              <Link
+                href="/admin/login"
+                onClick={closeMenu}
+                className="text-xs font-semibold text-[#5a6b62] hover:text-[#0a4b32]"
+              >
+                Administrator Portal Sign In →
+              </Link>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
