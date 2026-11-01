@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   GraduationCap,
   Briefcase,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,11 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authService } from "@/services/auth.service";
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onSwitchToRegister?: () => void;
+}
+
+export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,6 +49,12 @@ export default function LoginForm() {
     setError(null);
   };
 
+  const fillAdminCredentials = () => {
+    setEmail("admin@edunova.com");
+    setPassword("SecurePass123!@#");
+    setError(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -58,10 +69,12 @@ export default function LoginForm() {
       setLoading(true);
       const res = await authService.login({ email: email.trim(), password });
       if (res.success || res.data?.accessToken) {
-        setSuccess("Authentication successful! Loading digital campus...");
+        const userRole = res.data?.user?.role;
+        const targetPath = authService.getRoleDashboardPath(userRole);
+        setSuccess(`Authentication successful! Welcome to ${userRole || "User"} Portal...`);
         setTimeout(() => {
-          router.push("/");
-        }, 1200);
+          router.push(targetPath);
+        }, 800);
       } else {
         setError(res.message || "Invalid credentials. Please verify your email and password.");
       }
@@ -96,7 +109,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={fillStudentCredentials}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1"
+            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
           >
             <GraduationCap className="w-3 h-3" />
             <span>Student</span>
@@ -104,10 +117,18 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={fillTeacherCredentials}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1"
+            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
           >
             <Briefcase className="w-3 h-3" />
             <span>Teacher</span>
+          </button>
+          <button
+            type="button"
+            onClick={fillAdminCredentials}
+            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+          >
+            <ShieldCheck className="w-3 h-3 text-[#c48b28]" />
+            <span>Admin</span>
           </button>
         </div>
       </div>
@@ -154,12 +175,20 @@ export default function LoginForm() {
 
         {/* Password Input */}
         <div className="space-y-1">
-          <Label
-            htmlFor="login-password"
-            className="text-xs font-semibold text-[#0f1f17]"
-          >
-            Password *
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label
+              htmlFor="login-password"
+              className="text-xs font-semibold text-[#0f1f17]"
+            >
+              Password *
+            </Label>
+            <Link
+              href="/forgot-password"
+              className="text-[11px] font-semibold text-[#0a4b32] hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </div>
           <div className="relative">
             <Input
               id="login-password"
@@ -207,17 +236,34 @@ export default function LoginForm() {
           )}
         </Button>
 
-        {/* Registration Link */}
-        <div className="pt-2 text-center border-t border-[#e2e8e4]/70">
+        {/* Registration Link with Cross-Slide Trigger */}
+        <div className="pt-2 text-center border-t border-[#e2e8e4]/70 flex flex-col items-center gap-1">
           <p className="text-[11px] text-[#5a6b62]">
             Don&apos;t have an institutional account yet?{" "}
-            <Link
-              href="/register"
-              className="font-bold text-[#0a4b32] hover:underline"
-            >
-              Register Student or Teacher
-            </Link>
+            {onSwitchToRegister ? (
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="font-bold text-[#0a4b32] hover:underline cursor-pointer inline-flex items-center gap-1"
+              >
+                <span>Register Student or Teacher</span>
+              </button>
+            ) : (
+              <Link
+                href="/register"
+                className="font-bold text-[#0a4b32] hover:underline"
+              >
+                Register Student or Teacher
+              </Link>
+            )}
           </p>
+
+          <Link
+            href="/verify-email"
+            className="text-[10px] text-[#5a6b62]/80 hover:text-[#0a4b32] transition-colors"
+          >
+            Need to verify your institutional email? Click here
+          </Link>
         </div>
       </form>
     </div>
