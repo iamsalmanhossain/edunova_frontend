@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import {
   Eye,
   EyeOff,
@@ -11,17 +12,14 @@ import {
   Loader2,
   Mail,
   Lock,
-  Sparkles,
   CheckCircle2,
-  GraduationCap,
-  Briefcase,
-  ShieldCheck,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authService } from "@/services/auth.service";
+import { LoginCredentials } from "@/types/auth";
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
@@ -29,132 +27,100 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isUnverified, setIsUnverified] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Quick fill demo credentials
-  const fillTeacherCredentials = () => {
-    setEmail("jitoya7966@agaexpress.com");
-    setPassword("SecurePass123!@#");
-    setError(null);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginCredentials>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onTouched",
+  });
 
-  const fillStudentCredentials = () => {
-    setEmail("womipi2481@37xiao.com");
-    setPassword("SecurePass123!@#");
-    setError(null);
-  };
-
-  const fillAdminCredentials = () => {
-    setEmail("admin@edunova.com");
-    setPassword("SecurePass123!@#");
-    setError(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const onSubmit = async (data: LoginCredentials) => {
+    setServerError(null);
+    setIsUnverified(false);
     setSuccess(null);
 
-    if (!email.trim() || !password) {
-      setError("Please provide both your registered email address and password.");
-      return;
-    }
-
     try {
-      setLoading(true);
-      const res = await authService.login({ email: email.trim(), password });
+      const res = await authService.login({
+        email: data.email.trim(),
+        password: data.password,
+      });
+
       if (res.success || res.data?.accessToken) {
         const userRole = res.data?.user?.role;
         const targetPath = authService.getRoleDashboardPath(userRole);
-        setSuccess(`Authentication successful! Welcome to ${userRole || "User"} Portal...`);
+        setSuccess(`Authentication successful! Redirecting to ${userRole || "User"} Portal...`);
         setTimeout(() => {
           router.push(targetPath);
-        }, 800);
+        }, 600);
       } else {
-        setError(res.message || "Invalid credentials. Please verify your email and password.");
+        setServerError(res.message || "Invalid credentials. Please verify your email and password.");
       }
     } catch (err: unknown) {
       let msg = "Unable to authenticate. Please check your credentials or network connection.";
-      if (err && typeof err === "object" && "response" in err) {
-        const responseData = (err as {
-          response?: { data?: { message?: string | string[] } };
-        }).response?.data;
-        if (responseData?.message) {
-          msg = Array.isArray(responseData.message)
-            ? responseData.message.join(", ")
-            : responseData.message;
-        }
+      if (err instanceof Error) {
+        msg = err.message;
       }
-      setError(msg);
-    } finally {
-      setLoading(false);
+
+      if (msg.toLowerCase().includes("verified") || msg.toLowerCase().includes("verification")) {
+        setIsUnverified(true);
+        setUnverifiedEmail(data.email.trim());
+      }
+
+      setServerError(msg);
     }
   };
 
   return (
-    <div className="space-y-3.5 no-scrollbar">
-      {/* Quick Demo Credential Bar */}
-      <div className="bg-[#f0f7f3] border border-[#dce3df] rounded-lg p-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#0a4b32]">
-          <Sparkles className="w-3.5 h-3.5 text-[#c48b28]" />
-          <span className="hidden sm:inline">Autofill Test Account:</span>
-          <span className="sm:hidden">Autofill:</span>
+    <div className="space-y-4 no-scrollbar">
+      {/* Custom Error Feedback Banner */}
+      {serverError && (
+        <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex flex-col gap-2 animate-in fade-in">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="leading-relaxed font-medium">{serverError}</div>
+          </div>
+          {isUnverified && (
+            <div className="pt-2 border-t border-red-200/60 flex items-center justify-between">
+              <span className="text-[11px] text-red-800">Need to enter verification code?</span>
+              <Link
+                href={`/verify-email?email=${encodeURIComponent(unverifiedEmail || "")}`}
+                className="text-[11px] font-bold text-[#0a4b32] bg-white px-2.5 py-1 rounded-md border border-[#0a4b32]/30 hover:bg-[#0a4b32] hover:text-white transition-all inline-flex items-center gap-1 shadow-2xs"
+              >
+                <span>Verify OTP Now</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={fillStudentCredentials}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
-          >
-            <GraduationCap className="w-3 h-3" />
-            <span>Student</span>
-          </button>
-          <button
-            type="button"
-            onClick={fillTeacherCredentials}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
-          >
-            <Briefcase className="w-3 h-3" />
-            <span>Teacher</span>
-          </button>
-          <button
-            type="button"
-            onClick={fillAdminCredentials}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs flex items-center gap-1 cursor-pointer"
-          >
-            <ShieldCheck className="w-3 h-3 text-[#c48b28]" />
-            <span>Admin</span>
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <Alert variant="destructive" className="py-2 text-xs">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-          <AlertDescription className="text-xs font-medium">
-            {error}
-          </AlertDescription>
-        </Alert>
       )}
 
+      {/* Custom Success Banner */}
       {success && (
-        <Alert variant="success" className="py-2 text-xs">
-          <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-          <AlertDescription className="text-xs font-medium">
-            {success}
-          </AlertDescription>
-        </Alert>
+        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span className="font-semibold">{success}</span>
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      {/* Login Form Fields using React Hook Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
         {/* Email Input */}
         <div className="space-y-1">
-          <Label htmlFor="login-email" className="text-xs font-semibold text-[#0f1f17]">
+          <Label
+            htmlFor="login-email"
+            className="text-xs font-semibold text-[#0f1f17]"
+          >
             Institutional Email Address *
           </Label>
           <div className="relative">
@@ -162,15 +128,27 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               id="login-email"
               type="email"
               placeholder="e.g. user@edunova.ac.bd"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              autoComplete="email"
-              required
-              className="h-9.5 pl-8 text-xs sm:text-sm bg-white"
+              disabled={isSubmitting}
+              autoComplete="username"
+              {...register("email", {
+                required: "Institutional email address is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid institutional email address",
+                },
+              })}
+              className={`h-10 pl-8.5 text-xs sm:text-sm bg-white ${
+                /* email error check */ errors.email ? "border-red-500 focus-visible:ring-red-400" : ""
+              }`}
             />
             <Mail className="w-3.5 h-3.5 text-[#5a6b62] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
+          {errors.email && (
+            <p className="text-[11px] text-red-600 font-medium mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              <span>{errors.email.message}</span>
+            </p>
+          )}
         </div>
 
         {/* Password Input */}
@@ -194,18 +172,24 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               id="login-password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your account password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
+              disabled={isSubmitting}
               autoComplete="current-password"
-              required
-              className="h-9.5 pl-8 pr-8 text-xs sm:text-sm bg-white"
+              {...register("password", {
+                required: "Account password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              className={`h-10 pl-8.5 pr-8.5 text-xs sm:text-sm bg-white ${
+                errors.password ? "border-red-500 focus-visible:ring-red-400" : ""
+              }`}
             />
             <Lock className="w-3.5 h-3.5 text-[#5a6b62] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#5a6b62] hover:text-[#0f1f17] p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#5a6b62] hover:text-[#0f1f17] p-0.5 cursor-pointer"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -215,29 +199,35 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               )}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-[11px] text-red-600 font-medium mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              <span>{errors.password.message}</span>
+            </p>
+          )}
         </div>
 
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={loading}
-          className="w-full h-9.5 bg-[#0a4b32] hover:bg-[#073825] text-white font-semibold text-xs shadow-xs mt-2"
+          disabled={isSubmitting}
+          className="w-full h-10 bg-[#0a4b32] hover:bg-[#073825] text-white font-semibold text-xs shadow-xs mt-3 cursor-pointer"
         >
-          {loading ? (
-            <span className="flex items-center gap-1.5">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Authenticating...</span>
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#c48b28]" />
+              <span>Authenticating Credentials...</span>
             </span>
           ) : (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <LogIn className="w-3.5 h-3.5" />
               <span>Sign In to Digital Campus</span>
             </span>
           )}
         </Button>
 
-        {/* Registration Link with Cross-Slide Trigger */}
-        <div className="pt-2 text-center border-t border-[#e2e8e4]/70 flex flex-col items-center gap-1">
+        {/* Registration Link */}
+        <div className="pt-3 text-center border-t border-[#e2e8e4]/80 flex flex-col items-center gap-2">
           <p className="text-[11px] text-[#5a6b62]">
             Don&apos;t have an institutional account yet?{" "}
             {onSwitchToRegister ? (
@@ -257,13 +247,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               </Link>
             )}
           </p>
-
-          <Link
-            href="/verify-email"
-            className="text-[10px] text-[#5a6b62]/80 hover:text-[#0a4b32] transition-colors"
-          >
-            Need to verify your institutional email? Click here
-          </Link>
         </div>
       </form>
     </div>
