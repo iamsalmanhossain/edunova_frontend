@@ -96,7 +96,6 @@ export default function ImageUploader({
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    // Validation step 1
     // 1. File Type Validation
     if (!file.type.startsWith("image/")) {
       const err = "Please choose a valid image file (JPEG, PNG, WEBP, GIF).";
@@ -194,7 +193,7 @@ export default function ImageUploader({
   // ==========================================
   // VARIANT 1: Circular Avatar Mode
   // ==========================================
-  if (variant === "avatar") {
+  if (/* Avatar mode */ variant === "avatar") {
     return (
       <div className={`flex flex-col items-center gap-2.5 ${className}`}>
         {/* Hidden File Input */}
