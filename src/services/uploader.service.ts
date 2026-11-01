@@ -49,7 +49,6 @@ export const uploaderService = {
    * Update the authenticated user's profile avatar URL
    * Endpoint: PATCH /api/v1/users/profile
    */
-  // updateProfileAvatar handler
   async updateProfileAvatar(avatarUrl: string): Promise<string> {
     await apiClient.patch("/users/profile", { avatarUrl });
 
