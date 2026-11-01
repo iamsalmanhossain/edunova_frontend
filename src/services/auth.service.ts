@@ -1,4 +1,5 @@
 import { apiClient } from "./api-client";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   AuthResponse,
   AuthUser,
@@ -16,17 +17,15 @@ export const authService = {
    * Endpoint: POST /auth/login
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>("/auth/login", credentials);
-    if (response.data?.data?.accessToken && typeof window !== "undefined") {
-      localStorage.setItem("edunova_token", response.data.data.accessToken);
-      if (response.data.data.refreshToken) {
-        localStorage.setItem("edunova_refresh_token", response.data.data.refreshToken);
-      }
-      if (response.data.data.user) {
-        localStorage.setItem("edunova_user", JSON.stringify(response.data.data.user));
-      }
-    }
-    return response.data;
+    return useAuthStore.getState().login(credentials);
+  },
+
+  /**
+   * Dedicated Admin Login
+   * Endpoint: POST /auth/administrator/login
+   */
+  async adminLogin(credentials: LoginCredentials): Promise<AuthResponse> {
+    return useAuthStore.getState().adminLogin(credentials);
   },
 
   /**
@@ -34,11 +33,7 @@ export const authService = {
    * Endpoint: POST /auth/register/student
    */
   async registerStudent(payload: StudentRegisterPayload): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
-      "/auth/register/student",
-      payload
-    );
-    return response.data;
+    return useAuthStore.getState().registerStudent(payload);
   },
 
   /**
@@ -46,11 +41,7 @@ export const authService = {
    * Endpoint: POST /auth/register/teacher
    */
   async registerTeacher(payload: TeacherRegisterPayload): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
-      "/auth/register/teacher",
-      payload
-    );
-    return response.data;
+    return useAuthStore.getState().registerTeacher(payload);
   },
 
   /**
@@ -59,17 +50,18 @@ export const authService = {
    */
   async forgotPassword(payload: ForgotPasswordPayload): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>(
-        "/auth/forgot-password",
-        payload
-      );
-      return response.data;
-    } catch {
-      // Graceful fallback for UI demonstration
+      const response = await apiClient.post<Record<string, unknown>>("/auth/forgot-password", payload, {
+        skipAuth: true,
+      });
       return {
         success: true,
-        message: `Password reset instructions have been dispatched to ${payload.email}. Please inspect your institutional inbox.`,
+        message:
+          response.message ||
+          `Password recovery instructions dispatched to ${payload.email}. Please check your inbox.`,
+        data: response.data as AuthResponse["data"],
       };
+    } catch (err: unknown) {
+      throw err;
     }
   },
 
@@ -79,90 +71,92 @@ export const authService = {
    */
   async resetPassword(payload: ResetPasswordPayload): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>(
-        "/auth/reset-password",
-        payload
-      );
-      return response.data;
-    } catch {
+      const response = await apiClient.post<Record<string, unknown>>("/auth/reset-password", payload, {
+        skipAuth: true,
+      });
       return {
         success: true,
-        message: "Your account password has been updated securely. You may now sign in.",
+        message:
+          response.message ||
+          "Password updated successfully. You can now login with your new password.",
+        data: response.data as AuthResponse["data"],
       };
+    } catch (err: unknown) {
+      throw err;
     }
   },
 
   /**
-   * Verify institutional email with OTP code / token
+   * Verify institutional email with 6-digit OTP
    * Endpoint: POST /auth/verify-email
    */
+  // verifyEmail handler
   async verifyEmail(payload: VerifyEmailPayload): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>(
+      const response = await apiClient.post<Record<string, unknown>>(
         "/auth/verify-email",
-        payload
+        {
+          email: payload.email,
+          otp: payload.code || payload.otp,
+        },
+        { skipAuth: true }
       );
-      return response.data;
-    } catch {
       return {
         success: true,
-        message: "Institutional email verified successfully! Your account has been activated.",
+        message:
+          response.message ||
+          "Institutional email verified successfully. Your account is active.",
+        data: response.data as AuthResponse["data"],
       };
+    } catch (err: unknown) {
+      throw err;
     }
   },
 
   /**
-   * Resend verification code
-   * Endpoint: POST /auth/resend-verification
+   * Resend verification code (OTP)
+   * Endpoint: POST /auth/resend-email-otp
    */
   async resendVerification(email: string): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>(
-        "/auth/resend-verification",
-        { email }
+      const response = await apiClient.post<Record<string, unknown>>(
+        "/auth/resend-email-otp",
+        { email },
+        { skipAuth: true }
       );
-      return response.data;
-    } catch {
       return {
         success: true,
-        message: `A fresh 6-digit verification code has been dispatched to ${email}.`,
+        message:
+          response.message ||
+          `A new 6-digit confirmation code has been sent to ${email}.`,
+        data: response.data as AuthResponse["data"],
       };
+    } catch (err: unknown) {
+      throw err;
     }
   },
 
   /**
-   * Logout user
+   * Logout user and purge state
    */
   async logout(): Promise<void> {
-    try {
-      const refreshToken =
-        typeof window !== "undefined"
-          ? localStorage.getItem("edunova_refresh_token")
-          : undefined;
-      await apiClient.post("/auth/logout", { refreshToken });
-    } catch {
-      // Ignore network errors on logout
-    } finally {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("edunova_token");
-        localStorage.removeItem("edunova_refresh_token");
-        localStorage.removeItem("edunova_user");
-      }
-    }
+    await useAuthStore.getState().logout();
   },
 
   /**
    * Check if current user is logged in
    */
   isAuthenticated(): boolean {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem("edunova_token");
+    return useAuthStore.getState().isAuthenticated || !!this.getCurrentUser();
   },
 
   /**
    * Retrieve cached authenticated user profile
    */
   getCurrentUser(): AuthUser | null {
+    const storeUser = useAuthStore.getState().user;
+    if (storeUser) return storeUser;
+
     if (typeof window === "undefined") return null;
     const userStr = localStorage.getItem("edunova_user");
     if (!userStr) return null;
@@ -191,4 +185,3 @@ export const authService = {
     }
   },
 };
-
