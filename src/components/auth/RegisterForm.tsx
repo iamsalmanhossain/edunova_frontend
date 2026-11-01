@@ -246,7 +246,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
   };
 
   // When institute selection changes, fetch that institute's departments from backend
-  // Institute select handler
   const handleInstituteChange = async (selectedId: string) => {
     setInstituteId(selectedId);
     setDepartmentId("");
@@ -752,7 +751,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                   id="reg-dept"
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
-                  disabled={loading || !instituteId || loadingDepartments}
+                  /* Department disabled */ disabled={loading || !instituteId || loadingDepartments}
                   className="w-full h-9.5 pl-8 pr-2.5 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32] disabled:bg-[#f4f6f5] disabled:text-[#8a9b92] disabled:cursor-not-allowed"
                 >
                   {!instituteId ? (
