@@ -53,7 +53,6 @@ function VerifyEmailFormContent() {
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text");
-    // Clean digits from paste
     const cleanDigits = pastedData.replace(/\D/g, "").slice(0, 6);
     if (!cleanDigits) return;
 
