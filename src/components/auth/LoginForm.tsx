@@ -138,7 +138,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 },
               })}
               className={`h-10 pl-8.5 text-xs sm:text-sm bg-white ${
-                /* email error check */ errors.email ? "border-red-500 focus-visible:ring-red-400" : ""
+                errors.email ? "border-red-500 focus-visible:ring-red-400" : ""
               }`}
             />
             <Mail className="w-3.5 h-3.5 text-[#5a6b62] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
