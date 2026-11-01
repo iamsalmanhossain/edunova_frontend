@@ -11,18 +11,41 @@ import {
   Users,
   Award,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthVisualPanelProps {
   headline?: string;
   subheadline?: string;
+  mode?: "login" | "register" | "forgot-password" | "reset-password" | "verify-email";
 }
 
 export default function AuthVisualPanel({
-  headline = "Empowering Polytechnic Excellence Through Modern Digital Systems",
-  subheadline = "Experience seamless academic management, semester results, attendance monitoring, and centralized institutional governance.",
+  headline,
+  subheadline,
+  mode = "login",
 }: AuthVisualPanelProps) {
+  // Mode-specific content fallbacks
+  const defaultHeadlines = {
+    login: "Connecting Students, Teachers & Administration in One Unified Digital Ecosystem",
+    register: "Join the Digital Technical Education Revolution at EduNova",
+    "forgot-password": "Secure Institutional Account Recovery & Credential Management",
+    "reset-password": "Set Your New Encrypted Institutional Password",
+    "verify-email": "Official Institutional Email & Identity Verification",
+  };
+
+  const defaultSubheadlines = {
+    login: "Access official academic routines, real-time attendance logs, examination records, and institutional communications with high security.",
+    register: "Select whether you are enrolling as a student or registering as a faculty member at Kishoreganj Polytechnic Institute.",
+    "forgot-password": "Enter your verified institutional email address to receive immediate password restoration credentials.",
+    "reset-password": "Create a robust password meeting institutional cybersecurity standards to protect your academic records.",
+    "verify-email": "Confirming your identity to safeguard Kishoreganj Polytechnic Institute student & faculty portals.",
+  };
+
+  const activeHeadline = headline || defaultHeadlines[mode] || defaultHeadlines.login;
+  const activeSubheadline = subheadline || defaultSubheadlines[mode] || defaultSubheadlines.login;
+
   return (
-    <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 h-full relative flex-col justify-between p-6 xl:p-8 overflow-hidden bg-[#073825] text-white shrink-0">
+    <div className="flex w-full h-full relative flex-col justify-between p-6 xl:p-8 overflow-hidden bg-[#073825] text-white shrink-0">
       {/* Background Campus Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -66,13 +89,24 @@ export default function AuthVisualPanel({
           <span>Official Institutional Portal</span>
         </div>
 
-        <h2 className="text-xl xl:text-2xl font-extrabold leading-snug text-white">
-          {headline}
-        </h2>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mode}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-3"
+          >
+            <h2 className="text-xl xl:text-2xl font-extrabold leading-snug text-white">
+              {activeHeadline}
+            </h2>
 
-        <p className="text-xs xl:text-sm text-white/80 leading-relaxed">
-          {subheadline}
-        </p>
+            <p className="text-xs xl:text-sm text-white/80 leading-relaxed">
+              {activeSubheadline}
+            </p>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Feature Checkpoints */}
         <div className="space-y-2 pt-1 text-xs text-white/90">
