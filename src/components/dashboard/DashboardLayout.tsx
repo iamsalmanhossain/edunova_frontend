@@ -392,7 +392,7 @@ export default function DashboardLayout({
             isCollapsed={isCollapsed}
             onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
             onOpenMobileNav={() => setMobileOpen(true)}
-            /* onOpenPhotoModal */ onOpenPhotoModal={() => setIsPhotoModalOpen(true)}
+            onOpenPhotoModal={() => setIsPhotoModalOpen(true)}
           />
         ) : role === "TEACHER" ? (
           <TeacherDashboardHeader
@@ -419,6 +419,7 @@ export default function DashboardLayout({
       </div>
 
       {/* Shared Profile Photo Modal */}
+      {/* ProfilePhotoModal Dialog */}
       <ProfilePhotoModal
         isOpen={isPhotoModalOpen}
         onClose={() => setIsPhotoModalOpen(false)}
