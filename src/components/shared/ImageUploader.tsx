@@ -193,7 +193,7 @@ export default function ImageUploader({
   // ==========================================
   // VARIANT 1: Circular Avatar Mode
   // ==========================================
-  if (/* Avatar mode */ variant === "avatar") {
+  if (variant === "avatar") {
     return (
       <div className={`flex flex-col items-center gap-2.5 ${className}`}>
         {/* Hidden File Input */}
