@@ -47,14 +47,14 @@ const HIGHLIGHTS: HighlightItem[] = [
 
 export default function HighlightsStrip() {
   return (
-    <div className="relative z-20 -mt-6 sm:-mt-8 px-2 sm:px-0">
+    <div className="relative z-20 -mt-6 sm:-mt-8 lg:-mt-12 px-2 sm:px-0">
       <Container size="wide">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="bg-white rounded-xl sm:rounded-2xl border border-[#e2e8e4] shadow-xl p-3 sm:p-6 lg:p-8 overflow-hidden"
+          className="bg-white rounded-xl sm:rounded-2xl border border-[#e2e8e4] shadow-xl p-3 sm:p-5 lg:p-5 lg:py-4.5 overflow-hidden"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#e2e8e4]">
             {HIGHLIGHTS.map((item, idx) => {
