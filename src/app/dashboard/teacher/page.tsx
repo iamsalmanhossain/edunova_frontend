@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import DashboardGuard from "@/components/dashboard/DashboardGuard";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import TeacherDashboard from "@/components/dashboard/teacher/TeacherDashboard";
+import { useAuthStore } from "@/store/useAuthStore";
 import { authService } from "@/services/auth.service";
-import { AuthUser } from "@/types/auth";
 
 export default function TeacherDashboardPage() {
-  const [user] = useState<AuthUser | null>(() => authService.getCurrentUser());
+  const storeUser = useAuthStore((state) => state.user);
+  const user = storeUser || (typeof window !== "undefined" ? authService.getCurrentUser() : null);
 
   return (
     <DashboardGuard allowedRoles={["TEACHER"]}>
