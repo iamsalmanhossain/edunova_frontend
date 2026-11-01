@@ -419,7 +419,6 @@ export default function DashboardLayout({
       </div>
 
       {/* Shared Profile Photo Modal */}
-      {/* ProfilePhotoModal Dialog */}
       <ProfilePhotoModal
         isOpen={isPhotoModalOpen}
         onClose={() => setIsPhotoModalOpen(false)}
