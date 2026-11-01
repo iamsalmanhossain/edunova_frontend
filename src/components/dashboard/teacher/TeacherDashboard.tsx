@@ -7,6 +7,8 @@ import TeacherWelcomeBanner from "./TeacherWelcomeBanner";
 import TeacherMetricsGrid from "./TeacherMetricsGrid";
 import TeacherScheduleList, { TeacherLectureItem } from "./TeacherScheduleList";
 import TeacherQuickTools from "./TeacherQuickTools";
+import TeacherAttendanceAction from "./TeacherAttendanceAction";
+import TeacherGradebookOverview from "./TeacherGradebookOverview";
 
 interface TeacherDashboardProps {
   user: AuthUser;
@@ -43,7 +45,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   return (
     <div className="space-y-5 sm:space-y-6">
       {/* 1. Approval Status Alert */}
-      <TeacherApprovalAlert status={user.teacherApprovalStatus || "PENDING"} />
+      <TeacherApprovalAlert status={user.teacherApprovalStatus || "APPROVED"} />
 
       {/* 2. Welcome Banner */}
       <TeacherWelcomeBanner
@@ -57,13 +59,17 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         assignedCoursesCount={3}
         studentsCount={144}
         attendanceSubmissionRate="98.5%"
-        pendingEvaluationsCount={1}
+        pendingEvaluationsCount={2}
       />
 
-      {/* 4. Schedule & Faculty Tools */}
+      {/* 4. Live Attendance Sheet (Instructor specific) */}
+      <TeacherAttendanceAction />
+
+      {/* 5. Schedule & Faculty Tools */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-5 sm:space-y-6">
           <TeacherScheduleList schedule={schedule} />
+          <TeacherGradebookOverview />
         </div>
 
         <div>
@@ -73,4 +79,3 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
     </div>
   );
 }
-
