@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { GraduationCap, LogIn, LayoutDashboard, LogOut, ChevronDown, User as UserIcon } from "lucide-react";
+import { GraduationCap, LogIn, LayoutDashboard, LogOut, ChevronDown, User as UserIcon, Camera } from "lucide-react";
 import { NAVIGATION_ITEMS } from "@/config/navigation";
 import Container from "@/components/shared/Container";
 import DesktopNavigation from "./DesktopNavigation";
@@ -20,26 +20,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/auth.service";
-import { AuthUser } from "@/types/auth";
+import { useAuthStore } from "@/store/useAuthStore";
+import /* ProfilePhotoModal Dialog */ ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
 
 export default function Navbar() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
-    return authService.getCurrentUser();
-  });
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const storeUser = useAuthStore((state) => state.user);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 15);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  const currentUser = mounted
+    ? storeUser || authService.getCurrentUser()
+    : null;
 
   const handleLogout = async () => {
     await authService.logout();
-    setCurrentUser(null);
     router.push("/login");
   };
 
@@ -133,6 +144,13 @@ export default function Navbar() {
                     <span>Go to Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setIsPhotoModalOpen(true)}
+                  className="cursor-pointer rounded-lg text-xs font-semibold py-2 flex items-center gap-2 text-[#0f1f17] hover:text-[#0a4b32]"
+                >
+                  <Camera className="w-4 h-4 text-[#c48b28]" />
+                  <span>Update Profile Photo</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#e2e8e4]" />
                 <DropdownMenuItem
                   onClick={handleLogout}
@@ -174,6 +192,13 @@ export default function Navbar() {
           <MobileNavigation items={NAVIGATION_ITEMS} />
         </div>
       </Container>
+
+      {/* Shared Profile Photo Upload Modal */}
+      <ProfilePhotoModal
+        isOpen={isPhotoModalOpen}
+        onClose={() => setIsPhotoModalOpen(false)}
+        user={currentUser}
+      />
     </header>
   );
 }
