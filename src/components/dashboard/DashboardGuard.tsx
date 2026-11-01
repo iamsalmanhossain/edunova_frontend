@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ShieldAlert } from "lucide-react";
 import { authService } from "@/services/auth.service";
-import { AuthUser } from "@/types/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 
 interface DashboardGuardProps {
@@ -17,9 +17,9 @@ export default function DashboardGuard({
   allowedRoles,
 }: DashboardGuardProps) {
   const router = useRouter();
-
+  const storeUser = useAuthStore((state) => state.user);
   const [mounted, setMounted] = useState(false);
-  const [user] = useState<AuthUser | null>(() => authService.getCurrentUser());
+  const user = storeUser || (typeof window !== "undefined" ? authService.getCurrentUser() : null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,7 +31,7 @@ export default function DashboardGuard({
       return () => clearTimeout(timer);
     }
 
-    const currentUser = authService.getCurrentUser();
+    const currentUser = storeUser || authService.getCurrentUser();
     if (!currentUser) {
       router.push("/login");
       return () => clearTimeout(timer);
@@ -53,7 +53,7 @@ export default function DashboardGuard({
     }
 
     return () => clearTimeout(timer);
-  }, [allowedRoles, router]);
+  }, [allowedRoles, router, storeUser]);
 
   if (!mounted || !user) {
     return (
@@ -91,16 +91,16 @@ export default function DashboardGuard({
           <div className="mt-5 flex gap-2 justify-center">
             <Button
               onClick={() => router.push(authService.getRoleDashboardPath(user.role))}
-              className="bg-[#0a4b32] hover:bg-[#073825] text-white text-xs"
+              className="bg-[#0a4b32] hover:bg-[#073825] text-white text-xs cursor-pointer"
             >
               Go to Your Dashboard
             </Button>
             <Button
               variant="outline"
               onClick={() => authService.logout().then(() => router.push("/login"))}
-              className="text-xs border-[#dce3df]"
+              className="text-xs cursor-pointer"
             >
-              Sign Out
+              Sign In with Other Role
             </Button>
           </div>
         </div>
