@@ -151,8 +151,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
 
         const draft = getStoredDraft();
         if (draft?.instituteId) {
-          // Department loading
-      setLoadingDepartments(true);
+          setLoadingDepartments(true);
           const deptList = await departmentService.getDepartments(draft.instituteId);
           if (isMounted) {
             setDepartments(deptList || []);
@@ -916,7 +915,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                     <Input
                       id="reg-session"
                       type="text"
-                      placeholder="e.g. 2022-2023"
+                      /* Session format */ placeholder="e.g. 2022-2023"
                       value={session}
                       onChange={(e) => setSession(e.target.value)}
                       disabled={loading}
