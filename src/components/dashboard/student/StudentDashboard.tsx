@@ -8,6 +8,7 @@ import StudentRoutineTable, { RoutinePeriod } from "./StudentRoutineTable";
 import StudentCourseProgress, { StudentCourseItem } from "./StudentCourseProgress";
 import StudentNoticeBoard, { StudentNoticeItem } from "./StudentNoticeBoard";
 import StudentHelpDesk from "./StudentHelpDesk";
+import StudentFeeStatus from "./StudentFeeStatus";
 
 interface StudentDashboardProps {
   user: AuthUser;
@@ -86,7 +87,10 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
         registrationNo="1502123456"
       />
 
-      {/* 3. Routine, Progress & Sidebars */}
+      {/* 3. Tuition & Dues Status */}
+      <StudentFeeStatus />
+
+      {/* 4. Routine, Progress & Sidebars */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         <div className="lg:col-span-2 space-y-5 sm:space-y-6">
           <StudentRoutineTable routine={routine} />
@@ -101,4 +105,3 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
     </div>
   );
 }
-
