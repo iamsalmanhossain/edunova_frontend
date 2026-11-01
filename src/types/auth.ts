@@ -38,6 +38,9 @@ export interface AuthUser {
   role: "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "STUDENT";
   avatarUrl?: string | null;
   status?: string;
+  instituteId?: string;
+  departmentId?: string;
+  teacherApprovalStatus?: string;
 }
 
 export interface AuthResponse {
@@ -48,5 +51,20 @@ export interface AuthResponse {
     refreshToken?: string;
     user?: AuthUser;
   };
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  password: string;
+}
+
+export interface VerifyEmailPayload {
+  email?: string;
+  code?: string;
+  token?: string;
 }
 
