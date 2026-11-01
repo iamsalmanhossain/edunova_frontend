@@ -197,6 +197,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
         designation,
         qualification,
       };
+      // Save draft
       sessionStorage.setItem("edunova_register_draft", JSON.stringify(draft));
     } catch {
       // Ignore quota errors
@@ -334,7 +335,6 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
 
     if (role === "student" && session.trim()) {
       const sessionPattern = /^\d{4}-\d{4}$/;
-      // Validate format pattern
       if (!sessionPattern.test(session.trim())) {
         setError("Academic session must follow the YYYY-YYYY format (e.g. 2022-2023 or 2023-2024).");
         return;
