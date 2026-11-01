@@ -22,6 +22,7 @@ import {
   Clock,
   FileCheck2,
   Check,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,9 +34,37 @@ import { departmentService, VERIFIED_DEPARTMENTS } from "@/services/department.s
 import { Institute } from "@/types/institute";
 import { Department } from "@/types/department";
 
-// Preset verified UUIDs matching user specifications
+// Preset verified UUID matching user specifications
 const TARGET_INSTITUTE_ID = "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b";
-const TARGET_DEPARTMENT_ID = "e03dfd3c-1d76-448c-b793-c087a5d53b42";
+
+interface RegisterDraft {
+  currentStep?: 1 | 2 | 3;
+  role?: "student" | "teacher";
+  name?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+  gender?: "MALE" | "FEMALE" | "OTHER";
+  instituteId?: string;
+  departmentId?: string;
+  shift?: "FIRST_SHIFT" | "SECOND_SHIFT";
+  rollNo?: string;
+  registrationNo?: string;
+  semester?: number;
+  session?: string;
+  designation?: string;
+  qualification?: string;
+}
+
+const getStoredDraft = (): RegisterDraft | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem("edunova_register_draft");
+    return raw ? (JSON.parse(raw) as RegisterDraft) : null;
+  } catch {
+    return null;
+  }
+};
 
 interface RegisterFormProps {
   onSwitchToLogin?: () => void;
@@ -44,11 +73,18 @@ interface RegisterFormProps {
 export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
   const router = useRouter();
 
-  // Wizard Step (1: Identity & Account, 2: Campus & Shift, 3: Profile & Submit)
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  // Wizard Step initialized from stored session draft
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(() => {
+    const draft = getStoredDraft();
+    return draft?.currentStep && [1, 2, 3].includes(draft.currentStep)
+      ? (draft.currentStep as 1 | 2 | 3)
+      : 1;
+  });
 
-  // Role Selection
-  const [role, setRole] = useState<"student" | "teacher">("student");
+  // Role Selection initialized from stored session draft
+  const [role, setRole] = useState<"student" | "teacher">(() => {
+    return getStoredDraft()?.role === "teacher" ? "teacher" : "student";
+  });
 
   // Form State
   const [showPassword, setShowPassword] = useState(false);
@@ -57,54 +93,183 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
   const [success, setSuccess] = useState<string | null>(null);
 
   // Dynamic Institutes & Departments
-  const [institutes, setInstitutes] = useState<Institute[]>(VERIFIED_INSTITUTES);
-  const [departments, setDepartments] = useState<Department[]>(VERIFIED_DEPARTMENTS);
+  const [institutes, setInstitutes] = useState<Institute[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loadingInstitutes, setLoadingInstitutes] = useState(true);
+  const [loadingDepartments, setLoadingDepartments] = useState(false);
 
-  // Step 1: Personal & Account
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState<"MALE" | "FEMALE" | "OTHER">("MALE");
+  // Step 1: Personal & Account (Hydrated from draft if user reloads)
+  const [name, setName] = useState<string>(() => getStoredDraft()?.name || "");
+  const [email, setEmail] = useState<string>(() => getStoredDraft()?.email || "");
+  const [password, setPassword] = useState<string>(() => getStoredDraft()?.password || "");
+  const [phone, setPhone] = useState<string>(() => getStoredDraft()?.phone || "");
+  const [gender, setGender] = useState<"MALE" | "FEMALE" | "OTHER">(
+    () => getStoredDraft()?.gender || "MALE"
+  );
 
-  // Step 2: Campus & Shift
-  const [instituteId, setInstituteId] = useState(TARGET_INSTITUTE_ID);
-  const [departmentId, setDepartmentId] = useState(TARGET_DEPARTMENT_ID);
-  const [shift, setShift] = useState<"FIRST_SHIFT" | "SECOND_SHIFT">("FIRST_SHIFT");
+  // Step 2: Campus & Shift (No hardcoded defaults; hydrated from draft if exists)
+  const [instituteId, setInstituteId] = useState<string>(
+    () => getStoredDraft()?.instituteId || ""
+  );
+  const [departmentId, setDepartmentId] = useState<string>(
+    () => getStoredDraft()?.departmentId || ""
+  );
+  const [shift, setShift] = useState<"FIRST_SHIFT" | "SECOND_SHIFT">(
+    () => getStoredDraft()?.shift || "FIRST_SHIFT"
+  );
 
   // Step 3 (Student specific)
-  const [rollNo, setRollNo] = useState("");
-  const [registrationNo, setRegistrationNo] = useState("");
-  const [semester, setSemester] = useState<number>(4);
-  const [session, setSession] = useState("2022-2023");
+  const [rollNo, setRollNo] = useState<string>(() => getStoredDraft()?.rollNo || "");
+  const [registrationNo, setRegistrationNo] = useState<string>(
+    () => getStoredDraft()?.registrationNo || ""
+  );
+  const [semester, setSemester] = useState<number>(
+    () => getStoredDraft()?.semester ?? 4
+  );
+  const [session, setSession] = useState<string>(
+    () => getStoredDraft()?.session || ""
+  );
 
   // Step 3 (Teacher specific)
-  const [designation, setDesignation] = useState("Senior Instructor");
-  const [qualification, setQualification] = useState("B.Sc. in Computer Science & Engineering");
+  const [designation, setDesignation] = useState<string>(
+    () => getStoredDraft()?.designation || "Senior Instructor"
+  );
+  const [qualification, setQualification] = useState<string>(
+    () => getStoredDraft()?.qualification || "B.Sc. in Computer Science & Engineering"
+  );
 
+  // Load Institutes (and restored institute's departments) on component mount
   useEffect(() => {
-    async function loadData() {
+    let isMounted = true;
+    async function loadInitialData() {
       try {
-        const [instList, deptList] = await Promise.all([
-          instituteService.getInstitutes(),
-          departmentService.getDepartments(),
-        ]);
-        if (instList && instList.length > 0) {
-          setInstitutes(instList);
-          const foundInst = instList.find((i) => i.id === TARGET_INSTITUTE_ID);
-          setInstituteId(foundInst ? foundInst.id : instList[0].id);
+        setLoadingInstitutes(true);
+        const list = await instituteService.getInstitutes();
+        if (isMounted) {
+          setInstitutes(list || []);
         }
-        if (deptList && deptList.length > 0) {
-          setDepartments(deptList);
-          const foundDept = deptList.find((d) => d.id === TARGET_DEPARTMENT_ID);
-          setDepartmentId(foundDept ? foundDept.id : deptList[0].id);
+
+        const draft = getStoredDraft();
+        if (draft?.instituteId) {
+          setLoadingDepartments(true);
+          const deptList = await departmentService.getDepartments(draft.instituteId);
+          if (isMounted) {
+            setDepartments(deptList || []);
+          }
         }
-      } catch {
-        // Fallbacks already initialized
+      } catch (err) {
+        console.error("Failed to load initial registration data:", err);
+        if (isMounted) {
+          setInstitutes(VERIFIED_INSTITUTES);
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingInstitutes(false);
+          setLoadingDepartments(false);
+        }
       }
     }
-    loadData();
+    loadInitialData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  // Persist draft to sessionStorage whenever any input or step changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const draft: RegisterDraft = {
+        currentStep,
+        role,
+        name,
+        email,
+        password,
+        phone,
+        gender,
+        instituteId,
+        departmentId,
+        shift,
+        rollNo,
+        registrationNo,
+        semester,
+        session,
+        designation,
+        qualification,
+      };
+      sessionStorage.setItem("edunova_register_draft", JSON.stringify(draft));
+    } catch {
+      // Ignore quota errors
+    }
+  }, [
+    currentStep,
+    role,
+    name,
+    email,
+    password,
+    phone,
+    gender,
+    instituteId,
+    departmentId,
+    shift,
+    rollNo,
+    registrationNo,
+    semester,
+    session,
+    designation,
+    qualification,
+  ]);
+
+  // Clear draft function
+  const handleClearDraft = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("edunova_register_draft");
+    }
+    setCurrentStep(1);
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPhone("");
+    setGender("MALE");
+    setInstituteId("");
+    setDepartmentId("");
+    setDepartments([]);
+    setShift("FIRST_SHIFT");
+    setRollNo("");
+    setRegistrationNo("");
+    setSemester(4);
+    setSession("");
+    setDesignation("Senior Instructor");
+    setQualification("B.Sc. in Computer Science & Engineering");
+    setError(null);
+    setSuccess(null);
+  };
+
+  // When institute selection changes, fetch that institute's departments from backend
+  // Institute select handler
+  const handleInstituteChange = async (selectedId: string) => {
+    setInstituteId(selectedId);
+    setDepartmentId("");
+    setDepartments([]);
+    setError(null);
+
+    if (!selectedId) return;
+
+    try {
+      setLoadingDepartments(true);
+      const list = await departmentService.getDepartments(selectedId);
+      setDepartments(list || []);
+    } catch (err) {
+      console.error("Failed to fetch departments for institute:", err);
+      if (selectedId === TARGET_INSTITUTE_ID) {
+        setDepartments(VERIFIED_DEPARTMENTS);
+      } else {
+        setDepartments([]);
+      }
+    } finally {
+      setLoadingDepartments(false);
+    }
+  };
 
   // Step 1 Validation
   const validateStep1 = () => {
@@ -116,8 +281,11 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
       setError("Please provide a valid email address.");
       return false;
     }
-    if (!password || password.length < 8) {
-      setError("Password must contain at least 8 characters.");
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!strongPasswordRegex.test(password)) {
+      setError(
+        "Password must contain at least 8 characters with at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special symbol (e.g. SecurePass123!@#)."
+      );
       return false;
     }
     setError(null);
@@ -165,6 +333,14 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
       return;
     }
 
+    if (role === "student" && session.trim()) {
+      const sessionPattern = /^\d{4}-\d{4}$/;
+      if (!sessionPattern.test(session.trim())) {
+        setError("Academic session must follow the YYYY-YYYY format (e.g. 2022-2023 or 2023-2024).");
+        return;
+      }
+    }
+
     try {
       setLoading(true);
 
@@ -186,11 +362,16 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
 
         const res = await authService.registerStudent(studentPayload);
         if (res.success || res.message) {
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("edunova_register_draft");
+          }
           setSuccess(
             res.message ||
-              "Student registration submitted successfully! Redirecting to login..."
+              "Student registration submitted successfully! Redirecting to email verification..."
           );
-          setTimeout(() => router.push("/login"), 2000);
+          setTimeout(() => {
+            router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+          }, 1800);
         }
       } else {
         const teacherPayload = {
@@ -208,6 +389,9 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
 
         const res = await authService.registerTeacher(teacherPayload);
         if (res.success || res.message) {
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("edunova_register_draft");
+          }
           setSuccess(
             res.message ||
               "Teacher registration submitted successfully! Pending administrator approval."
@@ -218,14 +402,14 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
     } catch (err: unknown) {
       let msg =
         "Registration request failed. Please verify email or roll number is not already registered.";
-      if (err && typeof err === "object" && "response" in err) {
-        const responseData = (err as {
+      if (err && typeof err === "object") {
+        const errObj = err as {
+          message?: string | string[];
           response?: { data?: { message?: string | string[] } };
-        }).response?.data;
-        if (responseData?.message) {
-          msg = Array.isArray(responseData.message)
-            ? responseData.message.join(", ")
-            : responseData.message;
+        };
+        const rawMsg = errObj.response?.data?.message || errObj.message;
+        if (rawMsg) {
+          msg = Array.isArray(rawMsg) ? rawMsg.join(", ") : rawMsg;
         }
       }
       setError(msg);
@@ -305,6 +489,19 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
               <p className="text-xs font-bold text-[#0f1f17] leading-tight">Profile</p>
             </div>
           </div>
+
+          {/* Reset / Clear Draft Button (visible if user has filled anything) */}
+          {(name || email || instituteId || currentStep > 1) && (
+            <button
+              type="button"
+              onClick={handleClearDraft}
+              title="Reset form"
+              className="ml-1 p-1 rounded-md hover:bg-red-50 text-[#5a6b62] hover:text-red-600 transition-colors cursor-pointer flex items-center gap-1 text-[10px]"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span className="hidden md:inline">Reset</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -509,20 +706,28 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
           <div className="space-y-2.5 animate-in fade-in duration-200">
             {/* Institute Select */}
             <div className="space-y-1">
-              <Label htmlFor="reg-inst" className="text-xs font-semibold text-[#0f1f17]">
-                Academic Institute *
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reg-inst" className="text-xs font-semibold text-[#0f1f17]">
+                  Academic Institute *
+                </Label>
+                {loadingInstitutes && (
+                  <span className="text-[10px] text-[#0a4b32] flex items-center gap-1 font-medium">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Loading institutes...
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <select
                   id="reg-inst"
                   value={instituteId}
-                  onChange={(e) => setInstituteId(e.target.value)}
-                  disabled={loading}
-                  className="w-full h-9.5 pl-8 pr-2.5 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
+                  onChange={(e) => handleInstituteChange(e.target.value)}
+                  disabled={loading || loadingInstitutes}
+                  className="w-full h-9.5 pl-8 pr-2.5 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32] disabled:bg-[#f4f6f5] disabled:text-[#8a9b92]"
                 >
+                  <option value="">-- Select an Academic Institute * --</option>
                   {institutes.map((inst) => (
                     <option key={inst.id} value={inst.id}>
-                      {inst.name} ({inst.code})
+                      {inst.name} {inst.code ? `(${inst.code})` : ""}
                     </option>
                   ))}
                 </select>
@@ -532,25 +737,52 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
 
             {/* Department Select */}
             <div className="space-y-1">
-              <Label htmlFor="reg-dept" className="text-xs font-semibold text-[#0f1f17]">
-                Department / Program *
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reg-dept" className="text-xs font-semibold text-[#0f1f17]">
+                  Department / Program *
+                </Label>
+                {loadingDepartments && (
+                  <span className="text-[10px] text-[#0a4b32] flex items-center gap-1 font-medium">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Loading departments...
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <select
                   id="reg-dept"
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
-                  disabled={loading}
-                  className="w-full h-9.5 pl-8 pr-2.5 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
+                  disabled={loading || !instituteId || loadingDepartments}
+                  className="w-full h-9.5 pl-8 pr-2.5 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32] disabled:bg-[#f4f6f5] disabled:text-[#8a9b92] disabled:cursor-not-allowed"
                 >
-                  {departments.map((dept) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name} ({dept.code})
-                    </option>
-                  ))}
+                  {!instituteId ? (
+                    <option value="">-- Please select an institute first --</option>
+                  ) : loadingDepartments ? (
+                    <option value="">Loading departments for selected institute...</option>
+                  ) : departments.length === 0 ? (
+                    <option value="">No departments available for this institute</option>
+                  ) : (
+                    <>
+                      <option value="">-- Select Department / Program * --</option>
+                      {departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>
+                          {dept.name} {dept.code ? `(${dept.code})` : ""}
+                        </option>
+                      ))}
+                    </>
+                  )}
                 </select>
-                <GraduationCap className="w-3.5 h-3.5 text-[#5a6b62] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {loadingDepartments ? (
+                  <Loader2 className="w-3.5 h-3.5 text-[#0a4b32] animate-spin absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                ) : (
+                  <GraduationCap className="w-3.5 h-3.5 text-[#5a6b62] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                )}
               </div>
+              {!instituteId && (
+                <p className="text-[10px] text-[#5a6b62]">
+                  Select an academic institute above to load its offered departments.
+                </p>
+              )}
             </div>
 
             {/* Shift Selection */}
@@ -599,7 +831,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                 type="button"
                 variant="outline"
                 onClick={handlePrev}
-                className="w-1/3 h-9.5 border-[#dce3df] text-[#0f1f17] text-xs"
+                className="w-1/3 h-9.5 border-[#dce3df] text-[#0f1f17] text-xs cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5 mr-1" />
                 Back
@@ -607,7 +839,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
               <Button
                 type="button"
                 onClick={handleNext}
-                className="w-2/3 h-9.5 bg-[#0a4b32] hover:bg-[#073825] text-white font-semibold text-xs"
+                className="w-2/3 h-9.5 bg-[#0a4b32] hover:bg-[#073825] text-white font-semibold text-xs cursor-pointer shadow-xs"
               >
                 <span>Continue to Profile</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -664,20 +896,23 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                       value={semester}
                       onChange={(e) => setSemester(Number(e.target.value))}
                       disabled={loading}
-                      className="w-full h-8.5 px-2 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17]"
+                      className="w-full h-8.5 px-2 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
                     >
                       {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                         <option key={s} value={s}>
-                          Semester {s}
+                          Semester {s} ({s === 1 ? "1st" : s === 2 ? "2nd" : s === 3 ? "3rd" : `${s}th`})
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="reg-session" className="text-[11px] font-semibold text-[#0f1f17]">
-                      Academic Session
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="reg-session" className="text-[11px] font-semibold text-[#0f1f17]">
+                        Academic Session
+                      </Label>
+                      <span className="text-[9px] text-[#0a4b32] font-semibold">Format: YYYY-YYYY</span>
+                    </div>
                     <Input
                       id="reg-session"
                       type="text"
@@ -685,6 +920,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                       value={session}
                       onChange={(e) => setSession(e.target.value)}
                       disabled={loading}
+                      maxLength={15}
                       className="h-8.5 text-xs bg-white"
                     />
                   </div>
