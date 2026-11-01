@@ -9,6 +9,7 @@ interface AuthLayoutProps {
   subtitle: string;
   visualHeadline?: string;
   visualSubheadline?: string;
+  mode?: "login" | "register" | "forgot-password" | "reset-password" | "verify-email";
 }
 
 export default function AuthLayout({
@@ -17,16 +18,20 @@ export default function AuthLayout({
   subtitle,
   visualHeadline,
   visualSubheadline,
+  mode,
 }: AuthLayoutProps) {
   return (
     <div className="h-screen max-h-screen w-full flex flex-col lg:flex-row bg-[#fcfdfc] overflow-hidden no-scrollbar">
-      {/* Desktop Visual Panel: Completely hidden on mobile / tablets (lg:flex) */}
-      <AuthVisualPanel
-        headline={visualHeadline}
-        subheadline={visualSubheadline}
-      />
+      {/* Desktop Visual Panel: Takes 5/12 on lg, 1/2 on xl. Completely hidden on mobile / tablets */}
+      <div className="hidden lg:flex w-5/12 xl:w-1/2 h-full shrink-0">
+        <AuthVisualPanel
+          mode={mode}
+          headline={visualHeadline}
+          subheadline={visualSubheadline}
+        />
+      </div>
 
-      {/* Form Container: Full width on mobile/tablet, right half on desktop */}
+      {/* Form Container: Full width on mobile/tablet, 7/12 on lg, 1/2 on xl */}
       <div className="w-full lg:w-7/12 xl:w-1/2 h-full flex flex-col justify-between p-4 sm:p-6 lg:p-7 xl:p-8 overflow-y-auto no-scrollbar">
         {/* Header / Brand Nav */}
         <div className="flex items-center justify-between shrink-0 pb-3 sm:pb-4">
