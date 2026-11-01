@@ -90,7 +90,6 @@ export const authService = {
    * Verify institutional email with 6-digit OTP
    * Endpoint: POST /auth/verify-email
    */
-  // verifyEmail handler
   async verifyEmail(payload: VerifyEmailPayload): Promise<AuthResponse> {
     try {
       const response = await apiClient.post<Record<string, unknown>>(
