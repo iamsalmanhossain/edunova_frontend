@@ -50,18 +50,37 @@ function VerifyEmailFormContent() {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text");
+    // Clean digits from paste
+    const cleanDigits = pastedData.replace(/\D/g, "").slice(0, 6);
+    if (!cleanDigits) return;
+
+    const newDigits = [...digits];
+    const chars = cleanDigits.split("");
+    chars.forEach((c, i) => {
+      if (i < 6) newDigits[i] = c;
+    });
+    setDigits(newDigits);
+
+    // Auto focus the last filled input or submit if full
+    const nextIndex = Math.min(chars.length - 1, 5);
+    inputRefs.current[nextIndex]?.focus();
+  };
+
   const handleDigitChange = (index: number, val: string) => {
-    // Only accept numeric or clean paste
+    // Only accept numeric
     const clean = val.replace(/\D/g, "");
     if (clean.length > 1) {
-      // User pasted full code
+      // User pasted into input directly
       const chars = clean.slice(0, 6).split("");
       const newDigits = [...digits];
       chars.forEach((c, i) => {
         if (i < 6) newDigits[i] = c;
       });
       setDigits(newDigits);
-      const nextIndex = Math.min(chars.length, 5);
+      const nextIndex = Math.min(chars.length - 1, 5);
       inputRefs.current[nextIndex]?.focus();
       return;
     }
@@ -77,8 +96,21 @@ function VerifyEmailFormContent() {
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digits[index] && index > 0) {
+    if (e.key === "Backspace") {
+      if (!digits[index] && index > 0) {
+        const newDigits = [...digits];
+        newDigits[index - 1] = "";
+        setDigits(newDigits);
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        const newDigits = [...digits];
+        newDigits[index] = "";
+        setDigits(newDigits);
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -191,6 +223,7 @@ function VerifyEmailFormContent() {
                 value={digit}
                 onChange={(e) => handleDigitChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
+                onPaste={handlePaste}
                 className="w-10 h-12 sm:w-11 sm:h-12 text-center text-lg font-bold rounded-lg border border-[#dce3df] focus:border-[#0a4b32] focus:ring-2 focus:ring-[#0a4b32]/20 outline-none transition-all text-[#0f1f17] bg-white shadow-xs"
               />
             ))}
