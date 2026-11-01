@@ -20,7 +20,6 @@ import {
   Phone,
   Building2,
   Clock,
-  Sparkles,
   FileCheck2,
   Check,
 } from "lucide-react";
@@ -38,7 +37,11 @@ import { Department } from "@/types/department";
 const TARGET_INSTITUTE_ID = "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b";
 const TARGET_DEPARTMENT_ID = "e03dfd3c-1d76-448c-b793-c087a5d53b42";
 
-export default function RegisterForm() {
+interface RegisterFormProps {
+  onSwitchToLogin?: () => void;
+}
+
+export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
   const router = useRouter();
 
   // Wizard Step (1: Identity & Account, 2: Campus & Shift, 3: Profile & Submit)
@@ -102,39 +105,6 @@ export default function RegisterForm() {
     }
     loadData();
   }, []);
-
-  // Quick Autofill Helpers for instant testing
-  const fillSampleTeacher = () => {
-    setRole("teacher");
-    setName("Engr. Rafiqul Islam");
-    setEmail("jitoya7966@agaexpress.com");
-    setPassword("SecurePass123!@#");
-    setPhone("01812345678");
-    setGender("MALE");
-    setInstituteId(TARGET_INSTITUTE_ID);
-    setDepartmentId(TARGET_DEPARTMENT_ID);
-    setShift("FIRST_SHIFT");
-    setDesignation("Senior Instructor");
-    setQualification("B.Sc. in Computer Science & Engineering");
-    setError(null);
-  };
-
-  const fillSampleStudent = () => {
-    setRole("student");
-    setName("Tanvir Ahmed");
-    setEmail("womipi2481@37xiao.com");
-    setPassword("SecurePass123!@#");
-    setPhone("01712345679");
-    setGender("MALE");
-    setInstituteId(TARGET_INSTITUTE_ID);
-    setDepartmentId(TARGET_DEPARTMENT_ID);
-    setShift("FIRST_SHIFT");
-    setSemester(4);
-    setRollNo("619820");
-    setRegistrationNo("1502123456");
-    setSession("2022-2023");
-    setError(null);
-  };
 
   // Step 1 Validation
   const validateStep1 = () => {
@@ -266,31 +236,6 @@ export default function RegisterForm() {
 
   return (
     <div className="space-y-3 no-scrollbar">
-      {/* Quick Autofill Helper Bar */}
-      <div className="bg-[#f0f7f3] border border-[#dce3df] rounded-lg p-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#0a4b32]">
-          <Sparkles className="w-3.5 h-3.5 text-[#c48b28]" />
-          <span className="hidden sm:inline">Autofill Test Payload:</span>
-          <span className="sm:hidden">Autofill:</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={fillSampleStudent}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs"
-          >
-            Student
-          </button>
-          <button
-            type="button"
-            onClick={fillSampleTeacher}
-            className="px-2 py-0.5 text-[11px] font-medium rounded bg-white border border-[#dce3df] text-[#0a4b32] hover:bg-[#0a4b32] hover:text-white transition-all shadow-xs"
-          >
-            Teacher
-          </button>
-        </div>
-      </div>
-
       {/* Step Indicator Header */}
       <div className="bg-white rounded-lg border border-[#e2e8e4] p-2.5 sm:p-3 shadow-xs">
         <div className="flex items-center justify-between">
@@ -827,12 +772,22 @@ export default function RegisterForm() {
         <div className="pt-1 text-center">
           <p className="text-[11px] text-[#5a6b62]">
             Already have an active account?{" "}
-            <Link
-              href="/login"
-              className="font-bold text-[#0a4b32] hover:underline"
-            >
-              Sign In to Portal
-            </Link>
+            {onSwitchToLogin ? (
+              <button
+                type="button"
+                onClick={onSwitchToLogin}
+                className="font-bold text-[#0a4b32] hover:underline cursor-pointer transition-colors"
+              >
+                Sign In to Portal
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="font-bold text-[#0a4b32] hover:underline"
+              >
+                Sign In to Portal
+              </Link>
+            )}
           </p>
         </div>
       </form>
