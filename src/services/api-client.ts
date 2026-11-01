@@ -197,7 +197,6 @@ export async function fetchClient<T = unknown>(
       const connError = new Error(
         "Unable to connect to EduNova backend server (http://localhost:5000). Please ensure your backend is running (`pnpm start:dev` in edunova_backend)."
       ) as ApiClientError;
-      // Status 0 offline
       connError.status = 0;
       throw connError;
     }
