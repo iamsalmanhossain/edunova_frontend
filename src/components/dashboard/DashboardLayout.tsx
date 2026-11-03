@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
   GraduationCap,
@@ -17,13 +16,11 @@ import {
   Building2,
   ShieldCheck,
   CheckCircle2,
-  ExternalLink,
   X,
   ChevronRight,
   ClipboardList,
   Layers,
   Settings,
-  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -74,10 +71,10 @@ export default function DashboardLayout({
 
   const teacherNav: NavItem[] = [
     { label: "Faculty Dashboard", href: "/dashboard/teacher", icon: LayoutDashboard },
+    { label: "Daily Attendance", href: "/dashboard/teacher/attendance", icon: Clock },
+    { label: "Student Roll Sheet", href: "/dashboard/teacher/students", icon: Users },
     { label: "Teaching Schedule", href: "#schedule", icon: Calendar },
-    { label: "Attendance Entry", href: "#attendance", icon: Clock },
-    { label: "Midterm Mark Sheets", href: "#marks", icon: ClipboardList },
-    { label: "Student Roll Sheet", href: "#students", icon: Users },
+    { label: "Marks & Results", href: "/dashboard/teacher/results", icon: ClipboardList },
     { label: "Academic Notices", href: "#notices", icon: Bell },
   ];
 
@@ -183,7 +180,16 @@ export default function DashboardLayout({
           )}
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || (item.href !== "#" && pathname.startsWith(item.href));
+            const isRootDashboard =
+              item.href === "/dashboard/teacher" ||
+              item.href === "/dashboard/student" ||
+              item.href === "/dashboard/admin";
+            const isActive = isRootDashboard
+              ? pathname === item.href
+              : pathname === item.href ||
+                (item.href !== "#" &&
+                  !item.href.startsWith("#") &&
+                  pathname.startsWith(item.href));
             return (
               <Link
                 key={item.label}
@@ -219,94 +225,31 @@ export default function DashboardLayout({
           })}
         </div>
 
-        {/* User Footer Profile & Sign Out */}
-        <div className={`border-t border-[#0a4b32]/80 bg-[#052b1c]/80 transition-all ${isCollapsed ? "p-3 flex flex-col items-center gap-2" : "p-4 space-y-3"}`}>
+        {/* User Footer: Sign Out Only */}
+        <div
+          className={`border-t border-[#0a4b32]/80 bg-[#052b1c]/80 transition-all ${
+            isCollapsed ? "p-3 flex justify-center" : "p-4"
+          }`}
+        >
           {isCollapsed ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsPhotoModalOpen(true)}
-                className="relative w-9 h-9 rounded-full bg-[#0a4b32] text-[#c48b28] font-bold text-xs flex items-center justify-center cursor-pointer shadow-xs border border-[#146c4a] group overflow-hidden"
-                title={`Update profile photo - ${user.name}`}
-              >
-                {user.avatarUrl ? (
-                  <Image
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    width={36}
-                    height={36}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  user.name.charAt(0).toUpperCase()
-                )}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
-                  <Camera className="w-3.5 h-3.5" />
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={handleLogout}
-                title="Sign Out"
-                className="w-9 h-9 rounded-lg bg-red-600/90 hover:bg-red-700 text-white flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={handleLogout}
+              title="Sign Out"
+              className="w-10 h-10 rounded-xl bg-red-600/90 hover:bg-red-700 text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           ) : (
-            <>
-              <div
-                onClick={() => setIsPhotoModalOpen(true)}
-                className="flex items-center gap-3 p-1.5 -m-1.5 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
-                title="Click to update profile photo"
-              >
-                <div className="relative w-9 h-9 rounded-full bg-[#0a4b32] text-[#c48b28] font-bold text-xs flex items-center justify-center shrink-0 border border-[#146c4a] overflow-hidden">
-                  {user.avatarUrl ? (
-                    <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      width={36}
-                      height={36}
-                      className="w-full h-full object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    user.name.charAt(0).toUpperCase()
-                  )}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
-                    <Camera className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-white truncate leading-tight group-hover:text-[#e4a838] transition-colors">
-                    {user.name}
-                  </p>
-                  <p className="text-[10px] text-white/50 truncate leading-tight mt-0.5">
-                    {user.email}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <Link
-                  href="/"
-                  className="flex-1 text-[11px] font-medium text-white/70 hover:text-white hover:bg-white/5 px-2 py-1.5 rounded-lg border border-white/10 flex items-center justify-center gap-1 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3 text-[#c48b28]" />
-                  Website
-                </Link>
-                <Button
-                  onClick={handleLogout}
-                  variant="destructive"
-                  size="sm"
-                  className="h-8 text-[11px] bg-red-600 hover:bg-red-700 text-white px-3 font-semibold shadow-xs cursor-pointer"
-                >
-                  <LogOut className="w-3 h-3 mr-1" />
-                  Sign Out
-                </Button>
-              </div>
-            </>
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              size="sm"
+              className="w-full h-9 text-xs bg-red-600 hover:bg-red-700 text-white font-semibold shadow-xs cursor-pointer flex items-center justify-center gap-2 rounded-xl"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
           )}
         </div>
       </aside>
@@ -339,43 +282,55 @@ export default function DashboardLayout({
                 </button>
               </div>
 
-              <div className="py-4 space-y-1 overflow-y-auto no-scrollbar max-h-[calc(100vh-180px)]">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-white/80 hover:bg-[#0a4b32] hover:text-white"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <item.icon className="w-4 h-4 text-[#c48b28]" />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#c48b28] text-white">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                ))}
+              <div className="py-4 space-y-1 overflow-y-auto no-scrollbar max-h-[calc(100vh-140px)]">
+                {navItems.map((item) => {
+                  const isRootDashboard =
+                    item.href === "/dashboard/teacher" ||
+                    item.href === "/dashboard/student" ||
+                    item.href === "/dashboard/admin";
+                  const isActive = isRootDashboard
+                    ? pathname === item.href
+                    : pathname === item.href ||
+                      (item.href !== "#" &&
+                        !item.href.startsWith("#") &&
+                        pathname.startsWith(item.href));
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                        isActive
+                          ? "bg-[#0a4b32] text-white font-semibold border border-[#146c4a]"
+                          : "text-white/80 hover:bg-[#0a4b32] hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <item.icon
+                          className={`w-4 h-4 ${
+                            isActive ? "text-[#c48b28]" : "text-[#c48b28]"
+                          }`}
+                        />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#c48b28] text-white">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#0a4b32] space-y-2">
-              <div className="flex items-center gap-2 px-1 text-xs">
-                <div className="w-7 h-7 rounded-full bg-[#0a4b32] text-[#c48b28] font-bold text-xs flex items-center justify-center">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="truncate">
-                  <p className="font-bold text-white truncate text-xs">{user.name}</p>
-                  <p className="text-[10px] text-white/60 truncate">{user.email}</p>
-                </div>
-              </div>
+            <div className="pt-3 border-t border-[#0a4b32]">
               <Button
                 onClick={handleLogout}
-                className="w-full h-8 text-xs bg-red-600 hover:bg-red-700 text-white justify-center shadow-xs cursor-pointer"
+                variant="destructive"
+                className="w-full h-9 text-xs bg-red-600 hover:bg-red-700 text-white justify-center shadow-xs cursor-pointer flex items-center gap-2 rounded-xl"
               >
-                <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                <LogOut className="w-4 h-4" />
                 Sign Out
               </Button>
             </div>
