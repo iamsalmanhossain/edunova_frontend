@@ -8,8 +8,12 @@
  * - Provides clear, human-readable errors when backend server is offline
  */
 
-const API_BASE_URL =
+const CONFIGURED_API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const RENDER_FALLBACK_URL = "https://edunova-backend-tu1r.onrender.com/api/v1";
+
+// Memory cache for the working API base URL so we don't retry failed localhost ports on every request
+let activeBaseUrl: string = CONFIGURED_API_URL;
 
 interface RequestOptions extends RequestInit {
   skipAuth?: boolean;
@@ -75,7 +79,7 @@ async function refreshAccessToken(): Promise<string | null> {
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      const response = await fetch(`${activeBaseUrl}/auth/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,15 +118,55 @@ async function refreshAccessToken(): Promise<string | null> {
 }
 
 /**
- * Primary Native Fetch Wrapper
+ * Helper to process response json
+ */
+async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const errorMessage =
+      data?.message ||
+      (Array.isArray(data?.message) ? data.message.join(", ") : null) ||
+      `Request failed with status ${response.status}`;
+
+    const error = new Error(errorMessage) as ApiClientError;
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  // Standardize NestJS TransformInterceptor response structure
+  if (data && typeof data === "object") {
+    if ("data" in data && "success" in data) {
+      return data as ApiResponse<T>;
+    }
+    return {
+      success: true,
+      statusCode: response.status,
+      data: data as T,
+    };
+  }
+
+  return {
+    success: true,
+    statusCode: response.status,
+    data: data as T,
+  };
+}
+
+/**
+ * Primary Native Fetch Wrapper with Auto-Fallback between Local & Render Cloud Backend
  */
 export async function fetchClient<T = unknown>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
-  const url = endpoint.startsWith("http")
-    ? endpoint
-    : `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  const makeUrl = (base: string) => {
+    if (endpoint.startsWith("http")) return endpoint;
+    const cleanBase = base.replace(/\/+$/, "");
+    const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    return `${cleanBase}${cleanEndpoint}`;
+  };
 
   const headers = new Headers(options.headers || {});
 
@@ -141,8 +185,10 @@ export async function fetchClient<T = unknown>(
     }
   }
 
+  const targetUrl = makeUrl(activeBaseUrl);
+
   try {
-    const response = await fetch(url, {
+    const response = await fetch(targetUrl, {
       ...options,
       headers,
     });
@@ -160,46 +206,47 @@ export async function fetchClient<T = unknown>(
       }
     }
 
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      const errorMessage =
-        data?.message ||
-        (Array.isArray(data?.message) ? data.message.join(", ") : null) ||
-        `Request failed with status ${response.status}`;
-
-      const error = new Error(errorMessage) as ApiClientError;
-      error.status = response.status;
-      error.data = data;
-      throw error;
-    }
-
-    // Standardize NestJS TransformInterceptor response structure
-    if (data && typeof data === "object") {
-      if ("data" in data && "success" in data) {
-        return data as ApiResponse<T>;
-      }
-      return {
-        success: true,
-        statusCode: response.status,
-        data: data as T,
-      };
-    }
-
-    return {
-      success: true,
-      statusCode: response.status,
-      data: data as T,
-    };
+    return await parseResponse<T>(response);
   } catch (error: unknown) {
-    // Catch browser connection failures (e.g. backend server is not running on port 5000)
-    if (error instanceof TypeError && (error.message.includes("fetch") || error.message.includes("Failed"))) {
-      const connError = new Error(
-        "Unable to connect to EduNova backend server (http://localhost:5000). Please ensure your backend is running (`pnpm start:dev` in edunova_backend)."
-      ) as ApiClientError;
-      connError.status = 0;
-      throw connError;
+    // If local development backend is offline, seamlessly fallback to live Render backend
+    const isNetworkError =
+      error instanceof TypeError &&
+      (error.message.includes("fetch") || error.message.includes("Failed"));
+
+    if (
+      isNetworkError &&
+      !endpoint.startsWith("http") &&
+      activeBaseUrl.includes("localhost")
+    ) {
+      try {
+        const fallbackUrl = makeUrl(RENDER_FALLBACK_URL);
+        const fallbackResponse = await fetch(fallbackUrl, {
+          ...options,
+          headers,
+        });
+
+        if (fallbackResponse.status === 401 && !options.skipAuth && (options.retryCount || 0) < 1) {
+          activeBaseUrl = RENDER_FALLBACK_URL;
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            headers.set("Authorization", `Bearer ${newToken}`);
+            return fetchClient<T>(endpoint, {
+              ...options,
+              headers,
+              retryCount: (options.retryCount || 0) + 1,
+            });
+          }
+        }
+
+        const parsed = await parseResponse<T>(fallbackResponse);
+        // Switch activeBaseUrl to Render since localhost is unreachable
+        activeBaseUrl = RENDER_FALLBACK_URL;
+        return parsed;
+      } catch (fallbackError: unknown) {
+        throw fallbackError;
+      }
     }
+
     throw error;
   }
 }
@@ -234,4 +281,56 @@ export const apiClient = {
 
   delete: <T = unknown>(endpoint: string, options?: RequestOptions) =>
     fetchClient<T>(endpoint, { ...options, method: "DELETE" }),
+
+  getBlob: async (endpoint: string, options?: RequestOptions): Promise<Blob> => {
+    const makeUrl = (base: string) => {
+      if (endpoint.startsWith("http")) return endpoint;
+      const cleanBase = base.replace(/\/+$/, "");
+      const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+      return `${cleanBase}${cleanEndpoint}`;
+    };
+
+    const headers = new Headers(options?.headers || {});
+    const token = getStoredToken();
+    if (token && !options?.skipAuth && !headers.has("Authorization")) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    let url = makeUrl(activeBaseUrl);
+    let res: Response;
+    try {
+      res = await fetch(url, { ...options, headers, method: "GET" });
+    } catch {
+      url = makeUrl(RENDER_FALLBACK_URL);
+      res = await fetch(url, { ...options, headers, method: "GET" });
+      activeBaseUrl = RENDER_FALLBACK_URL;
+    }
+
+    // Silent JWT refresh on 401 Unauthorized
+    if (res.status === 401 && !options?.skipAuth && (options?.retryCount || 0) < 1) {
+      const refreshedToken = await refreshAccessToken();
+      if (refreshedToken) {
+        return apiClient.getBlob(endpoint, {
+          ...options,
+          retryCount: (options?.retryCount || 0) + 1,
+        });
+      }
+    }
+
+    if (!res.ok) {
+      let serverMsg = `Download failed with status ${res.status}`;
+      try {
+        const errorJson = await res.json();
+        if (errorJson?.message) {
+          serverMsg = Array.isArray(errorJson.message)
+            ? errorJson.message.join(", ")
+            : errorJson.message;
+        }
+      } catch {
+        // Non-JSON error payload
+      }
+      throw new Error(serverMsg);
+    }
+    return await res.blob();
+  },
 };
