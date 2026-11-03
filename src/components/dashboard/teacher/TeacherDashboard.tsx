@@ -1,74 +1,177 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { AuthUser } from "@/types/auth";
+import {
+  CheckCircle2,
+  Users,
+  ArrowRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import TeacherApprovalAlert from "./TeacherApprovalAlert";
 import TeacherWelcomeBanner from "./TeacherWelcomeBanner";
 import TeacherMetricsGrid from "./TeacherMetricsGrid";
 import TeacherScheduleList, { TeacherLectureItem } from "./TeacherScheduleList";
 import TeacherQuickTools from "./TeacherQuickTools";
-import TeacherAttendanceAction from "./TeacherAttendanceAction";
 import TeacherGradebookOverview from "./TeacherGradebookOverview";
+import TeacherDashboardSkeleton from "../skeletons/TeacherDashboardSkeleton";
+import { teacherService } from "@/services/teacher.service";
+import {
+  TeacherDashboardOverviewData,
+  TeacherAttendanceStatsData,
+} from "@/types/teacher";
 
 interface TeacherDashboardProps {
   user: AuthUser;
 }
 
 export default function TeacherDashboard({ user }: TeacherDashboardProps) {
-  const schedule: TeacherLectureItem[] = [
-    {
-      time: "08:30 AM – 10:00 AM",
-      subject: "Microprocessor & Interfacing (66651)",
-      semester: "4th Semester (Shift 1)",
-      department: "Computer Technology",
-      room: "CST Software Lab 2",
-      studentsCount: 52,
-    },
-    {
-      time: "11:45 AM – 01:15 PM",
-      subject: "Computer Architecture & Organization",
-      semester: "4th Semester (Shift 2)",
-      department: "Computer Technology",
-      room: "Academic Room 302",
-      studentsCount: 48,
-    },
-    {
-      time: "02:00 PM – 03:30 PM",
-      subject: "Advanced Microcontroller Workshop",
-      semester: "6th Semester (Shift 1)",
-      department: "Computer Technology",
-      room: "Hardware & Robotics Lab",
-      studentsCount: 44,
-    },
-  ];
+  const [overview, setOverview] = useState<TeacherDashboardOverviewData | null>(null);
+  const [stats, setStats] = useState<TeacherAttendanceStatsData | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadDashboardData() {
+      try {
+        setLoading(true);
+        const [overviewRes, statsRes] = await Promise.allSettled([
+          teacherService.getOverview(),
+          teacherService.getAttendanceStats(),
+        ]);
+
+        if (mounted) {
+          if (overviewRes.status === "fulfilled") {
+            setOverview(overviewRes.value);
+          }
+          if (statsRes.status === "fulfilled") {
+            setStats(statsRes.value);
+          }
+        }
+      } catch (err: unknown) {
+        console.warn("Could not load real teacher dashboard overview", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadDashboardData();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Compute live metric values
+  const departmentName =
+    overview?.scope?.departmentName ||
+    overview?.profile?.department?.name ||
+    user.teacherProfile?.department?.name ||
+    "Academic Department";
+
+  const designation =
+    overview?.profile?.designation ||
+    user.teacherProfile?.designation ||
+    "Faculty Member";
+
+  const totalStudents =
+    overview?.overview?.totalStudents ?? 0;
+
+  const assignedClassesCount =
+    overview?.overview?.assignedClasses ?? 0;
+
+  const avgAttendance =
+    stats?.subjects && stats.subjects.length > 0
+      ? `${Math.round(
+          stats.subjects.reduce((sum, s) => sum + (s.averageAttendanceRate || 0), 0) /
+            stats.subjects.length
+        )}%`
+      : "0%";
+
+  const pendingEvaluations =
+    overview?.overview?.pendingTasks?.pendingEvaluations ?? 0;
+
+  const todaysClasses: TeacherLectureItem[] =
+    overview?.overview?.todaysClasses && overview.overview.todaysClasses.length > 0
+      ? overview.overview.todaysClasses.map((c) => ({
+          time: c.time || "09:00 AM – 10:30 AM",
+          subject: c.subject,
+          semester: c.semester,
+          department: c.department || departmentName,
+          room: c.room || "Room 201",
+          studentsCount: c.studentsCount || 0,
+        }))
+      : [];
+
+  if (loading) {
+    return <TeacherDashboardSkeleton />;
+  }
 
   return (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12">
       {/* 1. Approval Status Alert */}
       <TeacherApprovalAlert status={user.teacherApprovalStatus || "APPROVED"} />
 
       {/* 2. Welcome Banner */}
       <TeacherWelcomeBanner
-        userName={user.name}
-        designation="Senior Instructor"
-        departmentName="Computer Science & Technology"
+        userName={overview?.profile?.name || user.name}
+        designation={designation}
+        departmentName={departmentName}
       />
 
-      {/* 3. KPI Metrics */}
+      {/* 3. Real KPI Metrics Grid */}
       <TeacherMetricsGrid
-        assignedCoursesCount={3}
-        studentsCount={144}
-        attendanceSubmissionRate="98.5%"
-        pendingEvaluationsCount={2}
+        assignedCoursesCount={assignedClassesCount}
+        studentsCount={totalStudents}
+        attendanceSubmissionRate={avgAttendance}
+        pendingEvaluationsCount={pendingEvaluations}
       />
 
-      {/* 4. Live Attendance Sheet (Instructor specific) */}
-      <TeacherAttendanceAction />
+      {/* 4. Live Attendance Hub Quick Launcher */}
+      <div className="bg-gradient-to-br from-[#0a4b32] to-[#063020] rounded-3xl p-5 sm:p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold backdrop-blur-xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#c48b28]" />
+            <span>Digital Attendance System Active</span>
+          </div>
+          <h2 className="text-base sm:text-lg font-bold text-white">
+            Daily Attendance & Student Scope Management
+          </h2>
+          <p className="text-xs text-white/70 max-w-xl">
+            Take subject attendance for your assigned semester, view historical roll call sessions, and manage your department student roster.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <Link href="/dashboard/teacher/attendance">
+            <Button
+              type="button"
+              className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold text-xs rounded-xl shadow-xs gap-1.5 cursor-pointer"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              Take Attendance
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </Button>
+          </Link>
+
+          <Link href="/dashboard/teacher/students">
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold text-xs rounded-xl gap-1.5 cursor-pointer"
+            >
+              <Users className="w-4 h-4" />
+              Student Directory
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       {/* 5. Schedule & Faculty Tools */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         <div className="lg:col-span-2 space-y-5 sm:space-y-6">
-          <TeacherScheduleList schedule={schedule} />
+          <TeacherScheduleList schedule={todaysClasses} />
           <TeacherGradebookOverview />
         </div>
 
