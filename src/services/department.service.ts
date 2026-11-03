@@ -94,40 +94,29 @@ export const departmentService = {
    * If instituteId is passed, returns ONLY the departments offered by that institute!
    */
   async getDepartments(instituteId?: string): Promise<Department[]> {
+    if (!instituteId) {
+      return [];
+    }
+
     try {
-      const url = instituteId
-        ? `/departments?instituteId=${encodeURIComponent(instituteId)}&limit=100`
-        : "/departments?limit=100";
+      const url = `/departments?instituteId=${encodeURIComponent(instituteId)}&limit=100`;
       const response = await apiClient.get<unknown>(url, { skipAuth: true });
 
       const raw = response.data as Record<string, unknown> | unknown[];
       let items: Department[] = [];
 
-      if (Array.isArray(raw) && raw.length > 0) {
+      if (Array.isArray(raw)) {
         items = raw as Department[];
       } else if (raw && typeof raw === "object") {
         const nestedData = (raw as { data?: unknown }).data;
-        if (Array.isArray(nestedData) && nestedData.length > 0) {
+        if (Array.isArray(nestedData)) {
           items = nestedData as Department[];
         }
       }
 
-      if (items.length > 0) {
-        return items.map((dept, index) => {
-          const fallback = VERIFIED_DEPARTMENTS[index % VERIFIED_DEPARTMENTS.length];
-          return {
-            ...fallback,
-            ...dept,
-            id: dept.id || fallback.id,
-            slug: dept.code ? dept.code.toLowerCase() : fallback.slug,
-          };
-        });
-      }
-
-      return instituteId ? [] : VERIFIED_DEPARTMENTS;
-    } catch (error) {
-      console.warn("Could not load departments from backend:", error);
-      return instituteId ? [] : VERIFIED_DEPARTMENTS;
+      return items;
+    } catch {
+      return [];
     }
   },
 
