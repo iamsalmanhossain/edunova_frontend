@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { FileSpreadsheet, ClipboardList, Upload } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2, Users, FileSpreadsheet, Award } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -14,29 +15,43 @@ export default function TeacherQuickTools() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 space-y-2">
-        <Button
-          variant="outline"
-          className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
-        >
-          <FileSpreadsheet className="w-4 h-4 mr-2 text-[#0a4b32]" />
-          Export Attendance Sheet (Excel)
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
-        >
-          <ClipboardList className="w-4 h-4 mr-2 text-[#0a4b32]" />
-          Input Continuous Assessment
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
-        >
-          <Upload className="w-4 h-4 mr-2 text-[#0a4b32]" />
-          Distribute Lecture Slides
-        </Button>
+        <Link href="/dashboard/teacher/attendance" className="block">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
+          >
+            <CheckCircle2 className="w-4 h-4 mr-2 text-[#0a4b32]" />
+            Take Daily Attendance
+          </Button>
+        </Link>
+        <Link href="/dashboard/teacher/results" className="block">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
+          >
+            <Award className="w-4 h-4 mr-2 text-[#c48b28]" />
+            Manage Marks & Results
+          </Button>
+        </Link>
+        <Link href="/dashboard/teacher/students" className="block">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
+          >
+            <Users className="w-4 h-4 mr-2 text-[#0a4b32]" />
+            Student Roll Sheet Directory
+          </Button>
+        </Link>
+        <Link href="/dashboard/teacher/attendance" className="block">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-2 text-[#0a4b32]" />
+            Pre-Enroll New Students
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );
 }
-
