@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
+import CentralBrandLoader from "@/components/shared/CentralBrandLoader";
 
 interface DashboardGuardProps {
   children: React.ReactNode;
@@ -57,13 +58,11 @@ export default function DashboardGuard({
 
   if (!mounted || !user) {
     return (
-      <div className="min-h-screen bg-[#f7faf8] flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 rounded-2xl bg-[#0a4b32] text-white flex items-center justify-center shadow-lg mb-4 animate-bounce">
-          <Loader2 className="w-6 h-6 animate-spin text-[#c48b28]" />
-        </div>
-        <p className="text-sm font-bold text-[#0a4b32]">Authenticating Secure Session...</p>
-        <p className="text-xs text-[#5a6b62] mt-1">Verifying institutional credentials with EduNova IMS</p>
-      </div>
+      <CentralBrandLoader
+        message="Verifying Secure Session..."
+        subMessage="Validating institutional credentials with EduNova IMS"
+        fullScreen={true}
+      />
     );
   }
 
