@@ -51,8 +51,8 @@ export const instituteService = {
         }
       }
       return VERIFIED_INSTITUTES;
-    } catch (error) {
-      console.warn("Could not load institutes from backend, using verified fallback:", error);
+    } catch {
+      // Backend offline or unreachable, smoothly use verified seed
       return VERIFIED_INSTITUTES;
     }
   },
