@@ -15,6 +15,15 @@ interface StudentDashboardProps {
 }
 
 export default function StudentDashboard({ user }: StudentDashboardProps) {
+  const student = user.studentProfile;
+  const semText = student?.semester
+    ? `${student.semester}th Semester ${student.department?.code || ""}`.trim()
+    : "Diploma Engineering";
+  const shiftText =
+    student?.shift === "SECOND_SHIFT" ? "Shift 2 (Day)" : "Shift 1 (Morning)";
+  const rollNo = student?.rollNo || "N/A";
+  const registrationNo = student?.registrationNo || "N/A";
+
   // Student routine data
   const routine: RoutinePeriod[] = [
     {
@@ -73,8 +82,8 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
       {/* 1. Welcome Banner */}
       <StudentWelcomeBanner
         userName={user.name}
-        semesterText="4th Semester CST"
-        shiftText="Shift 1 (Morning)"
+        semesterText={semText}
+        shiftText={shiftText}
       />
 
       {/* 2. KPI Metrics Grid */}
@@ -83,8 +92,8 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
         cgpa="3.82"
         enrolledSubjectsCount={5}
         creditHours={16}
-        rollNo="619820"
-        registrationNo="1502123456"
+        rollNo={rollNo}
+        registrationNo={registrationNo}
       />
 
       {/* 3. Tuition & Dues Status */}
