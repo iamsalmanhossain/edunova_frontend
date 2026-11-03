@@ -27,6 +27,7 @@ interface AuthState {
   setAuth: (user: AuthUser, accessToken: string, refreshToken?: string) => void;
   clearAuth: () => void;
   setUser: (user: AuthUser | null) => void;
+  updateUser: (fields: Partial<AuthUser>) => void;
   setInitialized: (val: boolean) => void;
 
   login: (credentials: LoginCredentials) => Promise<AuthResponse>;
@@ -92,6 +93,16 @@ export const useAuthStore = create<AuthState>()(
           }
         }
         set({ user });
+      },
+
+      updateUser: (fields) => {
+        const currentUser = get().user;
+        if (!currentUser) return;
+        const updated = { ...currentUser, ...fields };
+        if (typeof window !== "undefined") {
+          localStorage.setItem("edunova_user", JSON.stringify(updated));
+        }
+        set({ user: updated });
       },
 
       setInitialized: (val: boolean) => set({ isInitialized: val }),
