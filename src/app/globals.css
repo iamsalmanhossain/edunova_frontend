@@ -81,3 +81,19 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes progressSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+.animate-progress-sweep {
+  animation: progressSweep 1.5s ease-in-out infinite;
+}
