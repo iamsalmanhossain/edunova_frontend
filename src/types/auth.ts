@@ -1,3 +1,5 @@
+import { StudentProfileData, TeacherProfileData } from "./user";
+
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -36,11 +38,14 @@ export interface AuthUser {
   name: string;
   email: string;
   role: "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "STUDENT";
+  phone?: string | null;
   avatarUrl?: string | null;
   status?: string;
   instituteId?: string;
   departmentId?: string;
   teacherApprovalStatus?: string;
+  studentProfile?: StudentProfileData | null;
+  teacherProfile?: TeacherProfileData | null;
 }
 
 export interface AuthResponse {
