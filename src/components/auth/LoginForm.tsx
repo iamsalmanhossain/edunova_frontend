@@ -14,6 +14,7 @@ import {
   Lock,
   CheckCircle2,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +84,22 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
   return (
     <div className="space-y-4 no-scrollbar">
+      {/* Pre-Enrolled Student Claim Banner */}
+      <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-emerald-50 via-[#f2faf5] to-emerald-50 border border-emerald-200/90 text-emerald-950 text-xs flex items-center justify-between gap-2 shadow-2xs">
+        <div className="flex items-center gap-2 min-w-0">
+          <Sparkles className="w-4 h-4 text-[#c48b28] shrink-0" />
+          <span className="text-[11px] sm:text-xs font-semibold truncate">
+            Teacher added your roll for attendance?
+          </span>
+        </div>
+        <Link
+          href="/claim-account"
+          className="shrink-0 font-bold text-[11px] text-[#0a4b32] hover:text-white hover:bg-[#0a4b32] bg-white px-2.5 py-1 rounded-lg border border-emerald-300 hover:border-[#0a4b32] transition-all inline-flex items-center gap-1 shadow-2xs cursor-pointer"
+        >
+          <span>Claim Here</span>
+          <ArrowRight className="w-3 h-3 text-[#c48b28]" />
+        </Link>
+      </div>
       {/* Custom Error Feedback Banner */}
       {serverError && (
         <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex flex-col gap-2 animate-in fade-in">
