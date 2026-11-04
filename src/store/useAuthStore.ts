@@ -7,6 +7,7 @@ import {
   StudentRegisterPayload,
   TeacherRegisterPayload,
   AuthResponse,
+  ClaimStudentAccountPayload,
 } from "@/types/auth";
 
 interface AuthTokenPayload {
@@ -34,6 +35,7 @@ interface AuthState {
   adminLogin: (credentials: LoginCredentials) => Promise<AuthResponse>;
   registerStudent: (payload: StudentRegisterPayload) => Promise<AuthResponse>;
   registerTeacher: (payload: TeacherRegisterPayload) => Promise<AuthResponse>;
+  claimStudentAccount: (payload: ClaimStudentAccountPayload) => Promise<AuthResponse>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<boolean>;
 }
@@ -218,6 +220,61 @@ export const useAuthStore = create<AuthState>()(
               res.message ||
               "Teacher registration submitted. Pending email verification and admin approval.",
             data: res.data as AuthResponse["data"],
+          };
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      /**
+       * Claim Pre-Enrolled Student Account
+       * Endpoint: POST /auth/claim-account
+       * Activates roll, merges marks & attendance, sets auth tokens
+       */
+      claimStudentAccount: async (payload) => {
+        set({ isLoading: true });
+        try {
+          const res = await apiClient.post<any>(
+            "/auth/claim-account",
+            payload,
+            { skipAuth: true }
+          );
+
+          const rawData = res.data;
+          const student = rawData?.student;
+          const tokens = rawData?.tokens;
+
+          if (student && tokens?.accessToken) {
+            const authUser: AuthUser = {
+              id: student.user?.id || student.userId,
+              name: student.user?.name || student.name || payload.name || "",
+              email: student.user?.email || student.email || payload.email,
+              phone: student.user?.phone || student.phone || payload.phone || null,
+              role: "STUDENT",
+              status: student.user?.status || "ACTIVE",
+              instituteId: student.institute?.id,
+              departmentId: student.department?.id || payload.departmentId,
+              studentProfile: {
+                id: student.id,
+                rollNo: student.rollNo,
+                registrationNo: student.registrationNo,
+                semester: student.semester,
+                shift: student.shift,
+                isClaimed: true,
+                department: student.department,
+                institute: student.institute,
+              } as any,
+            };
+
+            get().setAuth(authUser, tokens.accessToken, tokens.refreshToken);
+          }
+
+          return {
+            success: true,
+            message:
+              res.message ||
+              "Student account claimed and activated successfully. Welcome!",
+            data: rawData as AuthResponse["data"],
           };
         } finally {
           set({ isLoading: false });
