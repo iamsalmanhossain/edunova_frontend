@@ -465,3 +465,85 @@ export interface UpdateSingleMarkPayload {
   remarks?: string;
 }
 
+export interface MarksSubjectItem {
+  id: string;
+  name: string;
+  code: string;
+  semester: number;
+  credit?: number;
+}
+
+export interface MarksStudentItem {
+  studentId: string;
+  rollNo: string;
+  registrationNo?: string | null;
+  name: string;
+  semester: number;
+  shift?: string;
+  session?: string;
+}
+
+export interface PasteJsonPayload {
+  rawJson?: string;
+  subjectId?: string;
+  examName?: string;
+  examType?: ExamType;
+  semester?: number;
+  session?: string;
+  shift?: "FIRST_SHIFT" | "SECOND_SHIFT" | "FIRST" | "SECOND";
+  totalMarks?: number;
+  passMarks?: number;
+  publish?: boolean;
+  remarks?: string;
+  marks?: Array<{
+    rollNo?: string;
+    studentId?: string;
+    obtainedMarks: number;
+    remarks?: string;
+  }>;
+  [key: string]: unknown;
+}
+
+export interface ResultGuideData {
+  title: string;
+  version: string;
+  description: string;
+  lastUpdated: string;
+  updatedBy: string;
+  markdownDocumentation?: string | null;
+  workflow: Array<{
+    step: number;
+    title: string;
+    description: string;
+    endpoint?: string;
+  }>;
+  instructions: string[];
+  customNotes?: string | null;
+  supportedMethods: Array<{
+    method: string;
+    endpoint: string;
+    name: string;
+    description: string;
+  }>;
+  examples: {
+    recommendedCopyPasteUsingRollNo?: Record<string, unknown>;
+    midtermExamWithPassMarks?: Record<string, unknown>;
+    usingStudentUuid?: Record<string, unknown>;
+    bulkMultipleExamsSubmit?: Array<Record<string, unknown>>;
+    excelCsvFormat?: {
+      headers: string[];
+      sampleRows?: Array<Record<string, unknown>>;
+      explanation?: string;
+    };
+    textareaWrapperExample?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+  gradingScale: Array<{
+    marksPercentage: string;
+    grade: string;
+    gradePoint: number;
+    remarks?: string;
+  }>;
+  rules: string[];
+}
+
