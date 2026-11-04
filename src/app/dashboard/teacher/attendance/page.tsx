@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardGuard from "@/components/dashboard/DashboardGuard";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useAuthStore } from "@/store/useAuthStore";
 import { authService } from "@/services/auth.service";
 import {
@@ -69,10 +67,7 @@ export default function TeacherAttendancePage() {
     "";
 
   return (
-    <DashboardGuard allowedRoles={["TEACHER"]}>
-      {user && (
-        <DashboardLayout user={user} role="TEACHER">
-          <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
             {/* Page Top Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
@@ -89,7 +84,7 @@ export default function TeacherAttendancePage() {
                   <span className="font-bold text-[#0f1f17]">
                     {overviewData?.scope?.departmentName ||
                       overviewData?.profile?.department?.name ||
-                      user.teacherProfile?.department?.name ||
+                      user?.teacherProfile?.department?.name ||
                       "Loading..."}
                   </span>{" "}
                   • Shift:{" "}
@@ -189,8 +184,5 @@ export default function TeacherAttendancePage() {
               onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
             />
           </div>
-        </DashboardLayout>
-      )}
-    </DashboardGuard>
   );
 }
