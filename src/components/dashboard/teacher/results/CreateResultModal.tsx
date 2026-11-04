@@ -16,24 +16,36 @@ interface CreateResultModalProps {
   onResultCreated: () => void;
 }
 
+interface ResultEntryStudent {
+  id: string;
+  name: string;
+  rollNo: string;
+  registrationNo?: string | null;
+  user?: {
+    name: string;
+  };
+}
+
 export default function CreateResultModal({
   isOpen,
   onClose,
-  subjects,
+  subjects: initialSubjects,
   currentShift,
   onResultCreated,
 }: CreateResultModalProps) {
-  const [subjectId, setSubjectId] = useState<string>(() => subjects[0]?.id || "");
+  const [semester, setSemester] = useState<number>(() => initialSubjects[0]?.semester || 4);
+  const [availableSubjects, setAvailableSubjects] = useState<TeacherSubject[]>(initialSubjects);
+  const [loadingSubjects, setLoadingSubjects] = useState(false);
+  const [subjectId, setSubjectId] = useState<string>(() => initialSubjects[0]?.id || "");
   const [examName, setExamName] = useState<string>("");
   const [examType, setExamType] = useState<ExamType>("MID_TERM");
-  const [semester, setSemester] = useState<number>(() => subjects[0]?.semester || 1);
   const [session, setSession] = useState<string>("2024-25");
   const [totalMarks, setTotalMarks] = useState<number>(100);
   const [passMarks, setPassMarks] = useState<number>(40);
   const [publish, setPublish] = useState<boolean>(false);
   const [examRemarks, setExamRemarks] = useState<string>("");
 
-  const [students, setStudents] = useState<AttendanceEligibleStudent[]>([]);
+  const [students, setStudents] = useState<ResultEntryStudent[]>([]);
   const [studentMarks, setStudentMarks] = useState<
     Record<string, { marks: number; remarks: string }>
   >({});
@@ -42,19 +54,110 @@ export default function CreateResultModal({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Load students for the selected subject
+  // Sync available subjects when semester changes or on open
   useEffect(() => {
     let mounted = true;
-    if (!subjectId || subjectId.trim() === "") return;
+    async function fetchSubjectsForSemester() {
+      try {
+        setLoadingSubjects(true);
+        const res = await teacherService.getMarksSubjects(semester);
+        if (mounted && res?.data && res.data.length > 0) {
+          setAvailableSubjects(
+            res.data.map((d) => ({
+              id: d.id,
+              name: d.name,
+              code: d.code,
+              semester: d.semester,
+            }))
+          );
+          if (!res.data.some((s) => s.id === subjectId)) {
+            setSubjectId(res.data[0].id);
+          }
+        } else if (mounted) {
+          // Filter initialSubjects by semester if available
+          const filtered = initialSubjects.filter((s) => s.semester === semester);
+          if (filtered.length > 0) {
+            setAvailableSubjects(filtered);
+            if (!filtered.some((s) => s.id === subjectId)) {
+              setSubjectId(filtered[0].id);
+            }
+          } else {
+            setAvailableSubjects(initialSubjects);
+          }
+        }
+      } catch {
+        if (mounted) {
+          const filtered = initialSubjects.filter((s) => s.semester === semester);
+          setAvailableSubjects(filtered.length > 0 ? filtered : initialSubjects);
+        }
+      } finally {
+        if (mounted) setLoadingSubjects(false);
+      }
+    }
+
+    if (isOpen) {
+      fetchSubjectsForSemester();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [semester, isOpen, initialSubjects]);
+
+  // Load students for the selected subject and semester
+  useEffect(() => {
+    let mounted = true;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subjectId);
+    if (!subjectId || !isUuid) {
+      setStudents([]);
+      return;
+    }
+
+    const activeSub = availableSubjects.find((s) => s.id === subjectId);
+    const targetSemester = activeSub ? activeSub.semester : semester;
 
     async function loadStudents() {
       try {
-        const res = await teacherService.getEligibleAttendanceStudents(
-          subjectId,
-          semester
-        );
+        setLoadingStudents(true);
+        setError(null);
+
+        let list: ResultEntryStudent[] = [];
+
+        // Step 2: Try GET /dashboard/teacher/marks/students first
+        try {
+          const marksRes = await teacherService.getMarksStudents({
+            semester: targetSemester,
+            session,
+            shift: currentShift,
+            subjectId,
+          });
+          if (marksRes?.students && marksRes.students.length > 0) {
+            list = marksRes.students.map((s) => ({
+              id: s.studentId,
+              name: s.name,
+              rollNo: s.rollNo,
+              registrationNo: s.registrationNo || undefined,
+            }));
+          }
+        } catch {
+          // Fallback to attendance students
+        }
+
+        if (list.length === 0) {
+          const res = await teacherService.getEligibleAttendanceStudents(
+            subjectId,
+            targetSemester
+          );
+          list = (res.students || []).map((s) => ({
+            id: s.id,
+            name: s.user?.name || "Student",
+            rollNo: s.rollNo,
+            registrationNo: s.registrationNo,
+            user: s.user,
+          }));
+        }
+
         if (mounted) {
-          const list = res.students || [];
           setStudents(list);
 
           // Initialize mark records
@@ -67,7 +170,11 @@ export default function CreateResultModal({
         }
       } catch (err: unknown) {
         console.error("Failed to load students:", err);
-        if (mounted) setLoadingStudents(false);
+        if (mounted) {
+          const msg = err instanceof Error ? err.message : "Failed to load students";
+          setError(msg);
+          setLoadingStudents(false);
+        }
       }
     }
 
@@ -75,14 +182,14 @@ export default function CreateResultModal({
     return () => {
       mounted = false;
     };
-  }, [subjectId, semester, currentShift]);
+  }, [subjectId, semester, session, currentShift, availableSubjects]);
 
   if (!isOpen) return null;
 
   const handleSubjectChange = (id: string) => {
     setSubjectId(id);
-    const sub = subjects.find((s) => s.id === id);
-    if (sub) {
+    const sub = availableSubjects.find((s) => s.id === id);
+    if (sub && sub.semester !== semester) {
       setSemester(sub.semester);
     }
   };
@@ -224,7 +331,25 @@ export default function CreateResultModal({
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <Label className="text-xs font-bold text-[#0f1f17]">Course / Subject *</Label>
+                <Label className="text-xs font-bold text-[#0f1f17]">Semester *</Label>
+                <select
+                  value={semester}
+                  onChange={(e) => setSemester(Number(e.target.value))}
+                  className="mt-1 w-full h-9 rounded-md border border-input bg-white px-3 py-1 text-xs shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0a4b32]"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                    <option key={sem} value={sem}>
+                      Semester {sem}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-[#0f1f17]">Course / Subject *</Label>
+                  {loadingSubjects && <span className="text-[10px] text-[#0a4b32] animate-pulse">Loading...</span>}
+                </div>
                 <select
                   value={subjectId}
                   onChange={(e) => handleSubjectChange(e.target.value)}
@@ -232,7 +357,7 @@ export default function CreateResultModal({
                   className="mt-1 w-full h-9 rounded-md border border-input bg-white px-3 py-1 text-xs shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0a4b32]"
                 >
                   <option value="">-- Select Subject --</option>
-                  {subjects.map((s) => (
+                  {availableSubjects.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.code} - {s.name} (Sem {s.semester})
                     </option>
@@ -348,7 +473,7 @@ export default function CreateResultModal({
                       return (
                         <tr key={student.id} className="hover:bg-[#f9fbfa]">
                           <td className="py-2 px-3 font-bold text-[#0f1f17]">{student.rollNo}</td>
-                          <td className="py-2 px-3 text-[#5a6b62]">{student.user?.name || "Student"}</td>
+                          <td className="py-2 px-3 text-[#5a6b62]">{student.name || student.user?.name || "Student"}</td>
                           <td className="py-2 px-3">
                             <Input
                               type="number"
