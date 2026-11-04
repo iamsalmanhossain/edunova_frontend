@@ -6,6 +6,7 @@ import {
   LoginCredentials,
   StudentRegisterPayload,
   TeacherRegisterPayload,
+  ClaimStudentAccountPayload,
   ForgotPasswordPayload,
   ResetPasswordPayload,
   VerifyEmailPayload,
@@ -42,6 +43,38 @@ export const authService = {
    */
   async registerTeacher(payload: TeacherRegisterPayload): Promise<AuthResponse> {
     return useAuthStore.getState().registerTeacher(payload);
+  },
+
+  /**
+   * Claim Pre-Enrolled Student Account
+   * Endpoint: POST /auth/claim-account
+   */
+  async claimStudentAccount(payload: ClaimStudentAccountPayload): Promise<AuthResponse> {
+    return useAuthStore.getState().claimStudentAccount(payload);
+  },
+
+  /**
+   * Check if roll is already pre-enrolled or registered
+   * Endpoint: GET /auth/check-roll
+   */
+  async checkStudentRoll(params: { departmentId: string; shift: string; rollNo: string }): Promise<{
+    exists: boolean;
+    isClaimed: boolean;
+    rollNo?: string;
+    department?: { id: string; name: string; code: string };
+    shift?: string;
+  }> {
+    try {
+      const query = new URLSearchParams({
+        departmentId: params.departmentId,
+        shift: params.shift,
+        rollNo: params.rollNo.trim(),
+      });
+      const res = await apiClient.get<any>(`/auth/check-roll?${query.toString()}`, { skipAuth: true });
+      return res.data ?? res;
+    } catch {
+      return { exists: false, isClaimed: false };
+    }
   },
 
   /**

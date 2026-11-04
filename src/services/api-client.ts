@@ -300,6 +300,11 @@ export const apiClient = {
     let res: Response;
     try {
       res = await fetch(url, { ...options, headers, method: "GET" });
+      if (!res.ok && res.status >= 500 && activeBaseUrl.includes("localhost")) {
+        url = makeUrl(RENDER_FALLBACK_URL);
+        res = await fetch(url, { ...options, headers, method: "GET" });
+        activeBaseUrl = RENDER_FALLBACK_URL;
+      }
     } catch {
       url = makeUrl(RENDER_FALLBACK_URL);
       res = await fetch(url, { ...options, headers, method: "GET" });
@@ -317,6 +322,10 @@ export const apiClient = {
       }
     }
 
+    if (res.status === 204) {
+      throw new Error("The requested report has no content available (Status 204).");
+    }
+
     if (!res.ok) {
       let serverMsg = `Download failed with status ${res.status}`;
       try {
@@ -331,6 +340,10 @@ export const apiClient = {
       }
       throw new Error(serverMsg);
     }
-    return await res.blob();
+    const blob = await res.blob();
+    if (blob.size === 0) {
+      throw new Error("Server returned an empty binary stream (0 bytes).");
+    }
+    return blob;
   },
 };
