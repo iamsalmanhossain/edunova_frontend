@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { X, UploadCloud, FileSpreadsheet, Download, AlertCircle, CheckCircle2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { X, UploadCloud, FileSpreadsheet, FileText, Download, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ interface ImportExcelModalProps {
   subjects: TeacherSubject[];
   currentShift: "FIRST_SHIFT" | "SECOND_SHIFT";
   onImportSuccess: () => void;
+  importMode?: "csv" | "excel";
 }
 
 export default function ImportExcelModal({
@@ -22,6 +23,7 @@ export default function ImportExcelModal({
   subjects,
   currentShift,
   onImportSuccess,
+  importMode = "excel",
 }: ImportExcelModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -38,6 +40,14 @@ export default function ImportExcelModal({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Sync subject and semester if not set
+  useEffect(() => {
+    if ((!subjectId || !subjects.some((s) => s.id === subjectId)) && subjects.length > 0) {
+      setSubjectId(subjects[0].id);
+      setSemester(subjects[0].semester);
+    }
+  }, [subjects, subjectId]);
 
   if (!isOpen) return null;
 
@@ -128,12 +138,20 @@ export default function ImportExcelModal({
         <div className="p-5 border-b border-[#f0f4f1] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <FileSpreadsheet className="w-5 h-5" />
+              {importMode === "csv" ? (
+                <FileText className="w-5 h-5 text-emerald-700" />
+              ) : (
+                <FileSpreadsheet className="w-5 h-5 text-emerald-700" />
+              )}
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-[#0f1f17]">Import Marks via Excel / CSV</h2>
+              <h2 className="text-base font-extrabold text-[#0f1f17]">
+                {importMode === "csv" ? "Import Marks via CSV (.csv)" : "Import Marks via Excel / CSV"}
+              </h2>
               <p className="text-xs text-[#5a6b62]">
-                Upload student marks spreadsheet for batch result calculation
+                {importMode === "csv"
+                  ? "Upload comma-separated CSV file with student roll numbers and marks"
+                  : "Upload student marks spreadsheet (.xlsx, .csv) for batch calculation"}
               </p>
             </div>
           </div>
