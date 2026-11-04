@@ -23,19 +23,17 @@ export default function DashboardGuard({
   const user = storeUser || (typeof window !== "undefined" ? authService.getCurrentUser() : null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 0);
+    setMounted(true);
 
     if (!authService.isAuthenticated()) {
       router.push("/login");
-      return () => clearTimeout(timer);
+      return;
     }
 
     const currentUser = storeUser || authService.getCurrentUser();
     if (!currentUser) {
       router.push("/login");
-      return () => clearTimeout(timer);
+      return;
     }
 
     const role = currentUser.role?.toUpperCase() as
@@ -52,17 +50,18 @@ export default function DashboardGuard({
       const correctPath = authService.getRoleDashboardPath(role);
       router.push(correctPath);
     }
-
-    return () => clearTimeout(timer);
   }, [allowedRoles, router, storeUser]);
 
+  // Initial SSR mount: render clean skeleton shell to avoid SSR/client hydration mismatch
   if (!mounted || !user) {
     return (
-      <CentralBrandLoader
-        message="Verifying Secure Session..."
-        subMessage="Validating institutional credentials with EduNova IMS"
-        fullScreen={true}
-      />
+      <div className="h-screen w-full overflow-hidden bg-[#f4f7f5] flex select-none" suppressHydrationWarning>
+        <aside className="hidden lg:flex w-64 xl:w-72 bg-[#073825] h-full shrink-0 border-r border-[#0a4b32]" />
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+          <header className="h-16 shrink-0 bg-white border-b border-[#e2e8e4]" />
+          <main className="flex-1 overflow-y-auto bg-[#f4f7f5] p-3 sm:p-5 lg:p-6" />
+        </div>
+      </div>
     );
   }
 
