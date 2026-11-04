@@ -126,6 +126,7 @@ export const FOOTER_CONFIG = {
     "EduNova is an enterprise digital campus platform purpose-built for polytechnic institutes, providing integrated academic governance, student management, and digital learning workflows.",
   quickLinks: [
     { name: "Home", href: "/" },
+    { name: "Claim Student Account", href: "/claim-account" },
     { name: "About Institute", href: "/about" },
     { name: "Departments", href: "/departments" },
     { name: "People Directory", href: "/people" },
