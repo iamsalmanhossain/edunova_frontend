@@ -168,94 +168,146 @@ export default function TeacherStudentDirectory() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-[#f4f7f5] text-[#5a6b62] uppercase font-bold text-[10px] tracking-wider border-b border-[#eef2ef]">
-                  <th className="py-3 px-4">Roll No</th>
-                  <th className="py-3 px-4">Student Info</th>
-                  <th className="py-3 px-4">Registration</th>
-                  <th className="py-3 px-4">Semester &amp; Session</th>
-                  <th className="py-3 px-4">Contact</th>
-                  <th className="py-3 px-4 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f4f1]">
-                {students.map((student) => (
-                  <tr
-                    key={student.id}
-                    className="hover:bg-emerald-50/30 transition-colors"
-                  >
-                    {/* Roll */}
-                    <td className="py-3 px-4">
-                      <span className="font-mono font-extrabold text-xs text-[#0a4b32]">
-                        {student.rollNo}
-                      </span>
-                    </td>
-
-                    {/* Name & Avatar */}
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
-                          {student.user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-bold text-[#0f1f17]">{student.user.name}</p>
-                          <p className="text-[10px] text-[#5a6b62]">{student.user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Registration No */}
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-xs text-[#0f1f17]">
-                        {student.registrationNo || "—"}
-                      </span>
-                    </td>
-
-                    {/* Semester & Session */}
-                    <td className="py-3 px-4">
-                      <p className="font-bold text-[#0f1f17]">
-                        {student.semester}th Semester
-                      </p>
-                      <p className="text-[10px] text-[#5a6b62]">
-                        {student.session || "2024-2025"}
-                      </p>
-                    </td>
-
-                    {/* Contact */}
-                    <td className="py-3 px-4">
-                      {student.user.phone || student.guardianPhone ? (
-                        <div className="space-y-0.5">
-                          {student.user.phone && (
-                            <p className="flex items-center gap-1 text-[11px] text-[#0f1f17]">
-                              <Phone className="w-3 h-3 text-[#0a4b32]" />
-                              {student.user.phone}
-                            </p>
-                          )}
-                          {student.guardianPhone && (
-                            <p className="text-[10px] text-[#5a6b62]">
-                              Guardian: {student.guardianPhone}
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 text-[11px]">Not provided</span>
-                      )}
-                    </td>
-
-                    {/* Status */}
-                    <td className="py-3 px-4 text-right">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                        {student.user.status || "ACTIVE"}
-                      </span>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-[#f4f7f5] text-[#5a6b62] uppercase font-bold text-[10px] tracking-wider border-b border-[#eef2ef]">
+                    <th className="py-3 px-4">Roll No</th>
+                    <th className="py-3 px-4">Student Info</th>
+                    <th className="py-3 px-4">Registration</th>
+                    <th className="py-3 px-4">Semester &amp; Session</th>
+                    <th className="py-3 px-4">Contact</th>
+                    <th className="py-3 px-4 text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#f0f4f1]">
+                  {students.map((student) => (
+                    <tr
+                      key={student.id}
+                      className="hover:bg-emerald-50/30 transition-colors"
+                    >
+                      {/* Roll */}
+                      <td className="py-3 px-4">
+                        <span className="font-mono font-extrabold text-xs text-[#0a4b32]">
+                          {student.rollNo}
+                        </span>
+                      </td>
+
+                      {/* Name & Avatar */}
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                            {student.user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-bold text-[#0f1f17]">{student.user.name}</p>
+                            <p className="text-[10px] text-[#5a6b62]">{student.user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Registration No */}
+                      <td className="py-3 px-4">
+                        <span className="font-mono text-xs text-[#0f1f17]">
+                          {student.registrationNo || "—"}
+                        </span>
+                      </td>
+
+                      {/* Semester & Session */}
+                      <td className="py-3 px-4">
+                        <p className="font-bold text-[#0f1f17]">
+                          {student.semester}th Semester
+                        </p>
+                        <p className="text-[10px] text-[#5a6b62]">
+                          {student.session || "2024-2025"}
+                        </p>
+                      </td>
+
+                      {/* Contact */}
+                      <td className="py-3 px-4">
+                        {student.user.phone || student.guardianPhone ? (
+                          <div className="space-y-0.5">
+                            {student.user.phone && (
+                              <p className="flex items-center gap-1 text-[11px] text-[#0f1f17]">
+                                <Phone className="w-3 h-3 text-[#0a4b32]" />
+                                {student.user.phone}
+                              </p>
+                            )}
+                            {student.guardianPhone && (
+                              <p className="text-[10px] text-[#5a6b62]">
+                                Guardian: {student.guardianPhone}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">Not provided</span>
+                        )}
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-3 px-4 text-right">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                          <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                          {student.user.status || "ACTIVE"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden divide-y divide-[#f0f4f1]">
+              {students.map((student) => (
+                <div key={student.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                        {student.user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#0f1f17]">{student.user.name}</h4>
+                        <p className="text-[11px] text-[#5a6b62]">{student.user.email}</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      {student.user.status || "ACTIVE"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-[#fcfdfc] p-2.5 rounded-xl border border-[#f0f4f1]">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Roll Number</span>
+                      <span className="font-mono font-extrabold text-[#0a4b32]">{student.rollNo}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Registration</span>
+                      <span className="font-mono text-[#0f1f17]">{student.registrationNo || "—"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Semester</span>
+                      <span className="font-bold text-[#0f1f17]">{student.semester}th Semester</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Session</span>
+                      <span className="text-[#5a6b62]">{student.session || "2024-2025"}</span>
+                    </div>
+                  </div>
+
+                  {student.user.phone && (
+                    <p className="flex items-center gap-1.5 text-xs text-[#0f1f17] pt-0.5">
+                      <Phone className="w-3.5 h-3.5 text-[#0a4b32]" />
+                      <a href={`tel:${student.user.phone}`} className="hover:underline">{student.user.phone}</a>
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
