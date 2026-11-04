@@ -33,6 +33,55 @@ export interface TeacherRegisterPayload {
   gender?: "MALE" | "FEMALE" | "OTHER";
 }
 
+export interface ClaimStudentAccountPayload {
+  departmentId: string;
+  shift: "FIRST" | "SECOND" | "FIRST_SHIFT" | "SECOND_SHIFT";
+  rollNo: string;
+  name?: string;
+  email: string;
+  password: string;
+  phone?: string;
+  registrationNo?: string;
+}
+
+export interface ClaimStudentAccountResponse {
+  success: boolean;
+  message: string;
+  data: {
+    student: {
+      id: string;
+      userId: string;
+      rollNo: string;
+      registrationNo?: string;
+      semester: number;
+      shift: string;
+      isClaimed: boolean;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        phone?: string;
+        role: "STUDENT";
+        status: string;
+      };
+      department: {
+        id: string;
+        name: string;
+        code: string;
+      };
+      institute: {
+        id: string;
+        name: string;
+        code: string;
+      };
+    };
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
+}
+
 export interface AuthUser {
   id: string;
   name: string;
