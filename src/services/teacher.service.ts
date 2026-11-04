@@ -17,6 +17,10 @@ import {
   TeacherResultListItem,
   TeacherResultDetailData,
   UpdateSingleMarkPayload,
+  MarksSubjectItem,
+  MarksStudentItem,
+  PasteJsonPayload,
+  ResultGuideData,
 } from "@/types/teacher";
 
 // Verified faculty records reflecting actual polytechnic faculty
@@ -255,10 +259,23 @@ export const teacherService = {
     semester?: number,
     shift?: string
   ): Promise<EligibleAttendanceResponse> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(subjectId);
+    if (!subjectId || !isUuid) {
+      return { students: [], total: 0 } as unknown as EligibleAttendanceResponse;
+    }
+
     const query = new URLSearchParams();
     query.set("subjectId", subjectId);
     if (semester) query.set("semester", semester.toString());
-    if (shift) query.set("shift", shift);
+    if (shift) {
+      const normalizedShift =
+        shift === "FIRST"
+          ? "FIRST_SHIFT"
+          : shift === "SECOND"
+          ? "SECOND_SHIFT"
+          : shift;
+      query.set("shift", normalizedShift);
+    }
 
     const res = await apiClient.get<EligibleAttendanceResponse>(
       `/dashboard/teacher/attendance/students?${query.toString()}`
@@ -383,7 +400,17 @@ export const teacherService = {
    * POST /dashboard/teacher/results
    */
   async submitResult(payload: SubmitResultPayload): Promise<unknown> {
-    const res = await apiClient.post<unknown>("/dashboard/teacher/results", payload);
+    const shiftStr = payload.shift as string | undefined;
+    const normalizedPayload = {
+      ...payload,
+      shift:
+        shiftStr === "FIRST"
+          ? ("FIRST_SHIFT" as const)
+          : shiftStr === "SECOND"
+          ? ("SECOND_SHIFT" as const)
+          : payload.shift,
+    };
+    const res = await apiClient.post<unknown>("/dashboard/teacher/results", normalizedPayload);
     return res.data;
   },
 
@@ -533,5 +560,79 @@ export const teacherService = {
     return apiClient.getBlob(
       `/dashboard/teacher/results/${id}/template?format=${format}`
     );
+  },
+
+  /**
+   * 21. Filter Subjects by Semester for Marks Entry
+   * GET /dashboard/teacher/marks/subjects?semester=4
+   */
+  async getMarksSubjects(
+    semester?: number,
+    search?: string
+  ): Promise<{ data: MarksSubjectItem[]; total: number }> {
+    const query = new URLSearchParams();
+    if (semester != null && semester > 0) query.set("semester", semester.toString());
+    if (search) query.set("search", search);
+    const qs = query.toString();
+    const res = await apiClient.get<any>(`/dashboard/teacher/marks/subjects${qs ? `?${qs}` : ""}`);
+    const raw = res.data ?? res;
+    if (Array.isArray(raw)) {
+      return { data: raw, total: raw.length };
+    }
+    return {
+      data: raw?.data || [],
+      total: raw?.total || (raw?.data ? raw.data.length : 0),
+    };
+  },
+
+  /**
+   * 22. Get Enrolled Students for Marks Entry Table
+   * GET /dashboard/teacher/marks/students?semester=4&session=2023-24
+   */
+  async getMarksStudents(params: {
+    semester: number;
+    session?: string;
+    shift?: string;
+    search?: string;
+    subjectId?: string;
+  }): Promise<{ students: MarksStudentItem[]; total: number }> {
+    const query = new URLSearchParams();
+    query.set("semester", params.semester.toString());
+    if (params.session) query.set("session", params.session);
+    if (params.shift) {
+      const s = params.shift === "FIRST_SHIFT" ? "FIRST" : params.shift === "SECOND_SHIFT" ? "SECOND" : params.shift;
+      query.set("shift", s);
+    }
+    if (params.search) query.set("search", params.search);
+    if (params.subjectId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.subjectId)) {
+      query.set("subjectId", params.subjectId);
+    }
+
+    const qs = query.toString();
+    const res = await apiClient.get<any>(`/dashboard/teacher/marks/students?${qs}`);
+    const raw = res.data ?? res;
+    return {
+      students: raw?.students || raw?.data || [],
+      total: raw?.total || (raw?.students ? raw.students.length : 0),
+    };
+  },
+
+  /**
+   * 23. JSON Copy & Paste Result Import
+   * POST /dashboard/teacher/marks/paste-json
+   */
+  async pasteJsonResult(payload: PasteJsonPayload): Promise<unknown> {
+    const res = await apiClient.post<unknown>("/dashboard/teacher/marks/paste-json", payload);
+    return res.data;
+  },
+
+  /**
+   * 24. Result Submission Guidelines & Documentation
+   * GET /dashboard/teacher/marks/guide
+   */
+  async getResultGuide(): Promise<ResultGuideData> {
+    const res = await apiClient.get<ResultGuideData>("/dashboard/teacher/marks/guide");
+    const raw = res.data ?? (res as unknown as ResultGuideData);
+    return raw;
   },
 };
