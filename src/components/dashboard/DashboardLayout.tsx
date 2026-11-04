@@ -62,10 +62,10 @@ export default function DashboardLayout({
   // Role specific navigation configs
   const studentNav: NavItem[] = [
     { label: "Dashboard Overview", href: "/dashboard/student", icon: LayoutDashboard },
+    { label: "Attendance Record", href: "/dashboard/student/attendance", icon: Clock },
+    { label: "Examinations & Marks", href: "/dashboard/student/results", icon: FileText },
     { label: "My Class Routine", href: "#routine", icon: Calendar },
-    { label: "Attendance Record", href: "#attendance", icon: Clock },
     { label: "Enrolled Courses", href: "#courses", icon: BookOpen },
-    { label: "Examinations & Marks", href: "#marks", icon: FileText },
     { label: "Campus Notices", href: "#notices", icon: Bell },
   ];
 
@@ -80,12 +80,10 @@ export default function DashboardLayout({
 
   const adminNav: NavItem[] = [
     { label: "Admin Console", href: "/dashboard/admin", icon: LayoutDashboard },
-    { label: "Teacher Approvals", href: "#approvals", icon: CheckCircle2, badge: "2" },
-    { label: "Student Registry", href: "#students", icon: Users },
-    { label: "Departments (4)", href: "#departments", icon: Layers },
-    { label: "Institute Management", href: "#institute", icon: Building2 },
-    { label: "System Audit Logs", href: "#audit", icon: ShieldCheck },
-    { label: "Platform Settings", href: "#settings", icon: Settings },
+    { label: "Teacher Management", href: "/dashboard/admin/teachers", icon: CheckCircle2 },
+    { label: "Student Registry", href: "/dashboard/admin/students", icon: Users },
+    { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
+    { label: "System Audit Logs", href: "/dashboard/admin/audit-logs", icon: ShieldCheck },
   ];
 
   const navItems =
@@ -121,7 +119,10 @@ export default function DashboardLayout({
   const currentRoleConfig = roleLabels[role] || roleLabels.STUDENT;
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-[#f4f7f5] flex select-none">
+    <div
+      className="h-screen w-full overflow-hidden bg-[#f4f7f5] flex select-none"
+      suppressHydrationWarning
+    >
       {/* 1. Desktop Fixed Sidebar */}
       <aside
         className={`hidden lg:flex bg-[#073825] text-white flex-col justify-between shrink-0 border-r border-[#0a4b32] h-full transition-all duration-300 ease-in-out ${
