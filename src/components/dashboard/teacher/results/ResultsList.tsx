@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -13,6 +13,9 @@ import {
   Clock,
   Eye,
   AlertCircle,
+  Code2,
+  BookOpen,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +29,9 @@ import {
 import ResultsSkeleton from "./ResultsSkeleton";
 import CreateResultModal from "./CreateResultModal";
 import ImportExcelModal from "./ImportExcelModal";
+import PasteJsonModal from "./PasteJsonModal";
+import ResultGuideModal from "./ResultGuideModal";
+import { downloadClassPdfFile, downloadClassExcelFile } from "@/utils/fileDownload";
 
 interface ResultsListProps {
   currentShift: "FIRST_SHIFT" | "SECOND_SHIFT";
@@ -43,11 +49,29 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Modals
+  // Modals & Menus
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isPasteJsonOpen, setIsPasteJsonOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [importMode, setImportMode] = useState<"csv" | "excel">("excel");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Close 3-dots dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -61,18 +85,26 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
 
     async function fetchData() {
       try {
-        // Load subjects for creating results
-        const overviewRes = await teacherService.getOverview();
-        if (mounted) {
-          if (overviewRes && (overviewRes as unknown as { subjects?: TeacherSubject[] }).subjects) {
-            setSubjects((overviewRes as unknown as { subjects: TeacherSubject[] }).subjects);
+        // Load real subjects with valid UUIDs
+        try {
+          const subRes = await teacherService.getMarksSubjects();
+          if (mounted && subRes?.data && subRes.data.length > 0) {
+            setSubjects(
+              subRes.data.map((d) => ({
+                id: d.id,
+                code: d.code,
+                name: d.name,
+                semester: d.semester,
+              }))
+            );
           } else {
-            setSubjects([
-              { id: "s-cst-401", code: "66641", name: "Data Structure & Algorithms", semester: 4 },
-              { id: "s-cst-402", code: "66642", name: "Database Management Systems", semester: 4 },
-              { id: "s-cst-601", code: "66661", name: "Web Development & Frameworks", semester: 6 },
-            ]);
+            const overviewRes = await teacherService.getOverview();
+            if (mounted && (overviewRes as unknown as { subjects?: TeacherSubject[] })?.subjects) {
+              setSubjects((overviewRes as unknown as { subjects: TeacherSubject[] }).subjects);
+            }
           }
+        } catch {
+          // Fallback if subjects fail to load
         }
 
         const res = await teacherService.getResults({
@@ -145,21 +177,10 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
   };
 
   // Handle PDF Download
-  const handleDownloadPdf = async (id: string, examName: string) => {
+  const handleDownloadPdf = async (id: string, subjectName?: string, examName?: string) => {
     try {
       setActionLoadingId(`pdf-${id}`);
-      const blob = await teacherService.downloadClassPdf(id, true);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `${examName.replace(/\s+/g, "_")}_Marksheet.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      await downloadClassPdfFile(id, subjectName, examName);
       showToast("Class Result PDF downloaded successfully!");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to download PDF marksheet.";
@@ -170,21 +191,10 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
   };
 
   // Handle Excel Export
-  const handleDownloadExcel = async (id: string, examName: string) => {
+  const handleDownloadExcel = async (id: string, subjectName?: string, examName?: string) => {
     try {
       setActionLoadingId(`excel-${id}`);
-      const blob = await teacherService.downloadClassExcel(id);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `${examName.replace(/\s+/g, "_")}_Marksheet.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      await downloadClassExcelFile(id, subjectName, examName);
       showToast("Class Result Excel spreadsheet downloaded successfully!");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to download Excel spreadsheet.";
@@ -225,22 +235,108 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Doc icon button to view Result Guidelines */}
           <Button
-            onClick={() => setIsImportOpen(true)}
+            onClick={() => setIsGuideOpen(true)}
             variant="outline"
-            className="h-10 px-4 text-xs font-bold border-[#dce3df] hover:bg-[#f0f7f3] hover:text-[#0a4b32] cursor-pointer flex items-center gap-1.5 rounded-xl"
+            className="h-10 w-10 p-0 text-xs font-bold border-[#dce3df] hover:bg-[#f0f7f3] hover:text-[#0a4b32] cursor-pointer flex items-center justify-center rounded-xl transition-colors shadow-xs"
+            title="Result Guidelines & Documentation (গাইডলাইন ও নিয়মাবলী)"
+            aria-label="Result Guidelines & Documentation"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            Import Excel
+            <BookOpen className="w-4 h-4 text-[#0a4b32]" />
           </Button>
+
+          {/* Primary Action Button: Enter Results */}
           <Button
             onClick={() => setIsCreateOpen(true)}
-            className="h-10 px-4 text-xs font-bold bg-[#0a4b32] hover:bg-[#073825] text-white shadow-xs cursor-pointer flex items-center gap-1.5 rounded-xl"
+            className="h-10 px-4 text-xs font-bold bg-[#0a4b32] hover:bg-[#073825] text-white shadow-xs cursor-pointer flex items-center gap-1.5 rounded-xl transition-all"
           >
             <Plus className="w-4 h-4 text-[#c48b28]" />
-            Enter Results
+            <span>Enter Results</span>
           </Button>
+
+          {/* 3-Dots Menu Dropdown */}
+          <div className="relative" ref={menuRef}>
+            <Button
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              variant="outline"
+              className={`h-10 w-10 p-0 border-[#dce3df] hover:bg-[#f0f7f3] hover:text-[#0a4b32] cursor-pointer flex items-center justify-center rounded-xl transition-all shadow-xs ${
+                isMenuOpen ? "bg-[#f0f7f3] text-[#0a4b32] border-[#0a4b32]" : ""
+              }`}
+              title="More Import Options"
+              aria-label="More Import Options"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+
+            {isMenuOpen && (
+              <div className="absolute right-0 top-12 z-50 w-56 rounded-2xl bg-white border border-[#dce3df] shadow-xl py-1.5 animate-in fade-in zoom-in-95 duration-150 divide-y divide-[#f0f4f1]">
+                <div className="p-1 space-y-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsPasteJsonOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-semibold text-[#0f1f17] hover:bg-[#f0f7f3] hover:text-[#0a4b32] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <Code2 className="w-4 h-4 text-[#c48b28] shrink-0" />
+                    <div>
+                      <div className="font-bold">Paste JSON Result</div>
+                      <div className="text-[10px] text-[#5a6b62]">Import marks via raw JSON</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setImportMode("csv");
+                      setIsImportOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-semibold text-[#0f1f17] hover:bg-[#f0f7f3] hover:text-[#0a4b32] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <div>
+                      <div className="font-bold">Import from CSV</div>
+                      <div className="text-[10px] text-[#5a6b62]">Upload comma-separated file</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setImportMode("excel");
+                      setIsImportOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-semibold text-[#0f1f17] hover:bg-[#f0f7f3] hover:text-[#0a4b32] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <div className="font-bold">Import from Excel</div>
+                      <div className="text-[10px] text-[#5a6b62]">Upload spreadsheet (.xlsx)</div>
+                    </div>
+                  </button>
+                </div>
+
+                <div className="p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsGuideOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#5a6b62] hover:bg-[#f0f7f3] hover:text-[#0a4b32] rounded-xl transition-colors text-left cursor-pointer"
+                  >
+                    <BookOpen className="w-4 h-4 text-[#0a4b32] shrink-0" />
+                    <span>Documentation & Rules</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -362,12 +458,12 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
                       {isPublished ? (
                         <>
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          Published
+                          Live for Students
                         </>
                       ) : (
                         <>
                           <Clock className="w-3 h-3 text-amber-600" />
-                          Draft
+                          Private Draft
                         </>
                       )}
                     </button>
@@ -417,7 +513,7 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
-                      onClick={() => handleDownloadPdf(item.id, item.name)}
+                      onClick={() => handleDownloadPdf(item.id, item.subject?.name, item.name)}
                       disabled={actionLoadingId === `pdf-${item.id}`}
                       title="Download PDF Marksheet"
                       className="w-8 h-8 rounded-lg bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors cursor-pointer"
@@ -426,7 +522,7 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDownloadExcel(item.id, item.name)}
+                      onClick={() => handleDownloadExcel(item.id, item.subject?.name, item.name)}
                       disabled={actionLoadingId === `excel-${item.id}`}
                       title="Export to Excel"
                       className="w-8 h-8 rounded-lg bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors cursor-pointer"
@@ -474,7 +570,21 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
         onClose={() => setIsImportOpen(false)}
         subjects={subjects}
         currentShift={currentShift}
+        importMode={importMode}
         onImportSuccess={() => setRefreshIndex((p) => p + 1)}
+      />
+
+      <PasteJsonModal
+        isOpen={isPasteJsonOpen}
+        onClose={() => setIsPasteJsonOpen(false)}
+        subjects={subjects}
+        onImportSuccess={() => setRefreshIndex((p) => p + 1)}
+      />
+
+      <ResultGuideModal
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+        onOpenPasteJson={() => setIsPasteJsonOpen(true)}
       />
     </div>
   );
