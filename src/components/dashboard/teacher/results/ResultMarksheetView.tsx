@@ -24,6 +24,12 @@ import {
   ResultPublicationStatus,
 } from "@/types/teacher";
 import EditSingleMarkModal from "./EditSingleMarkModal";
+import {
+  downloadClassPdfFile,
+  downloadClassExcelFile,
+  downloadStudentTranscriptPdf,
+  downloadMarksTemplateFile,
+} from "@/utils/fileDownload";
 
 interface ResultMarksheetViewProps {
   resultId: string;
@@ -113,18 +119,7 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
     if (!data) return;
     try {
       setActionLoading("class-pdf");
-      const blob = await teacherService.downloadClassPdf(resultId, true);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `${data.exam.name.replace(/\s+/g, "_")}_Marksheet.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      await downloadClassPdfFile(resultId, data.exam.subject?.name, data.exam.name);
       showToast("Class Result PDF downloaded successfully!");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to download PDF.";
@@ -139,21 +134,25 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
     if (!data) return;
     try {
       setActionLoading("class-excel");
-      const blob = await teacherService.downloadClassExcel(resultId);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `${data.exam.name.replace(/\s+/g, "_")}_Marksheet.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      await downloadClassExcelFile(resultId, data.exam.subject?.name, data.exam.name);
       showToast("Class Result Excel spreadsheet downloaded successfully!");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to download Excel spreadsheet.";
+      showToast(msg);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Download Prefilled Excel Template
+  const handleDownloadTemplate = async () => {
+    if (!data) return;
+    try {
+      setActionLoading("template");
+      await downloadMarksTemplateFile(resultId, data.exam.subject?.name, data.exam.name, "xlsx");
+      showToast("Offline marks entry template downloaded successfully!");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to download template.";
       showToast(msg);
     } finally {
       setActionLoading(null);
@@ -164,18 +163,13 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
   const handleDownloadStudentPdf = async (studentId: string, studentName: string) => {
     try {
       setActionLoading(`student-${studentId}`);
-      const blob = await teacherService.downloadStudentPdf(resultId, studentId, true);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `Result_${studentName.replace(/\s+/g, "_")}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      await downloadStudentTranscriptPdf(
+        resultId,
+        studentId,
+        studentName,
+        data?.exam?.subject?.name,
+        data?.exam?.name
+      );
       showToast(`Student result PDF downloaded for ${studentName}!`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to download student PDF.";
@@ -353,6 +347,17 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
             Excel Export
+          </Button>
+
+          <Button
+            onClick={handleDownloadTemplate}
+            disabled={actionLoading === "template"}
+            variant="outline"
+            className="h-9 px-3.5 text-xs font-bold border-[#dce3df] hover:bg-[#f0f7f3] hover:text-[#0a4b32] cursor-pointer rounded-xl flex items-center gap-1.5"
+            title="Download offline marks template pre-populated with student rolls"
+          >
+            <Download className="w-4 h-4 text-emerald-600" />
+            Template
           </Button>
         </div>
       </div>
