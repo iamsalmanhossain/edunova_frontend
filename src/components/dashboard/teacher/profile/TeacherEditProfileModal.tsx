@@ -6,6 +6,7 @@ import { X, Loader2, CheckCircle2, AlertCircle, Save, School, BookOpen } from "l
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { UserProfile, UpdateUserProfilePayload } from "@/types/user";
 import { Institute } from "@/types/institute";
 import { Department } from "@/types/department";
@@ -481,7 +482,7 @@ export default function TeacherEditProfileModal({
               <Label htmlFor="bio" className="text-xs font-bold text-[#0f1f17]">
                 Brief Professional Bio & Teaching Areas
               </Label>
-              <textarea
+              <Textarea
                 id="bio"
                 rows={3}
                 placeholder="Share your research interests, teaching portfolio, and academic focus..."
