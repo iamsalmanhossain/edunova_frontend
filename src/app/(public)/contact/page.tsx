@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export const metadata: Metadata = {
   title: "Contact & Institutional Office",
@@ -102,7 +103,7 @@ export default function ContactPage() {
 
                 <div className="space-y-1.5">
                   <Label htmlFor="contact-msg">Message</Label>
-                  <textarea
+                  <Textarea
                     id="contact-msg"
                     rows={4}
                     placeholder="Provide details about your query..."
