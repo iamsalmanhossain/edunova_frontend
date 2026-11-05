@@ -110,3 +110,34 @@ export interface ExamReminderItem {
   isUrgent: boolean;
   status?: "UPCOMING" | "PAST" | "TODAY";
 }
+
+export interface PageGuideSection {
+  id?: string;
+  title: string;
+  description: string;
+  steps?: string[];
+  tips?: string[];
+  warning?: string;
+}
+
+export interface PageGuideFaq {
+  question: string;
+  answer: string;
+}
+
+export interface PageGuideData {
+  pageKey: string;
+  title: string;
+  targetRole?: "TEACHER" | "STUDENT" | "ADMIN" | "ALL";
+  badge?: string;
+  summary?: string;
+  subtitle?: string;
+  sections: PageGuideSection[];
+  quickFaq?: PageGuideFaq[];
+  faqs?: PageGuideFaq[];
+  supportContact?: {
+    email?: string;
+    phone?: string;
+    office?: string;
+  };
+}
