@@ -17,6 +17,7 @@ import UserStatusModal from "./UserStatusModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search,
@@ -604,7 +605,7 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
             <p className="text-xs text-[#5a6b62]">
               Provide an official rejection explanation. This note is permanently linked to the decision audit log.
             </p>
-            <textarea
+            <Textarea
               rows={3}
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}

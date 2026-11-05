@@ -11,6 +11,7 @@ import AdminDashboardSkeleton from "../skeletons/AdminDashboardSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Users,
   UserCheck,
@@ -337,12 +338,12 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-[#0f1f17]">Rejection Reason *</label>
-              <textarea
+              <Textarea
                 rows={3}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="e.g. Invalid educational credentials or unauthorized faculty profile..."
-                className="w-full text-xs p-3 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-rose-500"
+                className="w-full text-xs p-3 rounded-xl border border-[#dce3df] focus:outline-none focus:ring-1 focus:ring-rose-500"
               />
             </div>
 
