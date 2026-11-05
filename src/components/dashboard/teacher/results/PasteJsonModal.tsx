@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { TeacherSubject } from "@/types/teacher";
 import { teacherService } from "@/services/teacher.service";
 
@@ -240,7 +241,7 @@ export default function PasteJsonModal({
                 Supports <code className="text-[#0a4b32] font-mono">rollNo</code> or <code className="text-[#0a4b32] font-mono">studentId</code>
               </span>
             </div>
-            <textarea
+            <Textarea
               value={jsonText}
               onChange={(e) => setJsonText(e.target.value)}
               placeholder={`{\n  "subjectId": "${defaultSubject.id}",\n  "examName": "Class Test 1",\n  "semester": 4,\n  "session": "2024-25",\n  "totalMarks": 20,\n  "marks": [\n    { "rollNo": "610234", "obtainedMarks": 18 },\n    { "rollNo": "610235", "obtainedMarks": 15 }\n  ]\n}`}
