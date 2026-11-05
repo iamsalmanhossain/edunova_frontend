@@ -229,4 +229,109 @@ export const academicFeaturesService = {
   },
 
   // ==========================================
+  // 5. Date-wise Attendance Register & Matrix
+  // ==========================================
+  async getAttendanceRegister(params: {
+    subjectId: string;
+    semester?: number;
+    startDate?: string;
+    endDate?: string;
+    shift?: string;
+  }): Promise<AttendanceRegisterData> {
+    const query = new URLSearchParams();
+    query.set("subjectId", params.subjectId);
+    if (params.semester) query.set("semester", params.semester.toString());
+    if (params.startDate) query.set("startDate", params.startDate);
+    if (params.endDate) query.set("endDate", params.endDate);
+    if (params.shift) query.set("shift", params.shift);
+
+    const res = await apiClient.get<any>(
+      `/dashboard/teacher/attendance/register?${query.toString()}`
+    );
+    const data: AttendanceRegisterData = res.data ?? res;
+
+    // Normalization: Ensure dates and attendanceMap are mapped
+    const sessionDates = data.sessions?.map((s) => s.dateStr) || data.dates || [];
+    const normalizedStudents = (data.students || []).map((st) => {
+      const map: Record<string, "P" | "A" | "L" | "-"> = {};
+      if (st.statuses) {
+        Object.entries(st.statuses).forEach(([d, status]) => {
+          map[d] = status === "PRESENT" ? "P" : "A";
+        });
+      }
+      return {
+        ...st,
+        attendanceMap: st.attendanceMap || map,
+      };
+    });
+
+    const totalStudents = normalizedStudents.length;
+    const totalClassDays = sessionDates.length;
+    const avgRate = totalStudents > 0
+      ? Number(
+          (
+            normalizedStudents.reduce((sum, s) => sum + (s.percentage || 0), 0) /
+            totalStudents
+          ).toFixed(1)
+        )
+      : 0;
+
+    return {
+      ...data,
+      dates: sessionDates,
+      students: normalizedStudents,
+      summary: data.summary || {
+        totalStudents,
+        totalClassDays,
+        averageAttendanceRate: avgRate,
+      },
+    };
+  },
+
+  async downloadAttendanceRegisterPdf(params: {
+    subjectId: string;
+    semester?: number;
+    startDate?: string;
+    endDate?: string;
+    shift?: string;
+    subjectName?: string;
+    filename?: string;
+  }): Promise<void> {
+    const query = new URLSearchParams();
+    query.set("subjectId", params.subjectId);
+    if (params.semester) query.set("semester", params.semester.toString());
+    if (params.startDate) query.set("startDate", params.startDate);
+    if (params.endDate) query.set("endDate", params.endDate);
+    if (params.shift) query.set("shift", params.shift);
+    query.set("download", "true");
+
+    const endpoint = `/dashboard/teacher/attendance/register/pdf?${query.toString()}`;
+    const cleanSub = (params.subjectName || "Subject").replace(/[^a-zA-Z0-9_\-]/g, "_");
+    const fallbackFilename = params.filename || `${cleanSub}_Attendance_Register.pdf`;
+
+    await downloadSecureFile(endpoint, fallbackFilename);
+  },
+
+  async downloadAttendanceRegisterExcel(params: {
+    subjectId: string;
+    semester?: number;
+    startDate?: string;
+    endDate?: string;
+    shift?: string;
+    subjectName?: string;
+    filename?: string;
+  }): Promise<void> {
+    const query = new URLSearchParams();
+    query.set("subjectId", params.subjectId);
+    if (params.semester) query.set("semester", params.semester.toString());
+    if (params.startDate) query.set("startDate", params.startDate);
+    if (params.endDate) query.set("endDate", params.endDate);
+    if (params.shift) query.set("shift", params.shift);
+
+    const endpoint = `/dashboard/teacher/attendance/register/excel?${query.toString()}`;
+    const cleanSub = (params.subjectName || "Subject").replace(/[^a-zA-Z0-9_\-]/g, "_");
+    const fallbackFilename = params.filename || `${cleanSub}_Attendance_Register.xlsx`;
+
+    await downloadSecureFile(endpoint, fallbackFilename);
+  },
 };
