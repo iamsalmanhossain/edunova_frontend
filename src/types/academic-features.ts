@@ -141,3 +141,70 @@ export interface PageGuideData {
     office?: string;
   };
 }
+
+export interface AttendanceRegisterSession {
+  id: string;
+  dateStr: string;
+  type?: string;
+}
+
+export interface AttendanceRegisterStudent {
+  studentId: string;
+  rollNo: string;
+  name: string;
+  statuses?: Record<string, "PRESENT" | "ABSENT">;
+  attendanceMap?: Record<string, "P" | "A" | "L" | "-">;
+  totalPresent: number;
+  totalAbsent: number;
+  percentage: number;
+}
+
+export interface AttendanceRegisterData {
+  instituteName: string;
+  departmentName: string;
+  subjectName: string;
+  subjectCode: string;
+  semester: number;
+  shift: string;
+  startDate?: string;
+  endDate?: string;
+  teacherName?: string;
+  totalHeld?: number;
+  sessions?: AttendanceRegisterSession[];
+  dates?: string[];
+  students: AttendanceRegisterStudent[];
+  summary?: {
+    totalStudents: number;
+    totalClassDays: number;
+    averageAttendanceRate: number;
+  };
+}
+
+export interface StudentOverviewResponse {
+  currentSemester: number;
+  viewingSemester: number;
+  isCurrentSemester: boolean;
+  isFreshSemester: boolean;
+  availableSemesters: number[];
+  student: {
+    name: string;
+    rollNo: string;
+    semester: number;
+    shift: string;
+  };
+  metrics: {
+    attendance: {
+      totalClassesHeld: number;
+      totalPresent: number;
+      attendancePercentage: number;
+    };
+    academics: {
+      totalEnrolledSubjects: number;
+      publishedResultsCount: number;
+      gpa: number;
+    };
+  };
+  enrolledSubjects: any[];
+  recentResults: any[];
+  recentAttendance: any[];
+}
