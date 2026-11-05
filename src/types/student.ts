@@ -80,6 +80,9 @@ export interface StudentRecentAttendance {
 
 export interface StudentDashboardOverviewData {
   student: StudentScopeInfo;
+  availableSemesters?: number[];
+  currentSemester?: number;
+  isFreshSemester?: boolean;
   metrics: {
     attendance: StudentAttendanceMetrics;
     academics: StudentAcademicMetrics;
