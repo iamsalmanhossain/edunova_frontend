@@ -14,8 +14,9 @@ export const studentService = {
    * 1. Student Dashboard Overview
    * GET /dashboard/student/overview
    */
-  async getOverview(): Promise<StudentDashboardOverviewData> {
-    const res = await apiClient.get<StudentDashboardOverviewData>("/dashboard/student/overview");
+  async getOverview(semester?: number): Promise<StudentDashboardOverviewData> {
+    const qs = semester ? `?semester=${semester}` : "";
+    const res = await apiClient.get<StudentDashboardOverviewData>(`/dashboard/student/overview${qs}`);
     return res.data!;
   },
 
