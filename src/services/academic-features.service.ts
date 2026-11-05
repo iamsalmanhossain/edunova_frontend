@@ -178,4 +178,39 @@ export const academicFeaturesService = {
   },
 
   // ==========================================
+  // 3. Dynamic Page Documentation & Help Guides
+  // ==========================================
+  async getPageGuide(pageKey: string): Promise<PageGuideData | null> {
+    try {
+      const res = await apiClient.get<any>(`/dashboard/guides/${pageKey}`, {
+        skipAuth: true,
+      });
+      return res.data ?? res;
+    } catch {
+      return null;
+    }
+  },
+
+  async listAllGuides(): Promise<PageGuideData[]> {
+    try {
+      const res = await apiClient.get<any>("/dashboard/guides", { skipAuth: true });
+      const raw = res.data ?? res;
+      return Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : [];
+    } catch {
+      return [];
+    }
+  },
+
+  async updatePageGuide(
+    pageKey: string,
+    dto: Partial<PageGuideData>
+  ): Promise<PageGuideData> {
+    const res = await apiClient.patch<PageGuideData>(
+      `/dashboard/admin/guides/${pageKey}`,
+      dto
+    );
+    return res.data!;
+  },
+
+  // ==========================================
 };
