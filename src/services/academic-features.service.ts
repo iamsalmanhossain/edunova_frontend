@@ -213,4 +213,20 @@ export const academicFeaturesService = {
   },
 
   // ==========================================
+  // 4. Semester Progression & Clean Student State
+  // ==========================================
+  async getStudentOverviewWithSemester(
+    semester?: number
+  ): Promise<StudentOverviewResponse> {
+    const query = new URLSearchParams();
+    if (semester) query.set("semester", semester.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+
+    const res = await apiClient.get<StudentOverviewResponse>(
+      `/dashboard/student/overview${qs}`
+    );
+    return res.data!;
+  },
+
+  // ==========================================
 };
