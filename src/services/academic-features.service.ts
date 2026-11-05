@@ -46,4 +46,136 @@ export const academicFeaturesService = {
   },
 
   // ==========================================
+  // 2. Class Diary, Notes & Smart Reminders
+  // ==========================================
+  async createDiaryEntry(payload: CreateDiaryPayload): Promise<ClassDiaryEntry> {
+    const res = await apiClient.post<ClassDiaryEntry>(
+      "/dashboard/teacher/diary",
+      payload
+    );
+    return res.data!;
+  },
+
+  async createClassDiary(payload: any): Promise<ClassDiaryEntry> {
+    const formatted: CreateDiaryPayload = {
+      subjectId: payload.subjectId,
+      semester: payload.semester,
+      date: payload.entryDate || payload.date || new Date().toISOString().split("T")[0],
+      chapter: payload.chapter,
+      topicsTaught: payload.topicsCovered || payload.topicsTaught || "",
+      nextClassPlan: payload.nextClassPlan,
+      classNoteUrl: payload.notesUrl || payload.classNoteUrl,
+      classNoteTitle: payload.chapter,
+      hasExam: payload.hasExamAnnouncement ?? payload.hasExam,
+      examTitle: payload.examTitle,
+      examDate: payload.examDate,
+      examType: payload.examType,
+      examSyllabus: payload.syllabus || payload.examSyllabus,
+    };
+    return this.createDiaryEntry(formatted);
+  },
+
+  async getTeacherDiaryEntries(params: {
+    subjectId?: string;
+    semester?: number;
+    shift?: string;
+  }): Promise<{ entries: ClassDiaryEntry[]; total: number }> {
+    const query = new URLSearchParams();
+    if (params.subjectId) query.set("subjectId", params.subjectId);
+    if (params.semester) query.set("semester", params.semester.toString());
+    if (params.shift) query.set("shift", params.shift);
+
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    const res = await apiClient.get<any>(`/dashboard/teacher/diary${qs}`);
+    const raw = res.data ?? res;
+    return {
+      entries: Array.isArray(raw?.entries) ? raw.entries : Array.isArray(raw) ? raw : [],
+      total: raw?.total || 0,
+    };
+  },
+
+  async getClassDiaryEntries(params?: {
+    subjectId?: string;
+    semester?: number;
+    shift?: string;
+  }): Promise<ClassDiaryEntry[]> {
+    const query = new URLSearchParams();
+    if (params?.subjectId) query.set("subjectId", params.subjectId);
+    if (params?.semester) query.set("semester", params.semester.toString());
+    if (params?.shift) query.set("shift", params.shift);
+    const qs = query.toString() ? `?${query.toString()}` : "";
+
+    const res = await apiClient.get<any>(`/dashboard/teacher/diary${qs}`);
+    const raw = res.data ?? res;
+    const list = Array.isArray(raw?.entries) ? raw.entries : Array.isArray(raw) ? raw : [];
+    return list.map((item: any) => ({
+      ...item,
+      entryDate: item.entryDate || item.date,
+      topicsCovered: item.topicsCovered || item.topicsTaught,
+      notesUrl: item.notesUrl || item.classNoteUrl,
+      hasExamAnnouncement: item.hasExamAnnouncement ?? item.hasExam,
+      syllabus: item.syllabus || item.examSyllabus,
+      subject: item.subject || {
+        id: item.subjectId,
+        name: item.subjectName || "Subject",
+        code: item.subjectCode || "SUB",
+      },
+    }));
+  },
+
+  async deleteDiaryEntry(id: string): Promise<boolean> {
+    await apiClient.delete(`/dashboard/teacher/diary/${id}`);
+    return true;
+  },
+
+  async deleteClassDiary(id: string): Promise<boolean> {
+    return this.deleteDiaryEntry(id);
+  },
+
+  async getStudentDiaryEntries(
+    semester?: number
+  ): Promise<{ entries: ClassDiaryEntry[]; total: number }> {
+    const query = new URLSearchParams();
+    if (semester) query.set("semester", semester.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+
+    const res = await apiClient.get<any>(`/dashboard/student/diary${qs}`);
+    const raw = res.data ?? res;
+    const list = Array.isArray(raw?.entries) ? raw.entries : Array.isArray(raw) ? raw : [];
+    return {
+      entries: list.map((item: any) => ({
+        ...item,
+        entryDate: item.entryDate || item.date,
+        topicsCovered: item.topicsCovered || item.topicsTaught,
+        notesUrl: item.notesUrl || item.classNoteUrl,
+        hasExamAnnouncement: item.hasExamAnnouncement ?? item.hasExam,
+        syllabus: item.syllabus || item.examSyllabus,
+        subject: item.subject || {
+          id: item.subjectId,
+          name: item.subjectName || "Subject",
+          code: item.subjectCode || "SUB",
+        },
+      })),
+      total: raw?.total || list.length,
+    };
+  },
+
+  async getUpcomingReminders(): Promise<{
+    reminders: ExamReminderItem[];
+    total: number;
+  }> {
+    const res = await apiClient.get<any>("/dashboard/reminders");
+    const raw = res.data ?? res;
+    const items = Array.isArray(raw?.reminders) ? raw.reminders : Array.isArray(raw) ? raw : [];
+    return {
+      reminders: items.map((r: any) => ({
+        ...r,
+        semester: r.semester || 1,
+        notesUrl: r.notesUrl || r.classNoteUrl,
+      })),
+      total: raw?.total || items.length,
+    };
+  },
+
+  // ==========================================
 };
