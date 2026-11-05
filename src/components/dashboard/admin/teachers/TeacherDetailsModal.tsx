@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AdminTeacherItem, UpdateTeacherPayload } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import {
   X,
   UserCheck,
@@ -173,7 +174,7 @@ export default function TeacherDetailsModal({
 
               <div>
                 <label className="font-semibold text-[#0f1f17] block mb-1">Professional Bio</label>
-                <textarea
+                <Textarea
                   rows={2}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
