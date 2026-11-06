@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, Users, FileSpreadsheet, Award } from "lucide-react";
+import { CheckCircle2, Users, FileSpreadsheet, Award, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -22,6 +22,15 @@ export default function TeacherQuickTools() {
           >
             <CheckCircle2 className="w-4 h-4 mr-2 text-[#0a4b32]" />
             Take Daily Attendance
+          </Button>
+        </Link>
+        <Link href="/dashboard/teacher/diary" className="block">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-xs h-9 border-[#dce3df] text-[#0f1f17] hover:border-[#0a4b32] hover:text-[#0a4b32] cursor-pointer"
+          >
+            <BookOpen className="w-4 h-4 mr-2 text-[#0a4b32]" />
+            Class Diary &amp; Lecture Notes
           </Button>
         </Link>
         <Link href="/dashboard/teacher/results" className="block">
