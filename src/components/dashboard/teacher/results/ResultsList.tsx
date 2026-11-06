@@ -31,6 +31,7 @@ import CreateResultModal from "./CreateResultModal";
 import ImportExcelModal from "./ImportExcelModal";
 import PasteJsonModal from "./PasteJsonModal";
 import ResultGuideModal from "./ResultGuideModal";
+import MasterSubjectOverviewModal from "./MasterSubjectOverviewModal";
 import { downloadClassPdfFile, downloadClassExcelFile } from "@/utils/fileDownload";
 
 interface ResultsListProps {
@@ -54,6 +55,7 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isPasteJsonOpen, setIsPasteJsonOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isMasterOverviewOpen, setIsMasterOverviewOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [importMode, setImportMode] = useState<"csv" | "excel">("excel");
@@ -236,6 +238,18 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {/* Master Overview Export */}
+          <Button
+            onClick={() => setIsMasterOverviewOpen(true)}
+            variant="outline"
+            className="h-10 px-3 text-xs font-bold border-[#0a4b32] text-[#0a4b32] hover:bg-[#f0f7f3] cursor-pointer flex items-center gap-1.5 rounded-xl transition-all shadow-xs"
+            title="Export Landscape Subject Master Overview PDF"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-[#0a4b32]" />
+            <span className="hidden sm:inline">Master Overview</span>
+            <span className="text-[10px] bg-[#e0ece5] text-[#0a4b32] px-1.5 py-0.5 rounded font-extrabold">PDF</span>
+          </Button>
+
           {/* Doc icon button to view Result Guidelines */}
           <Button
             onClick={() => setIsGuideOpen(true)}
@@ -585,6 +599,13 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
         onOpenPasteJson={() => setIsPasteJsonOpen(true)}
+      />
+
+      <MasterSubjectOverviewModal
+        isOpen={isMasterOverviewOpen}
+        onClose={() => setIsMasterOverviewOpen(false)}
+        subjects={subjects}
+        currentShift={currentShift}
       />
     </div>
   );
