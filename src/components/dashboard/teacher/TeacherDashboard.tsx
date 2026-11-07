@@ -16,6 +16,7 @@ import TeacherScheduleList, { TeacherLectureItem } from "./TeacherScheduleList";
 import TeacherQuickTools from "./TeacherQuickTools";
 import TeacherGradebookOverview from "./TeacherGradebookOverview";
 import TeacherDashboardSkeleton from "../skeletons/TeacherDashboardSkeleton";
+import UpcomingExamsWidget from "../shared/UpcomingExamsWidget";
 import { teacherService } from "@/services/teacher.service";
 import {
   TeacherDashboardOverviewData,
@@ -175,7 +176,8 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
           <TeacherGradebookOverview />
         </div>
 
-        <div>
+        <div className="space-y-5 sm:space-y-6">
+          <UpcomingExamsWidget />
           <TeacherQuickTools />
         </div>
       </div>
