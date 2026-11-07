@@ -19,7 +19,9 @@ import {
   XCircle,
   Award,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
+import UpcomingExamsWidget from "../shared/UpcomingExamsWidget";
 
 interface StudentDashboardProps {
   user: AuthUser;
@@ -27,6 +29,7 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ user }: StudentDashboardProps) {
   const [data, setData] = useState<StudentDashboardOverviewData | null>(null);
+  const [selectedSemester, setSelectedSemester] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +39,7 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
       try {
         setLoading(true);
         setError(null);
-        const res = await studentService.getOverview();
+        const res = await studentService.getOverview(selectedSemester);
         if (isMounted) {
           setData(res);
         }
@@ -56,7 +59,7 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedSemester]);
 
   if (loading) {
     return <StudentDashboardSkeleton />;
@@ -87,6 +90,10 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
   const recentResults = data?.recentResults || [];
   const recentAttendance = data?.recentAttendance || [];
 
+  const availableSemesters = data?.availableSemesters && data.availableSemesters.length > 0
+    ? data.availableSemesters
+    : [1, 2, 3, 4, 5, 6, 7, 8].filter((s) => s <= (student?.semester || 8));
+
   return (
     <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-200">
       {/* 1. Welcome Banner */}
@@ -95,6 +102,49 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
         semesterText={semText}
         shiftText={shiftText}
       />
+
+      {/* Fresh Semester Welcome Banner */}
+      {data?.isFreshSemester && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-500/15 border border-emerald-500/30 text-[#0f1f17] flex items-start sm:items-center gap-3.5 shadow-xs">
+          <div className="p-2.5 rounded-xl bg-[#0a4b32] text-[#c48b28] shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-[#0a4b32]">
+              Welcome to Semester {data.currentSemester || semester}! Fresh Academic Session Started
+            </h3>
+            <p className="text-xs text-[#5a6b62] mt-0.5">
+              Your academic records for this term have begun with a clean slate. Attendance logs and examination marks will appear as your teachers publish them.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Semester Switcher Bar */}
+      {availableSemesters.length > 1 && (
+        <div className="p-3.5 rounded-2xl bg-white border border-[#dce3df] shadow-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-[#0a4b32]" />
+            <span className="text-xs font-bold text-[#0f1f17]">View Past or Current Semester:</span>
+          </div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {availableSemesters.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSelectedSemester(s)}
+                className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  (selectedSemester === s || (!selectedSemester && s === semester))
+                    ? "bg-[#0a4b32] text-white shadow-xs"
+                    : "bg-[#f0f4f1] text-[#5a6b62] hover:bg-[#e2e8e4] hover:text-[#0f1f17]"
+                }`}
+              >
+                Semester {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm flex items-center gap-2">
@@ -230,8 +280,11 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
           </Card>
         </div>
 
-        {/* Right Column (Recent Attendance & Quick Links) */}
+        {/* Right Column (Exams Reminders, Recent Attendance & Quick Links) */}
         <div className="space-y-5 sm:space-y-6">
+          {/* Smart Exam Reminders Widget */}
+          <UpcomingExamsWidget />
+
           {/* Recent Attendance Log */}
           <Card className="border-[#e2e8e4] shadow-xs">
             <CardHeader className="pb-3 border-b border-[#e2e8e4]/80 flex flex-row items-center justify-between">
@@ -309,6 +362,16 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-2">
+              <Link
+                href="/dashboard/student/diary"
+                className="flex items-center justify-between p-3 rounded-xl bg-white border border-[#e2e8e4] hover:border-[#0a4b32]/40 transition-all text-xs font-semibold text-[#0f1f17]"
+              >
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[#0a4b32]" />
+                  <span>Class Diary &amp; Lecture Notes</span>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-[#5a6b62]" />
+              </Link>
               <Link
                 href="/dashboard/student/attendance"
                 className="flex items-center justify-between p-3 rounded-xl bg-white border border-[#e2e8e4] hover:border-[#0a4b32]/40 transition-all text-xs font-semibold text-[#0f1f17]"
