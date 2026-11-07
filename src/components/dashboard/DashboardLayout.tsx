@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -21,6 +21,7 @@ import {
   ClipboardList,
   Layers,
   Settings,
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -29,6 +30,7 @@ import StudentDashboardHeader from "./header/StudentDashboardHeader";
 import TeacherDashboardHeader from "./header/TeacherDashboardHeader";
 import AdminDashboardHeader from "./header/AdminDashboardHeader";
 import ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
+import PageGuideDrawer from "./guides/PageGuideDrawer";
 
 interface NavItem {
   label: string;
@@ -53,6 +55,33 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [isGuideDrawerOpen, setIsGuideDrawerOpen] = useState(false);
+  const [currentGuideKey, setCurrentGuideKey] = useState<string>("student-overview");
+
+  // Dynamically map active page to guide key
+  useEffect(() => {
+    if (pathname.includes("/dashboard/teacher/attendance")) {
+      setCurrentGuideKey("teacher-attendance");
+    } else if (pathname.includes("/dashboard/teacher/results")) {
+      setCurrentGuideKey("teacher-marks");
+    } else if (pathname.includes("/dashboard/teacher/diary")) {
+      setCurrentGuideKey("teacher-diary");
+    } else if (
+      pathname.includes("/dashboard/student/attendance") ||
+      pathname.includes("/dashboard/student/results") ||
+      pathname === "/dashboard/student"
+    ) {
+      setCurrentGuideKey("student-overview");
+    } else if (pathname.includes("/dashboard/admin")) {
+      setCurrentGuideKey("admin-overview");
+    } else if (pathname.includes("/claim") || pathname.includes("/register")) {
+      setCurrentGuideKey("student-claim");
+    } else if (role === "TEACHER") {
+      setCurrentGuideKey("teacher-attendance");
+    } else {
+      setCurrentGuideKey("student-overview");
+    }
+  }, [pathname, role]);
 
   const handleLogout = async () => {
     await authService.logout();
@@ -62,6 +91,7 @@ export default function DashboardLayout({
   // Role specific navigation configs
   const studentNav: NavItem[] = [
     { label: "Dashboard Overview", href: "/dashboard/student", icon: LayoutDashboard },
+    { label: "Class Diary & Notes", href: "/dashboard/student/diary", icon: BookOpen },
     { label: "Attendance Record", href: "/dashboard/student/attendance", icon: Clock },
     { label: "Examinations & Marks", href: "/dashboard/student/results", icon: FileText },
     { label: "My Class Routine", href: "#routine", icon: Calendar },
@@ -71,6 +101,7 @@ export default function DashboardLayout({
 
   const teacherNav: NavItem[] = [
     { label: "Faculty Dashboard", href: "/dashboard/teacher", icon: LayoutDashboard },
+    { label: "Class Diary & Notes", href: "/dashboard/teacher/diary", icon: BookOpen },
     { label: "Daily Attendance", href: "/dashboard/teacher/attendance", icon: Clock },
     { label: "Student Roll Sheet", href: "/dashboard/teacher/students", icon: Users },
     { label: "Teaching Schedule", href: "#schedule", icon: Calendar },
@@ -379,6 +410,26 @@ export default function DashboardLayout({
         isOpen={isPhotoModalOpen}
         onClose={() => setIsPhotoModalOpen(false)}
         user={user}
+      />
+
+      {/* Floating In-App Dynamic Help & Guide Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsGuideDrawerOpen(true)}
+        className="fixed bottom-6 right-6 z-40 bg-[#0a4b32] hover:bg-[#073825] text-white shadow-xl hover:shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-2 font-bold text-xs border border-[#146c4a] transition-all hover:scale-105 cursor-pointer"
+        title="Help & System Guidelines"
+        aria-label="Help and System Documentation"
+      >
+        <HelpCircle className="w-4 h-4 text-[#c48b28]" />
+        <span className="hidden sm:inline">Help &amp; Guide</span>
+      </button>
+
+      {/* Page Help Guide Drawer */}
+      <PageGuideDrawer
+        isOpen={isGuideDrawerOpen}
+        onClose={() => setIsGuideDrawerOpen(false)}
+        pageKey={currentGuideKey}
+        onPageKeyChange={(key) => setCurrentGuideKey(key)}
       />
     </div>
   );
