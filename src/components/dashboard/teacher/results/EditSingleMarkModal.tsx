@@ -30,7 +30,7 @@ function EditSingleMarkForm({
   student: TeacherResultDetailStudent;
   onMarkUpdated: (studentId: string, obtainedMarks: number, remarks?: string) => void;
 }) {
-  const [obtainedMarks, setObtainedMarks] = useState<number>(() => {
+  const [obtainedMarks, setObtainedMarks] = useState<number | string>(() => {
     return student.marksEntry?.obtainedMarks ?? 0;
   });
   const [remarks, setRemarks] = useState<string>(() => {
@@ -42,11 +42,12 @@ function EditSingleMarkForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (obtainedMarks < 0) {
+    const numericMarks = typeof obtainedMarks === "number" ? obtainedMarks : parseFloat(String(obtainedMarks)) || 0;
+    if (numericMarks < 0) {
       setError("Obtained marks cannot be negative.");
       return;
     }
-    if (obtainedMarks > totalMarks) {
+    if (numericMarks > totalMarks) {
       setError(`Obtained marks cannot exceed total marks (${totalMarks}).`);
       return;
     }
@@ -55,12 +56,12 @@ function EditSingleMarkForm({
       setSubmitting(true);
       setError(null);
       await teacherService.updateSingleMark(resultId, student.studentId, {
-        obtainedMarks: Number(obtainedMarks),
+        obtainedMarks: numericMarks,
         remarks: remarks.trim() || undefined,
       });
 
       setSuccess(true);
-      onMarkUpdated(student.studentId, Number(obtainedMarks), remarks.trim() || undefined);
+      onMarkUpdated(student.studentId, numericMarks, remarks.trim() || undefined);
       setTimeout(() => {
         onClose();
       }, 700);
@@ -72,7 +73,8 @@ function EditSingleMarkForm({
     }
   };
 
-  const percentage = totalMarks > 0 ? ((obtainedMarks / totalMarks) * 100).toFixed(1) : "0";
+  const numObtained = typeof obtainedMarks === "number" ? obtainedMarks : parseFloat(String(obtainedMarks)) || 0;
+  const percentage = totalMarks > 0 ? ((numObtained / totalMarks) * 100).toFixed(1) : "0";
 
   return (
     <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-[#dce3df] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -117,11 +119,30 @@ function EditSingleMarkForm({
           <Input
             id="edit-marks"
             type="number"
-            step="0.5"
+            step="any"
             min="0"
             max={totalMarks}
+            placeholder="0"
             value={obtainedMarks}
-            onChange={(e) => setObtainedMarks(parseFloat(e.target.value) || 0)}
+            onFocus={(e) => {
+              if (e.target.value === "0") setObtainedMarks("");
+            }}
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "") {
+                setObtainedMarks("");
+              } else {
+                const clean = raw.length > 1 && raw.startsWith("0") && !raw.startsWith("0.")
+                  ? raw.replace(/^0+/, "")
+                  : raw;
+                setObtainedMarks(clean);
+              }
+            }}
+            onBlur={() => {
+              if (obtainedMarks === "" || isNaN(Number(obtainedMarks))) {
+                setObtainedMarks(0);
+              }
+            }}
             required
             className="mt-1 text-sm font-semibold text-[#0f1f17]"
           />
