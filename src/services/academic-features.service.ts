@@ -1,4 +1,5 @@
 import { apiClient } from "./api-client";
+import { authService } from "./auth.service";
 import { downloadSecureFile } from "@/utils/fileDownload";
 import {
   SubjectMasterOverviewData,
@@ -6,6 +7,8 @@ import {
   ClassDiaryEntry,
   ExamReminderItem,
   PageGuideData,
+  CreatePageGuidePayload,
+  UpdatePageGuidePayload,
   AttendanceRegisterData,
   StudentOverviewResponse,
 } from "@/types/academic-features";
@@ -178,38 +181,105 @@ export const academicFeaturesService = {
   },
 
   // ==========================================
-  // 3. Dynamic Page Documentation & Help Guides
+  // 3. Dynamic Page Documentation & Help Guides (Role-Isolated & Admin Managed)
   // ==========================================
   async getPageGuide(pageKey: string): Promise<PageGuideData | null> {
+    const isAuth = authService.isAuthenticated();
+    if (!isAuth) {
+      return this.getPublicPageGuide(pageKey);
+    }
+
     try {
-      const res = await apiClient.get<any>(`/dashboard/guides/${pageKey}`, {
+      const res = await apiClient.get<any>(`/dashboard/guides/${pageKey}`);
+      const raw = res.data ?? res;
+      return raw?.data ?? raw;
+    } catch (err: unknown) {
+      const status = (err as { status?: number; statusCode?: number; data?: { statusCode?: number } })?.status ??
+        (err as { statusCode?: number })?.statusCode ??
+        (err as { data?: { statusCode?: number } })?.data?.statusCode;
+
+      if (status === 403) {
+        throw err;
+      }
+
+      // If not 403 (e.g. public page like student-claim called while token expired/missing), fallback to public endpoint
+      try {
+        return await this.getPublicPageGuide(pageKey);
+      } catch (publicErr) {
+        throw publicErr;
+      }
+    }
+  },
+
+  async getPublicPageGuide(pageKey: string): Promise<PageGuideData | null> {
+    try {
+      const res = await apiClient.get<any>(`/dashboard/guides/public/${pageKey}`, {
         skipAuth: true,
       });
-      return res.data ?? res;
-    } catch {
+      const raw = res.data ?? res;
+      return raw?.data ?? raw;
+    } catch (err: unknown) {
+      const status = (err as { status?: number; statusCode?: number; data?: { statusCode?: number } })?.status ??
+        (err as { statusCode?: number })?.statusCode ??
+        (err as { data?: { statusCode?: number } })?.data?.statusCode;
+
+      if (status === 403) {
+        throw err;
+      }
       return null;
     }
   },
 
   async listAllGuides(): Promise<PageGuideData[]> {
+    const isAuth = authService.isAuthenticated();
+    if (!isAuth) {
+      return [
+        {
+          pageKey: "student-claim",
+          title: "Student Account Claiming Guide",
+          targetRole: "STUDENT",
+          badge: "Account Activation",
+          summary: "Step-by-step instructions for students to claim their accounts.",
+          sections: [],
+        },
+      ];
+    }
+
     try {
-      const res = await apiClient.get<any>("/dashboard/guides", { skipAuth: true });
+      const res = await apiClient.get<any>("/dashboard/guides");
       const raw = res.data ?? res;
-      return Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : [];
+      if (Array.isArray(raw)) return raw;
+      if (Array.isArray(raw?.data)) return raw.data;
+      return [];
     } catch {
       return [];
     }
   },
 
+  async createPageGuide(
+    payload: CreatePageGuidePayload
+  ): Promise<PageGuideData> {
+    const res = await apiClient.post<any>("/dashboard/admin/guides", payload);
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
   async updatePageGuide(
     pageKey: string,
-    dto: Partial<PageGuideData>
+    dto: UpdatePageGuidePayload
   ): Promise<PageGuideData> {
-    const res = await apiClient.patch<PageGuideData>(
+    const res = await apiClient.patch<any>(
       `/dashboard/admin/guides/${pageKey}`,
       dto
     );
-    return res.data!;
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  async resetPageGuide(pageKey: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.delete<any>(`/dashboard/admin/guides/${pageKey}`);
+    const raw = res.data ?? res;
+    return raw;
   },
 
   // ==========================================
