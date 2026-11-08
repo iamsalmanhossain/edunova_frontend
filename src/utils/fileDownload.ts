@@ -58,7 +58,10 @@ export function resolveFullApiUrl(endpoint: string, baseUrl = CONFIGURED_API_URL
     return endpoint;
   }
   const cleanBase = baseUrl.replace(/\/+$/, "");
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  let cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  if (cleanBase.endsWith("/api/v1") && cleanEndpoint.startsWith("/api/v1/")) {
+    cleanEndpoint = cleanEndpoint.replace("/api/v1", "");
+  }
   return `${cleanBase}${cleanEndpoint}`;
 }
 
@@ -120,6 +123,23 @@ export async function downloadSecureFile(
     } else {
       downloadDirectWithToken(url, defaultFilename);
       return;
+    }
+  }
+
+  // Silent JWT token refresh retry on 401 Unauthorized
+  if (response?.status === 401) {
+    try {
+      const { refreshAccessToken } = await import("@/services/api-client");
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        headers["Authorization"] = `Bearer ${newToken}`;
+        response = await fetch(activeUrl, {
+          method: "GET",
+          headers,
+        });
+      }
+    } catch {
+      // Refresh failed, proceed to error handling below
     }
   }
 
