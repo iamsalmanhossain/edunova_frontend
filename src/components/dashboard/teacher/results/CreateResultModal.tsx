@@ -39,15 +39,14 @@ export default function CreateResultModal({
   const [subjectId, setSubjectId] = useState<string>(() => initialSubjects[0]?.id || "");
   const [examName, setExamName] = useState<string>("");
   const [examType, setExamType] = useState<ExamType>("MID_TERM");
-  const [session, setSession] = useState<string>("2024-25");
-  const [totalMarks, setTotalMarks] = useState<number>(100);
-  const [passMarks, setPassMarks] = useState<number>(40);
+  const [totalMarks, setTotalMarks] = useState<number | string>(100);
+  const [passMarks, setPassMarks] = useState<number | string>(40);
   const [publish, setPublish] = useState<boolean>(false);
   const [examRemarks, setExamRemarks] = useState<string>("");
 
   const [students, setStudents] = useState<ResultEntryStudent[]>([]);
   const [studentMarks, setStudentMarks] = useState<
-    Record<string, { marks: number; remarks: string }>
+    Record<string, { marks: number | string; remarks: string }>
   >({});
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -127,7 +126,6 @@ export default function CreateResultModal({
         try {
           const marksRes = await teacherService.getMarksStudents({
             semester: targetSemester,
-            session,
             shift: currentShift,
             subjectId,
           });
@@ -182,7 +180,7 @@ export default function CreateResultModal({
     return () => {
       mounted = false;
     };
-  }, [subjectId, semester, session, currentShift, availableSubjects]);
+  }, [subjectId, semester, currentShift, availableSubjects]);
 
   if (!isOpen) return null;
 
@@ -194,7 +192,7 @@ export default function CreateResultModal({
     }
   };
 
-  const handleMarkChange = (studentId: string, marks: number) => {
+  const handleMarkChange = (studentId: string, marks: number | string) => {
     setStudentMarks((prev) => ({
       ...prev,
       [studentId]: {
@@ -227,7 +225,8 @@ export default function CreateResultModal({
       setError("Please provide an Exam Title.");
       return;
     }
-    if (totalMarks <= 0) {
+    const numTotal = Number(totalMarks);
+    if (!numTotal || numTotal <= 0) {
       setError("Total marks must be greater than 0.");
       return;
     }
@@ -239,18 +238,20 @@ export default function CreateResultModal({
     // Validate student marks
     const marksPayload = students.map((s) => {
       const entry = studentMarks[s.id] || { marks: 0, remarks: "" };
+      const rawNum = typeof entry.marks === "number" ? entry.marks : parseFloat(String(entry.marks)) || 0;
       return {
         studentId: s.id,
-        obtainedMarks: Number(entry.marks),
+        rollNo: s.rollNo,
+        obtainedMarks: rawNum,
         remarks: entry.remarks.trim() || undefined,
       };
     });
 
     const invalidMark = marksPayload.find(
-      (m) => m.obtainedMarks < 0 || m.obtainedMarks > totalMarks
+      (m) => m.obtainedMarks < 0 || m.obtainedMarks > numTotal
     );
     if (invalidMark) {
-      setError(`All obtained marks must be between 0 and total marks (${totalMarks}).`);
+      setError(`All obtained marks must be between 0 and total marks (${numTotal}).`);
       return;
     }
 
@@ -261,10 +262,9 @@ export default function CreateResultModal({
         examName: examName.trim(),
         examType,
         semester: Number(semester),
-        session: session.trim(),
         shift: currentShift,
-        totalMarks: Number(totalMarks),
-        passMarks: passMarks ? Number(passMarks) : undefined,
+        totalMarks: numTotal,
+        passMarks: passMarks !== "" && passMarks != null ? Number(passMarks) : undefined,
         publish,
         remarks: examRemarks.trim() || undefined,
         marks: marksPayload,
@@ -276,8 +276,13 @@ export default function CreateResultModal({
         onClose();
       }, 1000);
     } catch (err: unknown) {
-      const errorObj = err as { message?: string };
-      setError(errorObj.message || "Failed to create result. Please verify all fields.");
+      let msg = err instanceof Error ? err.message : "Failed to create result. Please verify all fields.";
+      for (const s of students) {
+        if (msg.includes(s.id)) {
+          msg = msg.replace(s.id, `"${s.name}" (Roll: ${s.rollNo})`);
+        }
+      }
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -359,7 +364,7 @@ export default function CreateResultModal({
                   <option value="">-- Select Subject --</option>
                   {availableSubjects.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.code} - {s.name} (Sem {s.semester})
+                      {s.code ? `${s.code} - ${s.name} (Sem ${s.semester})` : s.name}
                     </option>
                   ))}
                 </select>
@@ -393,23 +398,29 @@ export default function CreateResultModal({
               </div>
 
               <div>
-                <Label className="text-xs font-bold text-[#0f1f17]">Academic Session *</Label>
-                <Input
-                  placeholder="2024-25"
-                  value={session}
-                  onChange={(e) => setSession(e.target.value)}
-                  required
-                  className="mt-1 text-xs"
-                />
-              </div>
-
-              <div>
                 <Label className="text-xs font-bold text-[#0f1f17]">Total Marks *</Label>
                 <Input
                   type="number"
                   min="1"
+                  placeholder="100"
                   value={totalMarks}
-                  onChange={(e) => setTotalMarks(Number(e.target.value))}
+                  onFocus={(e) => {
+                    if (e.target.value === "0") setTotalMarks("");
+                  }}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setTotalMarks("");
+                    } else {
+                      const clean = raw.length > 1 && raw.startsWith("0") ? raw.replace(/^0+/, "") : raw;
+                      setTotalMarks(clean);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (totalMarks === "" || Number(totalMarks) < 1) {
+                      setTotalMarks(100);
+                    }
+                  }}
                   required
                   className="mt-1 text-xs font-semibold"
                 />
@@ -420,8 +431,23 @@ export default function CreateResultModal({
                 <Input
                   type="number"
                   min="0"
+                  placeholder="40"
                   value={passMarks}
-                  onChange={(e) => setPassMarks(Number(e.target.value))}
+                  onFocus={(e) => {
+                    if (e.target.value === "0") setPassMarks("");
+                  }}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setPassMarks("");
+                    } else {
+                      const clean = raw.length > 1 && raw.startsWith("0") && !raw.startsWith("0.") ? raw.replace(/^0+/, "") : raw;
+                      setPassMarks(clean);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (passMarks === "") setPassMarks(0);
+                  }}
                   className="mt-1 text-xs"
                 />
               </div>
@@ -469,7 +495,9 @@ export default function CreateResultModal({
                   <tbody className="divide-y divide-[#f0f4f1]">
                     {students.map((student) => {
                       const entry = studentMarks[student.id] || { marks: 0, remarks: "" };
-                      const pct = totalMarks > 0 ? ((entry.marks / totalMarks) * 100).toFixed(0) : "0";
+                      const numericMark = typeof entry.marks === "number" ? entry.marks : parseFloat(String(entry.marks)) || 0;
+                      const numTotal = Number(totalMarks) || 100;
+                      const pct = numTotal > 0 ? ((numericMark / numTotal) * 100).toFixed(0) : "0";
                       return (
                         <tr key={student.id} className="hover:bg-[#f9fbfa]">
                           <td className="py-2 px-3 font-bold text-[#0f1f17]">{student.rollNo}</td>
@@ -477,13 +505,32 @@ export default function CreateResultModal({
                           <td className="py-2 px-3">
                             <Input
                               type="number"
-                              step="0.5"
+                              step="any"
                               min="0"
-                              max={totalMarks}
-                              value={entry.marks}
-                              onChange={(e) =>
-                                handleMarkChange(student.id, parseFloat(e.target.value) || 0)
-                              }
+                              max={numTotal}
+                              placeholder="0"
+                              value={entry.marks === 0 ? "0" : entry.marks}
+                              onFocus={(e) => {
+                                if (e.target.value === "0") {
+                                  handleMarkChange(student.id, "");
+                                }
+                              }}
+                              onChange={(e) => {
+                                const raw = e.target.value;
+                                if (raw === "") {
+                                  handleMarkChange(student.id, "");
+                                } else {
+                                  const clean = raw.length > 1 && raw.startsWith("0") && !raw.startsWith("0.")
+                                    ? raw.replace(/^0+/, "")
+                                    : raw;
+                                  handleMarkChange(student.id, clean);
+                                }
+                              }}
+                              onBlur={(e) => {
+                                if (e.target.value === "") {
+                                  handleMarkChange(student.id, 0);
+                                }
+                              }}
                               className="h-8 text-xs font-semibold"
                             />
                           </td>
