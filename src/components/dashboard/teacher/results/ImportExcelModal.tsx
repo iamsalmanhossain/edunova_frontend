@@ -32,8 +32,8 @@ export default function ImportExcelModal({
   const [examType, setExamType] = useState<ExamType>("MID_TERM");
   const [semester, setSemester] = useState<number>(() => subjects[0]?.semester || 1);
   const [session, setSession] = useState<string>("2024-25");
-  const [totalMarks, setTotalMarks] = useState<number>(100);
-  const [passMarks, setPassMarks] = useState<number>(40);
+  const [totalMarks, setTotalMarks] = useState<number | string>(100);
+  const [passMarks, setPassMarks] = useState<number | string>(40);
   const [publish, setPublish] = useState<boolean>(false);
   const [remarks, setRemarks] = useState<string>("");
 
@@ -98,7 +98,8 @@ export default function ImportExcelModal({
       setError("Please provide an Exam Name (e.g. Midterm Exam, Class Test 1).");
       return;
     }
-    if (totalMarks <= 0) {
+    const numTotal = Number(totalMarks) || 0;
+    if (numTotal <= 0) {
       setError("Total marks must be greater than 0.");
       return;
     }
@@ -113,8 +114,10 @@ export default function ImportExcelModal({
       formData.append("semester", semester.toString());
       formData.append("session", session.trim());
       formData.append("shift", currentShift);
-      formData.append("totalMarks", totalMarks.toString());
-      if (passMarks) formData.append("passMarks", passMarks.toString());
+      formData.append("totalMarks", numTotal.toString());
+      if (passMarks !== "" && passMarks != null) {
+        formData.append("passMarks", passMarks.toString());
+      }
       formData.append("publish", publish ? "true" : "false");
       if (remarks.trim()) formData.append("remarks", remarks.trim());
 
@@ -192,7 +195,7 @@ export default function ImportExcelModal({
                 <option value="">-- Select Subject --</option>
                 {subjects.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.code} - {s.name} (Sem {s.semester})
+                    {s.code ? `${s.code} - ${s.name}` : s.name}
                   </option>
                 ))}
               </select>
@@ -259,8 +262,25 @@ export default function ImportExcelModal({
               <Input
                 type="number"
                 min="1"
+                placeholder="100"
                 value={totalMarks}
-                onChange={(e) => setTotalMarks(Number(e.target.value))}
+                onFocus={(e) => {
+                  if (e.target.value === "0") setTotalMarks("");
+                }}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    setTotalMarks("");
+                  } else {
+                    const clean = raw.length > 1 && raw.startsWith("0") ? raw.replace(/^0+/, "") : raw;
+                    setTotalMarks(clean);
+                  }
+                }}
+                onBlur={() => {
+                  if (totalMarks === "" || Number(totalMarks) < 1) {
+                    setTotalMarks(100);
+                  }
+                }}
                 required
                 className="mt-1 text-xs font-semibold"
               />
@@ -271,8 +291,23 @@ export default function ImportExcelModal({
               <Input
                 type="number"
                 min="0"
+                placeholder="40"
                 value={passMarks}
-                onChange={(e) => setPassMarks(Number(e.target.value))}
+                onFocus={(e) => {
+                  if (e.target.value === "0") setPassMarks("");
+                }}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    setPassMarks("");
+                  } else {
+                    const clean = raw.length > 1 && raw.startsWith("0") && !raw.startsWith("0.") ? raw.replace(/^0+/, "") : raw;
+                    setPassMarks(clean);
+                  }
+                }}
+                onBlur={() => {
+                  if (passMarks === "") setPassMarks(0);
+                }}
                 className="mt-1 text-xs"
               />
             </div>
