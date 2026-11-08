@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { UserAccountStatus } from "@/types/admin";
 import { Button } from "@/components/ui/button";
+import { appToast } from "@/store/useToastStore";
 import { ShieldAlert, Loader2, X } from "lucide-react";
 
 interface UserStatusModalProps {
@@ -31,9 +32,10 @@ export default function UserStatusModal({
     try {
       setLoading(true);
       await onSubmit(user.id, selectedStatus);
+      appToast.success(`User status updated to ${selectedStatus}.`, "Status Updated");
       onClose();
     } catch (err: unknown) {
-      alert("Failed to update user status: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to update user status: " + (err instanceof Error ? err.message : "Error"), "Update Failed");
     } finally {
       setLoading(false);
     }
