@@ -24,6 +24,7 @@ import {
   ResultPublicationStatus,
 } from "@/types/teacher";
 import EditSingleMarkModal from "./EditSingleMarkModal";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   downloadClassPdfFile,
   downloadClassExcelFile,
@@ -247,10 +248,83 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-10 w-48 bg-[#e6ede8] rounded-xl" />
-        <div className="h-44 bg-white rounded-2xl border border-[#dce3df] p-6" />
-        <div className="h-96 bg-white rounded-2xl border border-[#dce3df] p-6" />
+      <div className="space-y-6">
+        {/* Navigation & Toolbar Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <Skeleton className="h-9 w-40 rounded-xl" />
+          <div className="flex items-center gap-2 flex-wrap">
+            <Skeleton className="h-9 w-36 rounded-xl" />
+            <Skeleton className="h-9 w-32 rounded-xl" />
+            <Skeleton className="h-9 w-32 rounded-xl" />
+            <Skeleton className="h-9 w-28 rounded-xl" />
+          </div>
+        </div>
+
+        {/* Exam Header Overview Card Skeleton */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-[#dce3df] shadow-xs space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-24 rounded-full" />
+                <Skeleton className="h-4 w-48 rounded" />
+              </div>
+              <Skeleton className="h-7 w-64 rounded-lg" />
+              <Skeleton className="h-4 w-44 rounded" />
+            </div>
+
+            <div className="flex items-center gap-4 bg-[#f4f7f5] p-3.5 rounded-xl border border-[#e2e8e4]">
+              <div className="text-center px-2 space-y-1">
+                <Skeleton className="h-3 w-16 mx-auto rounded" />
+                <Skeleton className="h-6 w-10 mx-auto rounded" />
+              </div>
+              <div className="w-[1px] h-8 bg-[#dce3df]" />
+              <div className="text-center px-2 space-y-1">
+                <Skeleton className="h-3 w-16 mx-auto rounded" />
+                <Skeleton className="h-6 w-10 mx-auto rounded" />
+              </div>
+              <div className="w-[1px] h-8 bg-[#dce3df]" />
+              <div className="text-center px-2 space-y-1">
+                <Skeleton className="h-3 w-16 mx-auto rounded" />
+                <Skeleton className="h-6 w-10 mx-auto rounded" />
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Stats Grid Skeleton */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-[#f0f4f1]">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-3 rounded-xl bg-[#f0f7f3] flex items-center gap-3">
+                <Skeleton className="w-5 h-5 rounded shrink-0" />
+                <div className="space-y-1 flex-1">
+                  <Skeleton className="h-2.5 w-16 rounded" />
+                  <Skeleton className="h-4 w-24 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Table Container Skeleton */}
+        <div className="bg-white rounded-2xl border border-[#dce3df] shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-[#dce3df] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <Skeleton className="h-5 w-48 rounded" />
+            <Skeleton className="h-9 w-64 rounded-md" />
+          </div>
+          <div className="p-4 space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-[#f0f4f1] last:border-0">
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-40 rounded" />
+                  <Skeleton className="h-3 w-28 rounded" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-8 w-16 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
