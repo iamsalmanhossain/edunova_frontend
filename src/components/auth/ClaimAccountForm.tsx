@@ -22,7 +22,9 @@ import {
   Sparkles,
   Check,
   ClipboardList,
+  HelpCircle,
 } from "lucide-react";
+import PageGuideDrawer from "@/components/dashboard/guides/PageGuideDrawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,6 +53,7 @@ export default function ClaimAccountForm() {
 
   // Wizard Step: 1 = Academic, 2 = Credentials, 3 = Confirm
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  const [isGuideDrawerOpen, setIsGuideDrawerOpen] = useState(false);
 
   // Institutes & Departments
   const [institutes, setInstitutes] = useState<Institute[]>(VERIFIED_INSTITUTES);
@@ -223,7 +226,7 @@ export default function ClaimAccountForm() {
         rollNo: formData.rollNo.trim(),
         name: formData.name?.trim() || undefined,
         email: formData.email.trim().toLowerCase(),
-        password: formData.password,
+        password: formData.password.trim(),
         phone: formData.phone?.trim() || undefined,
         registrationNo: formData.registrationNo?.trim() || undefined,
       });
@@ -284,9 +287,20 @@ export default function ClaimAccountForm() {
               </p>
             </div>
           </div>
-          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-            Step {currentStep} of 3
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsGuideDrawerOpen(true)}
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f7f5] hover:bg-[#eef7f2] text-[#0a4b32] border border-[#dce3df] inline-flex items-center gap-1 cursor-pointer transition-colors"
+              title="View Account Claiming Guide"
+            >
+              <HelpCircle className="w-3 h-3 text-[#c48b28]" />
+              <span>Guide</span>
+            </button>
+            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Step {currentStep} of 3
+            </span>
+          </div>
         </div>
 
         {/* 3-Step Wizard Navigation Indicator */}
@@ -771,6 +785,13 @@ export default function ClaimAccountForm() {
           </Link>
         </div>
       </form>
+
+      {/* Public Student Claim Page Guide Drawer */}
+      <PageGuideDrawer
+        isOpen={isGuideDrawerOpen}
+        onClose={() => setIsGuideDrawerOpen(false)}
+        pageKey="student-claim"
+      />
     </div>
   );
 }
