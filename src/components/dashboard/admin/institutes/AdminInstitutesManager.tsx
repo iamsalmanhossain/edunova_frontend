@@ -622,6 +622,486 @@ export default function AdminInstitutesManager({ user }: AdminInstitutesManagerP
       )}
 
       {/* CREATE INSTITUTE MODAL */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#f0f4f1]">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-[#eef7f2] text-[#0a4b32] rounded-xl">
+                  <Building2 className="w-4 h-4" />
+                </span>
+                <h3 className="text-base font-bold text-[#0f1f17]">Register New Institute</h3>
+              </div>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {createError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{createError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleCreateSubmit} className="space-y-3.5 mt-4">
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Institute Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                  placeholder="e.g. Chittagong Polytechnic Institute"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Institute Code *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={createForm.code}
+                    onChange={(e) => setCreateForm({ ...createForm, code: e.target.value.toUpperCase() })}
+                    placeholder="e.g. CPI"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32] font-mono uppercase"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Division *
+                  </label>
+                  <select
+                    value={createForm.division}
+                    onChange={(e) => setCreateForm({ ...createForm, division: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    {BD_DIVISIONS.map((div) => (
+                      <option key={div} value={div}>
+                        {div}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    District *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={createForm.district}
+                    onChange={(e) => setCreateForm({ ...createForm, district: e.target.value })}
+                    placeholder="e.g. Chattogram"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Official Website
+                  </label>
+                  <input
+                    type="url"
+                    value={createForm.website}
+                    onChange={(e) => setCreateForm({ ...createForm, website: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Full Campus Address
+                </label>
+                <input
+                  type="text"
+                  value={createForm.address}
+                  onChange={(e) => setCreateForm({ ...createForm, address: e.target.value })}
+                  placeholder="e.g. Nasirabad, Chattogram-4000"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#0f1f17] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={createForm.isActive}
+                    onChange={(e) => setCreateForm({ ...createForm, isActive: e.target.checked })}
+                    className="rounded text-[#0a4b32] focus:ring-[#0a4b32]"
+                  />
+                  <span>Active Institute (Accepting Students & Faculty)</span>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f0f4f1]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="rounded-xl text-xs h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={savingCreate}
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-9 px-4 font-bold"
+                >
+                  {savingCreate ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                  Create Institute
+                </Button>
+              </div>
+            </form>
           </div>
+        </div>
+      )}
+
+      {/* EDIT INSTITUTE MODAL */}
+      {editingInstitute && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#f0f4f1]">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-[#eef7f2] text-[#0a4b32] rounded-xl">
+                  <Edit2 className="w-4 h-4" />
+                </span>
+                <h3 className="text-base font-bold text-[#0f1f17]">Edit Institute Information</h3>
+              </div>
+              <button
+                onClick={() => setEditingInstitute(null)}
+                className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {editError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{editError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="space-y-3.5 mt-4">
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Institute Name
+                </label>
+                <input
+                  type="text"
+                  value={editForm.name || ""}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Institute Code
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.code || ""}
+                    onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32] font-mono uppercase"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Division
+                  </label>
+                  <select
+                    value={editForm.division || ""}
+                    onChange={(e) => setEditForm({ ...editForm, division: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    {BD_DIVISIONS.map((div) => (
+                      <option key={div} value={div}>
+                        {div}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    District
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.district || ""}
+                    onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Official Website
+                  </label>
+                  <input
+                    type="url"
+                    value={editForm.website || ""}
+                    onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Full Campus Address
+                </label>
+                <input
+                  type="text"
+                  value={editForm.address || ""}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#0f1f17] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editForm.isActive ?? true}
+                    onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
+                    className="rounded text-[#0a4b32] focus:ring-[#0a4b32]"
+                  />
+                  <span>Active Institute</span>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f0f4f1]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingInstitute(null)}
+                  className="rounded-xl text-xs h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={savingEdit}
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-9 px-4 font-bold"
+                >
+                  {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* INSTITUTE DEPARTMENTS MANAGEMENT MODAL */}
+      {deptModalInstitute && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#f0f4f1]">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-[#eef7f2] text-[#0a4b32] rounded-xl">
+                  <Layers className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-[#0f1f17]">
+                    Manage Departments for {deptModalInstitute.name}
+                  </h3>
+                  <p className="text-xs text-[#5a6b62]">
+                    Code: <span className="font-mono font-bold text-[#0a4b32]">{deptModalInstitute.code}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setDeptModalInstitute(null)}
+                className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 mt-4">
+              {/* Assign New Department Section */}
+              <div className="p-4 bg-[#fcfdfc] rounded-2xl border border-[#e2e8e4]">
+                <h4 className="text-xs font-bold text-[#0f1f17] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <FolderPlus className="w-3.5 h-3.5 text-[#0a4b32]" />
+                  Offer New Department at this Institute
+                </h4>
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  <select
+                    value={selectedDeptToAssign}
+                    onChange={(e) => setSelectedDeptToAssign(e.target.value)}
+                    className="flex-1 text-xs p-2.5 rounded-xl border border-[#e2e8e4] bg-white text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    <option value="">-- Select Master Department to Assign --</option>
+                    {unassignedDepts.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} ({d.code})
+                      </option>
+                    ))}
+                  </select>
+
+                  <Button
+                    size="sm"
+                    disabled={!selectedDeptToAssign || assigningDept}
+                    onClick={handleAssignDept}
+                    className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs font-bold h-10 px-4 shrink-0"
+                  >
+                    {assigningDept ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
+                    Assign Department
+                  </Button>
+                </div>
+                {unassignedDepts.length === 0 && (
+                  <p className="text-[11px] text-gray-500 mt-2">
+                    All available global master departments are already assigned to this institute.
+                  </p>
+                )}
+              </div>
+
+              {/* Current Assigned Departments Table */}
+              <div>
+                <h4 className="text-xs font-bold text-[#0f1f17] uppercase tracking-wider mb-2">
+                  Currently Offered Departments ({assignedDepts.length})
+                </h4>
+
+                {loadingDepts ? (
+                  <div className="p-8 text-center text-[#5a6b62]">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#0a4b32] mb-2" />
+                    <p className="text-xs">Loading assigned departments...</p>
+                  </div>
+                ) : assignedDepts.length === 0 ? (
+                  <div className="p-8 text-center text-[#5a6b62] bg-[#fcfdfc] rounded-2xl border border-dashed border-[#e2e8e4]">
+                    <Layers className="w-8 h-8 mx-auto text-gray-300 mb-2" />
+                    <p className="text-xs font-semibold">No departments currently offered</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      Use the dropdown above to offer academic departments at this institute.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="max-h-60 overflow-y-auto rounded-2xl border border-[#e2e8e4]">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#fcfdfc] text-[#5a6b62] border-b border-[#e2e8e4] sticky top-0">
+                        <tr>
+                          <th className="py-2.5 px-3.5 font-semibold">Department</th>
+                          <th className="py-2.5 px-3.5 font-semibold">Code</th>
+                          <th className="py-2.5 px-3.5 font-semibold text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f4f1] text-[#0f1f17]">
+                        {assignedDepts.map((d) => (
+                          <tr key={d.id} className="hover:bg-[#fcfdfc]">
+                            <td className="py-2.5 px-3.5 font-bold">{d.name}</td>
+                            <td className="py-2.5 px-3.5 font-mono text-[#0a4b32] font-semibold">
+                              {d.code}
+                            </td>
+                            <td className="py-2.5 px-3.5 text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={removingDeptId === d.id}
+                                onClick={() => handleRemoveDept(d.id)}
+                                className="h-7 px-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg text-[11px]"
+                              >
+                                {removingDeptId === d.id ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  "Remove"
+                                )}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4 mt-4 border-t border-[#f0f4f1]">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setDeptModalInstitute(null)}
+                className="rounded-xl text-xs h-9 px-4"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {deletingInstitute && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 text-red-600 mb-3">
+              <span className="p-2.5 bg-red-50 rounded-2xl">
+                <AlertTriangle className="w-6 h-6" />
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-[#0f1f17]">Delete Institute</h3>
+                <p className="text-xs text-red-600">This action will soft-delete the institution.</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-[#5a6b62] leading-relaxed my-3">
+              Are you sure you want to delete{" "}
+              <strong className="text-[#0f1f17]">{deletingInstitute.name}</strong> ({deletingInstitute.code})?
+              Existing student and faculty records linked to this institution will remain in the database.
+            </p>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f0f4f1]">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setDeletingInstitute(null)}
+                disabled={isDeleting}
+                className="rounded-xl text-xs h-9"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs h-9 px-4 font-bold"
+              >
+                {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                Yes, Delete Institute
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
+
