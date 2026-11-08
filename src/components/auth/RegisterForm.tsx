@@ -388,8 +388,8 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
       if (role === "student") {
         const studentPayload = {
           name: name.trim(),
-          email: email.trim(),
-          password,
+          email: email.trim().toLowerCase(),
+          password: password.trim(),
           instituteId,
           departmentId,
           shift,
@@ -417,8 +417,8 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
       } else {
         const teacherPayload = {
           name: name.trim(),
-          email: email.trim(),
-          password,
+          email: email.trim().toLowerCase(),
+          password: password.trim(),
           instituteId,
           departmentId,
           shift,
