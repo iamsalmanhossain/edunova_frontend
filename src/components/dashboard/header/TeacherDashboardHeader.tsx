@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import NotificationBellPopover from "./NotificationBellPopover";
 
 interface TeacherDashboardHeaderProps {
   user: AuthUser;
@@ -145,16 +146,8 @@ export default function TeacherDashboardHeader({
 
       {/* Right: Faculty Notifications & Teacher Profile */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0" ref={dropdownRef}>
-        {/* Faculty Notification Bell */}
-        <button
-          type="button"
-          className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors relative cursor-pointer"
-          aria-label="Faculty Notifications"
-          title="Academic Staff Notices"
-        >
-          <Bell className="w-4 h-4 text-[#5a6b62]" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#c48b28] ring-2 ring-white" />
-        </button>
+        {/* Academic Notification Bell */}
+        <NotificationBellPopover />
 
         {/* Teacher Mini Avatar Menu Trigger */}
         <div className="relative">
