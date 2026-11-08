@@ -110,7 +110,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   }
 
   return (
-    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12" suppressHydrationWarning>
       {/* 1. Approval Status Alert */}
       <TeacherApprovalAlert status={user.teacherApprovalStatus || "APPROVED"} />
 
