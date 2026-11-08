@@ -344,7 +344,7 @@ export interface SubmitResultPayload {
   examName: string;
   examType?: ExamType;
   semester: number;
-  session: string;
+  session?: string;
   shift?: "FIRST_SHIFT" | "SECOND_SHIFT";
   totalMarks: number;
   passMarks?: number;
