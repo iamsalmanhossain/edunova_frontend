@@ -5,6 +5,7 @@ import { AdminTeacherItem, UpdateTeacherPayload } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { appToast } from "@/store/useToastStore";
 import {
   X,
   UserCheck,
@@ -54,8 +55,9 @@ export default function TeacherDetailsModal({
         },
       });
       setIsEditing(false);
+      appToast.success("Teacher profile updated successfully!", "Profile Updated");
     } catch (err: unknown) {
-      alert("Failed to update teacher: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to update teacher: " + (err instanceof Error ? err.message : "Error"), "Update Failed");
     } finally {
       setLoading(false);
     }
