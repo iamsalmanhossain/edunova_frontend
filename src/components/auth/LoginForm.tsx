@@ -51,10 +51,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     setIsUnverified(false);
     setSuccess(null);
 
+    const cleanEmail = data.email.trim().toLowerCase();
+    const cleanPassword = data.password.trim();
+
     try {
       const res = await authService.login({
-        email: data.email.trim(),
-        password: data.password,
+        email: cleanEmail,
+        password: cleanPassword,
       });
 
       if (res.success || res.data?.accessToken) {
@@ -149,6 +152,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               autoComplete="username"
               {...register("email", {
                 required: "Institutional email address is required",
+                setValueAs: (v) => (typeof v === "string" ? v.trim().toLowerCase() : v),
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Please enter a valid institutional email address",
@@ -193,6 +197,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               autoComplete="current-password"
               {...register("password", {
                 required: "Account password is required",
+                setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
                 minLength: {
                   value: 6,
                   message: "Password must be at least 6 characters",
