@@ -9,6 +9,7 @@ import StudentResultsList from "./StudentResultsList";
 import StudentExamDetailModal from "./StudentExamDetailModal";
 import StudentResultsSkeleton from "@/components/dashboard/skeletons/StudentResultsSkeleton";
 import { downloadSecureFile } from "@/utils/fileDownload";
+import { appToast } from "@/store/useToastStore";
 import { Award, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -69,8 +70,10 @@ export default function StudentResultsManager({ user }: StudentResultsManagerPro
         `/dashboard/student/results/${examId}/pdf?download=true`,
         `${cleanSub}_${cleanExam}_Transcript.pdf`
       );
+      appToast.success("Official result PDF downloaded successfully!", "Marksheet Downloaded");
     } catch (err: unknown) {
-      alert("Failed to download result PDF: " + (err instanceof Error ? err.message : "Error"));
+      const msg = err instanceof Error ? err.message : "Error downloading marks record.";
+      appToast.error(msg, "Download Failed");
     } finally {
       setDownloadingId(null);
     }
