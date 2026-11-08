@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AdminStudentItem, UpdateStudentPayload } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { appToast } from "@/store/useToastStore";
 import {
   X,
   Users,
@@ -66,8 +67,9 @@ export default function StudentDetailsModal({
         },
       });
       setIsEditing(false);
+      appToast.success("Student details updated successfully!", "Student Updated");
     } catch (err: unknown) {
-      alert("Failed to update student: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to update student: " + (err instanceof Error ? err.message : "Error"), "Update Failed");
     } finally {
       setLoading(false);
     }
