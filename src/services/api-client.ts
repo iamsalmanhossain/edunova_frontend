@@ -65,7 +65,7 @@ function clearStoredTokens(): void {
 /**
  * Attempts to silently refresh the JWT access token using the backend refresh endpoint
  */
-async function refreshAccessToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<string | null> {
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
@@ -100,13 +100,41 @@ async function refreshAccessToken(): Promise<string | null> {
 
       if (newAccessToken) {
         setStoredTokens(newAccessToken, newRefreshToken);
+        // Synchronize with zustand store
+        if (typeof window !== "undefined") {
+          try {
+            const { useAuthStore } = await import("@/store/useAuthStore");
+            const authState = useAuthStore.getState();
+            if (authState.user) {
+              authState.setAuth(
+                authState.user,
+                newAccessToken,
+                newRefreshToken || authState.refreshToken || undefined
+              );
+            }
+          } catch {
+            // store sync fallback
+          }
+        }
         return newAccessToken;
       }
 
       clearStoredTokens();
+      if (typeof window !== "undefined") {
+        try {
+          const { useAuthStore } = await import("@/store/useAuthStore");
+          useAuthStore.getState().clearAuth();
+        } catch {}
+      }
       return null;
     } catch {
       clearStoredTokens();
+      if (typeof window !== "undefined") {
+        try {
+          const { useAuthStore } = await import("@/store/useAuthStore");
+          useAuthStore.getState().clearAuth();
+        } catch {}
+      }
       return null;
     } finally {
       isRefreshing = false;
