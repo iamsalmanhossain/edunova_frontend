@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { AuthUser } from "@/types/auth";
 import { MasterDepartment, MasterSubject } from "@/types/admin";
 import { adminService } from "@/services/admin.service";
+import { appToast } from "@/store/useToastStore";
 import AdminDepartmentsSkeleton from "@/components/dashboard/skeletons/AdminDepartmentsSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +42,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
   const [subjName, setSubjName] = useState("");
   const [subjCode, setSubjCode] = useState("");
   const [subjSemester, setSubjSemester] = useState(1);
-  const [subjCredit, setSubjCredit] = useState(3);
+  const [subjCredit, setSubjCredit] = useState<number | string>(3);
   const [savingSubj, setSavingSubj] = useState(false);
 
   // 1. Load Departments
@@ -88,7 +89,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
 
   const handleCreateDepartment = async () => {
     if (!deptName.trim() || !deptCode.trim()) {
-      alert("Please provide department name and code.");
+      appToast.warning("Please provide department name and code.", "Validation Error");
       return;
     }
     try {
@@ -105,8 +106,9 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
       setDeptCode("");
       await loadDepartments();
       setSelectedDeptId(newDept.id);
+      appToast.success("Department created successfully!", "Department Created");
     } catch (err: unknown) {
-      alert("Failed to create department: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to create department: " + (err instanceof Error ? err.message : "Error"), "Creation Failed");
     } finally {
       setSavingDept(false);
     }
@@ -114,7 +116,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
 
   const handleCreateSubject = async () => {
     if (!subjName.trim() || !subjCode.trim() || !selectedDeptId) {
-      alert("Please provide subject name and code.");
+      appToast.warning("Please provide subject name and code.", "Validation Error");
       return;
     }
     try {
@@ -132,8 +134,9 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
       setSubjSemester(1);
       setSubjCredit(3);
       await loadSubjects(selectedDeptId, selectedSemester);
+      appToast.success("Subject created successfully!", "Subject Created");
     } catch (err: unknown) {
-      alert("Failed to create subject: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to create subject: " + (err instanceof Error ? err.message : "Error"), "Creation Failed");
     } finally {
       setSavingSubj(false);
     }
@@ -144,8 +147,9 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
     try {
       await adminService.deleteSubject(subjId);
       await loadSubjects(selectedDeptId, selectedSemester);
+      appToast.success(`Subject "${name}" deleted successfully!`, "Subject Deleted");
     } catch (err: unknown) {
-      alert("Failed to delete subject: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to delete subject: " + (err instanceof Error ? err.message : "Error"), "Delete Failed");
     }
   };
 
@@ -465,8 +469,25 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
                     type="number"
                     min={1}
                     max={6}
+                    placeholder="3"
                     value={subjCredit}
-                    onChange={(e) => setSubjCredit(Number(e.target.value))}
+                    onFocus={(e) => {
+                      if (e.target.value === "0") setSubjCredit("");
+                    }}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === "") {
+                        setSubjCredit("");
+                      } else {
+                        const clean = raw.length > 1 && raw.startsWith("0") ? raw.replace(/^0+/, "") : raw;
+                        setSubjCredit(clean);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (subjCredit === "" || Number(subjCredit) < 1) {
+                        setSubjCredit(3);
+                      }
+                    }}
                     className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
                   />
                 </div>
