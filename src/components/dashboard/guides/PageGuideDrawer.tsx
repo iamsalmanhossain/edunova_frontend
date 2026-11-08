@@ -668,6 +668,477 @@ export default function PageGuideDrawer({
       </div>
 
       {/* ADMIN EDIT DOCUMENTATION MODAL */}
-          </Sheet>
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-[#f0f4f1]">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-[#eef7f2] text-[#0a4b32] rounded-xl">
+                  <Edit3 className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-[#0f1f17]">
+                    Edit Documentation: {formPageKey}
+                  </h3>
+                  <p className="text-xs text-[#5a6b62]">
+                    Updates will customize this page guide for all users under its target role.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {adminError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{adminError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Guide Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formTitle}
+                    onChange={(e) => setFormTitle(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Target Role (RBAC Isolation) *
+                  </label>
+                  <select
+                    value={formTargetRole}
+                    onChange={(e) => setFormTargetRole(e.target.value as GuideTargetRole)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    <option value="ALL">ALL (Universal / Public)</option>
+                    <option value="STUDENT">STUDENT (Students & Admin only)</option>
+                    <option value="TEACHER">TEACHER (Teachers & Admin only)</option>
+                    <option value="ADMIN">ADMIN (Admin console only)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Badge Text
+                  </label>
+                  <input
+                    type="text"
+                    value={formBadge}
+                    onChange={(e) => setFormBadge(e.target.value)}
+                    placeholder="e.g. Attendance Module"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Subtitle / Summary Banner
+                  </label>
+                  <input
+                    type="text"
+                    value={formSubtitle}
+                    onChange={(e) => setFormSubtitle(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Summary Description
+                </label>
+                <Textarea
+                  rows={2}
+                  value={formSummary}
+                  onChange={(e) => setFormSummary(e.target.value)}
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4]"
+                />
+              </div>
+
+              {/* Sections Editor */}
+              <div className="space-y-3 pt-2 border-t border-[#f0f4f1]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#0f1f17] uppercase tracking-wider">
+                    Content Sections ({formSections.length})
+                  </h4>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      setFormSections([
+                        ...formSections,
+                        { title: "New Section", description: "", steps: [], tips: [] },
+                      ])
+                    }
+                    className="h-7 text-[11px] rounded-lg"
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add Section
+                  </Button>
+                </div>
+
+                {formSections.map((sec, sIdx) => (
+                  <div key={sIdx} className="p-3 rounded-xl border border-[#e2e8e4] bg-[#fcfdfc] space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <input
+                        type="text"
+                        placeholder="Section Title"
+                        value={sec.title}
+                        onChange={(e) => {
+                          const updated = [...formSections];
+                          updated[sIdx].title = e.target.value;
+                          setFormSections(updated);
+                        }}
+                        className="text-xs font-bold p-1.5 rounded-lg border border-[#e2e8e4] flex-1 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormSections(formSections.filter((_, i) => i !== sIdx))}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Remove Section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <Textarea
+                      rows={2}
+                      placeholder="Section Description"
+                      value={sec.description}
+                      onChange={(e) => {
+                        const updated = [...formSections];
+                        updated[sIdx].description = e.target.value;
+                        setFormSections(updated);
+                      }}
+                      className="w-full text-xs p-2 rounded-lg border border-[#e2e8e4] bg-white"
+                    />
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-gray-500 block mb-0.5">
+                        Steps (One per line)
+                      </label>
+                      <Textarea
+                        rows={2}
+                        placeholder="Step 1&#10;Step 2"
+                        value={(sec.steps || []).join("\n")}
+                        onChange={(e) => {
+                          const updated = [...formSections];
+                          updated[sIdx].steps = e.target.value.split("\n").filter(Boolean);
+                          setFormSections(updated);
+                        }}
+                        className="w-full text-xs p-2 rounded-lg border border-[#e2e8e4] bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* FAQs Editor */}
+              <div className="space-y-3 pt-2 border-t border-[#f0f4f1]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#0f1f17] uppercase tracking-wider">
+                    FAQs ({formFaqs.length})
+                  </h4>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setFormFaqs([...formFaqs, { question: "", answer: "" }])}
+                    className="h-7 text-[11px] rounded-lg"
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add FAQ
+                  </Button>
+                </div>
+
+                {formFaqs.map((faq, fIdx) => (
+                  <div key={fIdx} className="p-3 rounded-xl border border-[#e2e8e4] bg-[#fcfdfc] space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <input
+                        type="text"
+                        placeholder="Question"
+                        value={faq.question}
+                        onChange={(e) => {
+                          const updated = [...formFaqs];
+                          updated[fIdx].question = e.target.value;
+                          setFormFaqs(updated);
+                        }}
+                        className="text-xs font-semibold p-1.5 rounded-lg border border-[#e2e8e4] flex-1 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormFaqs(formFaqs.filter((_, i) => i !== fIdx))}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Remove FAQ"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      placeholder="Answer"
+                      value={faq.answer}
+                      onChange={(e) => {
+                        const updated = [...formFaqs];
+                        updated[fIdx].answer = e.target.value;
+                        setFormFaqs(updated);
+                      }}
+                      className="w-full text-xs p-2 rounded-lg border border-[#e2e8e4] bg-white"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f0f4f1]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="rounded-xl text-xs h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={savingAdmin}
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-9 px-4 font-bold"
+                >
+                  {savingAdmin ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                  Save Documentation
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN CREATE NEW GUIDE MODAL */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[#e2e8e4] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-[#f0f4f1]">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-[#eef7f2] text-[#0a4b32] rounded-xl">
+                  <Plus className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-[#0f1f17]">
+                    Create New Page Documentation Guide
+                  </h3>
+                  <p className="text-xs text-[#5a6b62]">
+                    Register a new guide entry that will be available in the topic switcher.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {adminError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{adminError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Page Key (Unique Identifier) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formPageKey}
+                    onChange={(e) => setFormPageKey(e.target.value)}
+                    placeholder="e.g. teacher-routine"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32] font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Guide Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formTitle}
+                    onChange={(e) => setFormTitle(e.target.value)}
+                    placeholder="e.g. Class Routine Management"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Target Role (RBAC Isolation) *
+                  </label>
+                  <select
+                    value={formTargetRole}
+                    onChange={(e) => setFormTargetRole(e.target.value as GuideTargetRole)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    <option value="TEACHER">TEACHER (Teachers & Admin only)</option>
+                    <option value="STUDENT">STUDENT (Students & Admin only)</option>
+                    <option value="ADMIN">ADMIN (Admin console only)</option>
+                    <option value="ALL">ALL (Universal / Public)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                    Badge Text
+                  </label>
+                  <input
+                    type="text"
+                    value={formBadge}
+                    onChange={(e) => setFormBadge(e.target.value)}
+                    placeholder="e.g. Schedule Module"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#0f1f17] block mb-1">
+                  Summary Description
+                </label>
+                <Textarea
+                  rows={2}
+                  value={formSummary}
+                  onChange={(e) => setFormSummary(e.target.value)}
+                  placeholder="Comprehensive guide on how to configure..."
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4]"
+                />
+              </div>
+
+              {/* Sections Editor */}
+              <div className="space-y-3 pt-2 border-t border-[#f0f4f1]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#0f1f17] uppercase tracking-wider">
+                    Content Sections ({formSections.length})
+                  </h4>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      setFormSections([
+                        ...formSections,
+                        { title: "New Section", description: "", steps: [] },
+                      ])
+                    }
+                    className="h-7 text-[11px] rounded-lg"
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add Section
+                  </Button>
+                </div>
+
+                {formSections.map((sec, sIdx) => (
+                  <div key={sIdx} className="p-3 rounded-xl border border-[#e2e8e4] bg-[#fcfdfc] space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <input
+                        type="text"
+                        placeholder="Section Title"
+                        value={sec.title}
+                        onChange={(e) => {
+                          const updated = [...formSections];
+                          updated[sIdx].title = e.target.value;
+                          setFormSections(updated);
+                        }}
+                        className="text-xs font-bold p-1.5 rounded-lg border border-[#e2e8e4] flex-1 bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormSections(formSections.filter((_, i) => i !== sIdx))}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Remove Section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <Textarea
+                      rows={2}
+                      placeholder="Section Description"
+                      value={sec.description}
+                      onChange={(e) => {
+                        const updated = [...formSections];
+                        updated[sIdx].description = e.target.value;
+                        setFormSections(updated);
+                      }}
+                      className="w-full text-xs p-2 rounded-lg border border-[#e2e8e4] bg-white"
+                    />
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-gray-500 block mb-0.5">
+                        Steps (One per line)
+                      </label>
+                      <Textarea
+                        rows={2}
+                        placeholder="Step 1&#10;Step 2"
+                        value={(sec.steps || []).join("\n")}
+                        onChange={(e) => {
+                          const updated = [...formSections];
+                          updated[sIdx].steps = e.target.value.split("\n").filter(Boolean);
+                          setFormSections(updated);
+                        }}
+                        className="w-full text-xs p-2 rounded-lg border border-[#e2e8e4] bg-white font-mono"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#f0f4f1]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="rounded-xl text-xs h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={savingAdmin}
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-9 px-4 font-bold"
+                >
+                  {savingAdmin ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                  Create Documentation
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
