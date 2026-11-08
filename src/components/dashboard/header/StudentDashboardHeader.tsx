@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import NotificationBellPopover from "./NotificationBellPopover";
 
 interface StudentDashboardHeaderProps {
   user: AuthUser;
@@ -137,16 +138,8 @@ export default function StudentDashboardHeader({
 
       {/* Right: Academic Notifications & Student Profile */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0" ref={dropdownRef}>
-        {/* Academic Notification Bell */}
-        <button
-          type="button"
-          className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors relative cursor-pointer"
-          aria-label="Student Notifications"
-          title="Student Notices"
-        >
-          <Bell className="w-4 h-4 text-[#5a6b62]" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-600 ring-2 ring-white" />
-        </button>
+        {/* Academic Notification Bell Popover */}
+        <NotificationBellPopover />
 
         {/* Student Mini Avatar Menu Trigger */}
         <div className="relative">
