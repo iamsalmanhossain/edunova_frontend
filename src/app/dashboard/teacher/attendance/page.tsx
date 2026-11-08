@@ -18,7 +18,9 @@ import TakeAttendanceCard from "@/components/dashboard/teacher/attendance/TakeAt
 import AttendanceHistoryList from "@/components/dashboard/teacher/attendance/AttendanceHistoryList";
 import AttendanceStatsGrid from "@/components/dashboard/teacher/attendance/AttendanceStatsGrid";
 import PreEnrollStudentModal from "@/components/dashboard/teacher/attendance/PreEnrollStudentModal";
+import AttendanceRegisterMatrix from "@/components/dashboard/teacher/attendance/AttendanceRegisterMatrix";
 import AttendancePageSkeleton from "@/components/dashboard/skeletons/AttendancePageSkeleton";
+import { FileSpreadsheet } from "lucide-react";
 
 export default function TeacherAttendancePage() {
   const storeUser = useAuthStore((state) => state.user);
@@ -27,7 +29,7 @@ export default function TeacherAttendancePage() {
   const [overviewData, setOverviewData] = useState<TeacherDashboardOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"take" | "history" | "stats">("take");
+  const [activeTab, setActiveTab] = useState<"take" | "history" | "stats" | "register">("take");
   const [isPreEnrollOpen, setIsPreEnrollOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -147,6 +149,19 @@ export default function TeacherAttendancePage() {
                 <BarChart3 className="w-4 h-4" />
                 Analytics &amp; Stats
               </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("register")}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                  activeTab === "register"
+                    ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/50 rounded-t-xl"
+                    : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
+                }`}
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+                Attendance Register (PDF/Excel)
+              </button>
             </div>
 
             {/* Loading / Error States */}
@@ -173,6 +188,12 @@ export default function TeacherAttendancePage() {
 
                 {activeTab === "stats" && (
                   <AttendanceStatsGrid refreshTrigger={refreshTrigger} />
+                )}
+
+                {activeTab === "register" && (
+                  <AttendanceRegisterMatrix
+                    currentShift={overviewData?.scope?.shift || "FIRST_SHIFT"}
+                  />
                 )}
               </div>
             )}
