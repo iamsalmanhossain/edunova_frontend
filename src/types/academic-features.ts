@@ -111,6 +111,8 @@ export interface ExamReminderItem {
   status?: "UPCOMING" | "PAST" | "TODAY";
 }
 
+export type GuideTargetRole = "TEACHER" | "STUDENT" | "ADMIN" | "ALL";
+
 export interface PageGuideSection {
   id?: string;
   title: string;
@@ -125,21 +127,51 @@ export interface PageGuideFaq {
   answer: string;
 }
 
+export interface PageGuideSupportContact {
+  email?: string;
+  phone?: string;
+  office?: string;
+}
+
 export interface PageGuideData {
+  id?: string;
   pageKey: string;
   title: string;
-  targetRole?: "TEACHER" | "STUDENT" | "ADMIN" | "ALL";
+  targetRole?: GuideTargetRole;
   badge?: string;
   summary?: string;
   subtitle?: string;
   sections: PageGuideSection[];
   quickFaq?: PageGuideFaq[];
   faqs?: PageGuideFaq[];
-  supportContact?: {
-    email?: string;
-    phone?: string;
-    office?: string;
-  };
+  supportContact?: PageGuideSupportContact;
+  customizedByAdmin?: boolean;
+  updatedAt?: string;
+}
+
+export interface CreatePageGuidePayload {
+  pageKey: string;
+  title: string;
+  targetRole: GuideTargetRole;
+  badge: string;
+  summary: string;
+  subtitle?: string;
+  sections: PageGuideSection[];
+  quickFaq?: PageGuideFaq[];
+  faqs?: PageGuideFaq[];
+  supportContact?: PageGuideSupportContact;
+}
+
+export interface UpdatePageGuidePayload {
+  title?: string;
+  targetRole?: GuideTargetRole;
+  badge?: string;
+  summary?: string;
+  subtitle?: string;
+  sections?: PageGuideSection[];
+  quickFaq?: PageGuideFaq[];
+  faqs?: PageGuideFaq[];
+  supportContact?: PageGuideSupportContact;
 }
 
 export interface AttendanceRegisterSession {
