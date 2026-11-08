@@ -94,9 +94,6 @@ export default function DashboardLayout({
     { label: "Class Diary & Notes", href: "/dashboard/student/diary", icon: BookOpen },
     { label: "Attendance Record", href: "/dashboard/student/attendance", icon: Clock },
     { label: "Examinations & Marks", href: "/dashboard/student/results", icon: FileText },
-    { label: "My Class Routine", href: "#routine", icon: Calendar },
-    { label: "Enrolled Courses", href: "#courses", icon: BookOpen },
-    { label: "Campus Notices", href: "#notices", icon: Bell },
   ];
 
   const teacherNav: NavItem[] = [
@@ -104,15 +101,14 @@ export default function DashboardLayout({
     { label: "Class Diary & Notes", href: "/dashboard/teacher/diary", icon: BookOpen },
     { label: "Daily Attendance", href: "/dashboard/teacher/attendance", icon: Clock },
     { label: "Student Roll Sheet", href: "/dashboard/teacher/students", icon: Users },
-    { label: "Teaching Schedule", href: "#schedule", icon: Calendar },
     { label: "Marks & Results", href: "/dashboard/teacher/results", icon: ClipboardList },
-    { label: "Academic Notices", href: "#notices", icon: Bell },
   ];
 
   const adminNav: NavItem[] = [
     { label: "Admin Console", href: "/dashboard/admin", icon: LayoutDashboard },
+    { label: "Institutes", href: "/dashboard/admin/institutes", icon: Building2 },
     { label: "Teacher Management", href: "/dashboard/admin/teachers", icon: CheckCircle2 },
-    { label: "Student Registry", href: "/dashboard/admin/students", icon: Users },
+    { label: "Student Management", href: "/dashboard/admin/students", icon: Users },
     { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
     { label: "System Audit Logs", href: "/dashboard/admin/audit-logs", icon: ShieldCheck },
   ];
