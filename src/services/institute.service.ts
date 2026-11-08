@@ -1,5 +1,10 @@
 import { apiClient } from "./api-client";
-import { Institute } from "@/types/institute";
+import {
+  Institute,
+  CreateInstitutePayload,
+  UpdateInstitutePayload,
+  QueryInstitutesParams,
+} from "@/types/institute";
 
 // Verified institutional fallback data directly from verified backend seed
 export const VERIFIED_INSTITUTES: Institute[] = [
@@ -33,10 +38,18 @@ export const instituteService = {
   /**
    * Fetch all institutes from backend GET /institutes (Public)
    */
-  async getInstitutes(): Promise<Institute[]> {
+  async getInstitutes(params?: QueryInstitutesParams): Promise<Institute[]> {
     try {
+      const query = new URLSearchParams();
+      query.set("limit", (params?.limit || 100).toString());
+      if (params?.page) query.set("page", params.page.toString());
+      if (params?.search) query.set("search", params.search);
+      if (params?.division) query.set("division", params.division);
+      if (params?.district) query.set("district", params.district);
+      if (params?.isActive !== undefined) query.set("isActive", params.isActive.toString());
+
       const response = await apiClient.get<unknown>(
-        "/institutes?limit=100&isActive=true",
+        `/institutes?${query.toString()}`,
         { skipAuth: true }
       );
 
@@ -54,6 +67,53 @@ export const instituteService = {
     } catch {
       // Backend offline or unreachable, smoothly use verified seed
       return VERIFIED_INSTITUTES;
+    }
+  },
+
+  /**
+   * Fetch institutes with pagination & meta for Admin Table
+   */
+  async getInstitutesWithMeta(params?: QueryInstitutesParams): Promise<{
+    items: Institute[];
+    meta: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    try {
+      const query = new URLSearchParams();
+      query.set("page", (params?.page || 1).toString());
+      query.set("limit", (params?.limit || 20).toString());
+      if (params?.search) query.set("search", params.search);
+      if (params?.division) query.set("division", params.division);
+      if (params?.district) query.set("district", params.district);
+      if (params?.isActive !== undefined) query.set("isActive", params.isActive.toString());
+
+      const response = await apiClient.get<any>(`/institutes?${query.toString()}`);
+      const raw = response.data ?? response;
+
+      let items: Institute[] = [];
+      if (Array.isArray(raw?.data)) {
+        items = raw.data;
+      } else if (Array.isArray(raw)) {
+        items = raw;
+      }
+
+      const meta = raw?.meta ?? {
+        page: params?.page || 1,
+        limit: params?.limit || 20,
+        total: items.length,
+        totalPages: Math.ceil(items.length / (params?.limit || 20)) || 1,
+      };
+
+      return { items, meta };
+    } catch {
+      return {
+        items: VERIFIED_INSTITUTES,
+        meta: {
+          page: 1,
+          limit: 20,
+          total: VERIFIED_INSTITUTES.length,
+          totalPages: 1,
+        },
+      };
     }
   },
 
@@ -76,6 +136,44 @@ export const instituteService = {
       const found = VERIFIED_INSTITUTES.find((i) => i.id === id);
       return found || VERIFIED_INSTITUTES[0];
     }
+  },
+
+  /**
+   * Create new institute (Admin only)
+   * POST /institutes
+   */
+  async createInstitute(payload: CreateInstitutePayload): Promise<Institute> {
+    const response = await apiClient.post<any>("/institutes", payload);
+    const raw = response.data ?? response;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * Update institute (Admin only)
+   * PATCH /institutes/:id
+   */
+  async updateInstitute(id: string, payload: UpdateInstitutePayload): Promise<Institute> {
+    const response = await apiClient.patch<any>(`/institutes/${id}`, payload);
+    const raw = response.data ?? response;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * Delete institute (Admin only)
+   * DELETE /institutes/:id
+   */
+  async deleteInstitute(id: string): Promise<unknown> {
+    const response = await apiClient.delete(`/institutes/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Restore soft-deleted institute (Admin only)
+   * POST /institutes/:id/restore
+   */
+  async restoreInstitute(id: string): Promise<unknown> {
+    const response = await apiClient.post(`/institutes/${id}/restore`);
+    return response.data;
   },
 };
 
