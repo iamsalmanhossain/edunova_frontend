@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { downloadSecureFile } from "@/utils/fileDownload";
+import { appToast } from "@/store/useToastStore";
 import { Badge } from "@/components/ui/badge";
 import { studentService } from "@/services/student.service";
 import { StudentExamDetailData } from "@/types/student";
@@ -71,8 +72,10 @@ export default function StudentExamDetailModal({
         `/dashboard/student/results/${examId}/pdf?download=true`,
         `${cleanSub}_${cleanExam}_Transcript.pdf`
       );
+      appToast.success("Official result PDF downloaded successfully!", "Marksheet Downloaded");
     } catch (err: unknown) {
-      alert("Failed to download PDF: " + (err instanceof Error ? err.message : "Unknown error"));
+      const msg = err instanceof Error ? err.message : "Error downloading PDF.";
+      appToast.error(msg, "Download Failed");
     } finally {
       setDownloading(false);
     }
