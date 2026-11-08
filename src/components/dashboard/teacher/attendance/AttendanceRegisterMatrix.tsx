@@ -7,6 +7,7 @@ import { AttendanceRegisterData } from "@/types/academic-features";
 import { TeacherSubject } from "@/types/teacher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { appToast } from "@/store/useToastStore";
 import {
   FileSpreadsheet,
   FileText,
@@ -133,8 +134,10 @@ export default function AttendanceRegisterMatrix({
         shift: selectedShift,
         filename,
       });
-    } catch (err) {
-      alert("Failed to download Attendance Register PDF. Please try again.");
+      appToast.success("Attendance register PDF downloaded successfully!", "PDF Exported");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to download Attendance Register PDF.";
+      appToast.error(msg, "Export Failed");
     } finally {
       setDownloadingPdf(false);
     }
@@ -156,8 +159,10 @@ export default function AttendanceRegisterMatrix({
         shift: selectedShift,
         filename,
       });
-    } catch (err) {
-      alert("Failed to download Attendance Register Excel spreadsheet. Please try again.");
+      appToast.success("Attendance register Excel downloaded successfully!", "Excel Exported");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to download Attendance Register Excel.";
+      appToast.error(msg, "Export Failed");
     } finally {
       setDownloadingExcel(false);
     }
