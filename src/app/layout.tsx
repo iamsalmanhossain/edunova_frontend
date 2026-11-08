@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import GlobalToastContainer from "@/components/ui/GlobalToast";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -123,6 +124,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <GlobalToastContainer />
       </body>
     </html>
   );
