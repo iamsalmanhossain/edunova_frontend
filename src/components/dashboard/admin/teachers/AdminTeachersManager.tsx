@@ -11,6 +11,7 @@ import {
   PendingTeacherQueueItem,
 } from "@/types/admin";
 import { adminService } from "@/services/admin.service";
+import { appToast } from "@/store/useToastStore";
 import AdminTeachersSkeleton from "@/components/dashboard/skeletons/AdminTeachersSkeleton";
 import TeacherDetailsModal from "./TeacherDetailsModal";
 import UserStatusModal from "./UserStatusModal";
@@ -141,8 +142,9 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
       await adminService.approveTeacher(teacherId);
       await loadPending();
       await loadTeachers(meta.page);
+      appToast.success(`Teacher "${name}" approved successfully!`, "Teacher Approved");
     } catch (err: unknown) {
-      alert("Failed to approve teacher: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to approve teacher: " + (err instanceof Error ? err.message : "Error"), "Approval Failed");
     } finally {
       setProcessingId(null);
     }
@@ -150,7 +152,7 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
 
   const handleRejectSubmit = async () => {
     if (!rejectingTeacherId || !rejectionReason.trim()) {
-      alert("Please enter a reason for rejection.");
+      appToast.warning("Please enter a reason for rejection.", "Validation Error");
       return;
     }
     try {
@@ -160,8 +162,9 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
       setRejectionReason("");
       await loadPending();
       await loadTeachers(meta.page);
+      appToast.info("Teacher application rejected.", "Application Rejected");
     } catch (err: unknown) {
-      alert("Failed to reject teacher: " + (err instanceof Error ? err.message : "Error"));
+      appToast.error("Failed to reject teacher: " + (err instanceof Error ? err.message : "Error"), "Rejection Failed");
     } finally {
       setProcessingId(null);
     }
