@@ -364,7 +364,7 @@ export default function CreateResultModal({
                   <option value="">-- Select Subject --</option>
                   {availableSubjects.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.code ? `${s.code} - ${s.name} (Sem ${s.semester})` : s.name}
+                      {s.code ? `${s.code} - ${s.name}` : s.name}
                     </option>
                   ))}
                 </select>
