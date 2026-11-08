@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { academicFeaturesService } from "@/services/academic-features.service";
+import { appToast } from "@/store/useToastStore";
 import { ClassDiaryEntry } from "@/types/academic-features";
 import { TeacherSubject } from "@/types/teacher";
 import { Button } from "@/components/ui/button";
@@ -62,8 +63,10 @@ export default function TeacherDiaryList({
       setDeleteLoadingId(id);
       await academicFeaturesService.deleteClassDiary(id);
       setEntries((prev) => prev.filter((e) => e.id !== id));
-    } catch (err) {
-      alert("Failed to delete diary entry. Please try again.");
+      appToast.success("Class diary entry removed successfully.", "Diary Deleted");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to delete diary entry. Please try again.";
+      appToast.error(msg, "Delete Failed");
     } finally {
       setDeleteLoadingId(null);
     }
