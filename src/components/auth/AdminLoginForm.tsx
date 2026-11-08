@@ -47,8 +47,8 @@ export default function AdminLoginForm() {
 
     try {
       const res = await authService.adminLogin({
-        email: data.email.trim(),
-        password: data.password,
+        email: data.email.trim().toLowerCase(),
+        password: data.password.trim(),
       });
 
       if (res.success || res.data?.accessToken) {
@@ -121,6 +121,7 @@ export default function AdminLoginForm() {
               autoComplete="username"
               {...register("email", {
                 required: "Administrator email is required",
+                setValueAs: (v) => (typeof v === "string" ? v.trim().toLowerCase() : v),
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Please enter a valid email address",
@@ -162,6 +163,7 @@ export default function AdminLoginForm() {
               autoComplete="current-password"
               {...register("password", {
                 required: "Master access key is required",
+                setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
                 minLength: {
                   value: 6,
                   message: "Access key must be at least 6 characters",
