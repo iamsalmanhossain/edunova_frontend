@@ -12,6 +12,7 @@ import {
 } from "@/types/admin";
 import { adminService } from "@/services/admin.service";
 import { appToast } from "@/store/useToastStore";
+import { appConfirm } from "@/store/useConfirmStore";
 import AdminTeachersSkeleton from "@/components/dashboard/skeletons/AdminTeachersSkeleton";
 import TeacherDetailsModal from "./TeacherDetailsModal";
 import UserStatusModal from "./UserStatusModal";
@@ -136,7 +137,13 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
 
   // Actions
   const handleApprove = async (teacherId: string, name: string) => {
-    if (!confirm(`Confirm registration approval for ${name}?`)) return;
+    const confirmed = await appConfirm({
+      title: "Approve Faculty Registration",
+      message: `Confirm registration approval for faculty instructor "${name}"? Please confirm this action.`,
+      confirmText: "Approve Instructor",
+      variant: "default",
+    });
+    if (!confirmed) return;
     try {
       setProcessingId(teacherId);
       await adminService.approveTeacher(teacherId);
