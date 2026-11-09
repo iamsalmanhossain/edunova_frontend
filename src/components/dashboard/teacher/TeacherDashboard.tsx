@@ -18,6 +18,7 @@ import TeacherGradebookOverview from "./TeacherGradebookOverview";
 import TeacherDashboardSkeleton from "../skeletons/TeacherDashboardSkeleton";
 import UpcomingExamsWidget from "../shared/UpcomingExamsWidget";
 import { teacherService } from "@/services/teacher.service";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   TeacherDashboardOverviewData,
   TeacherAttendanceStatsData,
@@ -46,6 +47,12 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
         if (mounted) {
           if (overviewRes.status === "fulfilled") {
             setOverview(overviewRes.value);
+            const liveApprovalStatus = overviewRes.value?.profile?.approvalStatus;
+            if (liveApprovalStatus && liveApprovalStatus !== user.teacherApprovalStatus) {
+              useAuthStore.getState().updateUser({
+                // teacherApprovalStatus sync pending
+              });
+            }
           }
           if (statsRes.status === "fulfilled") {
             setStats(statsRes.value);
@@ -112,7 +119,15 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   return (
     <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12" suppressHydrationWarning>
       {/* 1. Approval Status Alert */}
-      <TeacherApprovalAlert status={user.teacherApprovalStatus || "APPROVED"} />
+      <TeacherApprovalAlert
+        status={
+          overview?.profile?.approvalStatus ||
+          user.teacherProfile?.approvalStatus ||
+          user.teacherApprovalStatus ||
+          "APPROVED"
+        }
+        instituteName={overview?.scope?.instituteName}
+      />
 
       {/* 2. Welcome Banner */}
       <TeacherWelcomeBanner
