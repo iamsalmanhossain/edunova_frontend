@@ -6,6 +6,7 @@ import { Institute, CreateInstitutePayload, UpdateInstitutePayload } from "@/typ
 import { MasterDepartment } from "@/types/admin";
 import { instituteService } from "@/services/institute.service";
 import { adminService } from "@/services/admin.service";
+import { appConfirm } from "@/store/useConfirmStore";
 import AdminInstitutesSkeleton from "@/components/dashboard/skeletons/AdminInstitutesSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -287,7 +288,13 @@ export default function AdminInstitutesManager({ user }: AdminInstitutesManagerP
   // 10. Remove Department
   const handleRemoveDept = async (deptId: string) => {
     if (!deptModalInstitute) return;
-    if (!confirm("Are you sure you want to remove this department offering from this institute?")) return;
+    const confirmed = await appConfirm({
+      title: "Remove Department Offering",
+      message: "Are you sure you want to remove this department offering from this institute? Associated courses and student access may be affected.",
+      confirmText: "Remove Department",
+      variant: "destructive",
+    });
+    if (!confirmed) return;
     try {
       setRemovingDeptId(deptId);
       await adminService.removeDepartmentFromInstitute(deptModalInstitute.id, deptId);
