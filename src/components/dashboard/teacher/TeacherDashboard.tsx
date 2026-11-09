@@ -50,7 +50,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
             const liveApprovalStatus = overviewRes.value?.profile?.approvalStatus;
             if (liveApprovalStatus && liveApprovalStatus !== user.teacherApprovalStatus) {
               useAuthStore.getState().updateUser({
-                // teacherApprovalStatus sync pending
+                teacherApprovalStatus: liveApprovalStatus,
               });
             }
           }
