@@ -5,6 +5,7 @@ import { AuthUser } from "@/types/auth";
 import { MasterDepartment, MasterSubject } from "@/types/admin";
 import { adminService } from "@/services/admin.service";
 import { appToast } from "@/store/useToastStore";
+import { appConfirm } from "@/store/useConfirmStore";
 import AdminDepartmentsSkeleton from "@/components/dashboard/skeletons/AdminDepartmentsSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -143,7 +144,13 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
   };
 
   const handleDeleteSubject = async (subjId: string, name: string) => {
-    if (!confirm(`Delete subject "${name}"?`)) return;
+    const confirmed = await appConfirm({
+      title: "Delete Subject Course",
+      message: `Are you sure you want to permanently delete subject "${name}"? This action cannot be undone.`,
+      confirmText: "Delete Subject",
+      variant: "destructive",
+    });
+    if (!confirmed) return;
     try {
       await adminService.deleteSubject(subjId);
       await loadSubjects(selectedDeptId, selectedSemester);
