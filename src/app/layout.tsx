@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import GlobalToastContainer from "@/components/ui/GlobalToast";
+import GlobalConfirmDialog from "@/components/ui/GlobalConfirmDialog";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -125,6 +126,7 @@ export default function RootLayout({
       >
         {children}
         <GlobalToastContainer />
+        <GlobalConfirmDialog />
       </body>
     </html>
   );
