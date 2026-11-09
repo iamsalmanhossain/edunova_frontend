@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { academicFeaturesService } from "@/services/academic-features.service";
 import { appToast } from "@/store/useToastStore";
+import { appConfirm } from "@/store/useConfirmStore";
 import { ClassDiaryEntry } from "@/types/academic-features";
 import { TeacherSubject } from "@/types/teacher";
 import { Button } from "@/components/ui/button";
@@ -58,7 +59,13 @@ export default function TeacherDiaryList({
   }, [selectedSubject, selectedSemester, currentShift]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to remove this class diary entry?")) return;
+    const confirmed = await appConfirm({
+      title: "Remove Class Diary Entry",
+      message: "Are you sure you want to remove this class diary entry? Attached lesson notes and lecture topics will be removed.",
+      confirmText: "Delete Entry",
+      variant: "destructive",
+    });
+    if (!confirmed) return;
     try {
       setDeleteLoadingId(id);
       await academicFeaturesService.deleteClassDiary(id);
