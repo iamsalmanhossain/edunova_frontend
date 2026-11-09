@@ -33,6 +33,7 @@ import PasteJsonModal from "./PasteJsonModal";
 import ResultGuideModal from "./ResultGuideModal";
 import MasterSubjectOverviewModal from "./MasterSubjectOverviewModal";
 import { downloadClassPdfFile, downloadClassExcelFile } from "@/utils/fileDownload";
+import { appConfirm } from "@/store/useConfirmStore";
 
 interface ResultsListProps {
   currentShift: "FIRST_SHIFT" | "SECOND_SHIFT";
@@ -161,9 +162,13 @@ export default function ResultsList({ currentShift }: ResultsListProps) {
 
   // Handle Delete
   const handleDeleteResult = async (id: string, examName: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${examName}" and all associated student marks?`)) {
-      return;
-    }
+    const confirmed = await appConfirm({
+      title: "Delete Examination Results",
+      message: `Are you sure you want to permanently delete examination "${examName}" and all associated student marks? This cannot be undone.`,
+      confirmText: "Delete Exam",
+      variant: "destructive",
+    });
+    if (!confirmed) return;
 
     try {
       setActionLoadingId(id);
