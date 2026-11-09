@@ -6,6 +6,7 @@ import { AuthUser } from "@/types/auth";
 import { AdminOverviewData, PendingTeacherRegistration } from "@/types/admin";
 import { adminService } from "@/services/admin.service";
 import { appToast } from "@/store/useToastStore";
+import { appConfirm } from "@/store/useConfirmStore";
 import AdminWelcomeBanner from "./AdminWelcomeBanner";
 import AdminMetricsGrid from "./AdminMetricsGrid";
 import AdminDashboardSkeleton from "../skeletons/AdminDashboardSkeleton";
@@ -61,7 +62,13 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
   }, [loadOverview]);
 
   const handleApprove = async (teacher: PendingTeacherRegistration) => {
-    if (!confirm(`Are you sure you want to approve registration for ${teacher.name}?`)) return;
+    const confirmed = await appConfirm({
+      title: "Approve Faculty Registration",
+      message: `Are you sure you want to approve registration for ${teacher.name}? Please confirm to proceed.`,
+      confirmText: "Approve Faculty",
+      variant: "default",
+    });
+    if (!confirmed) return;
     try {
       setProcessingId(teacher.teacherId);
       await adminService.approveTeacher(teacher.teacherId);
