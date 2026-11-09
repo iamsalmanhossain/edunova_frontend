@@ -96,7 +96,7 @@ export default function GlobalConfirmDialog() {
         }
       }}
     >
-      <div className="bg-white rounded-3xl border border-[#dce3df] shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200 space-y-4">
+      <div className="bg-white rounded-3xl border border-[#dce3df] shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200 space-y-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3.5">
             {getIcon()}
