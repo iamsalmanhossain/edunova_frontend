@@ -52,3 +52,30 @@ export const useConfirmStore = create<ConfirmStoreState>((set) => ({
  *   });
  *   if (!confirmed) return;
  */
+export const appConfirm = (options: ConfirmOptions): Promise<boolean> => {
+  return new Promise((resolve) => {
+    useConfirmStore.getState().openConfirm({
+      ...options,
+      onConfirm: async () => {
+        try {
+          useConfirmStore.getState().setLoading(true);
+          if (options.onConfirm) {
+            await options.onConfirm();
+          }
+          useConfirmStore.getState().closeConfirm();
+          resolve(true);
+        } catch (err) {
+          useConfirmStore.getState().setLoading(false);
+          throw err;
+        }
+      },
+      onCancel: () => {
+        if (options.onCancel) {
+          options.onCancel();
+        }
+        useConfirmStore.getState().closeConfirm();
+        resolve(false);
+      },
+    });
+  });
+};
