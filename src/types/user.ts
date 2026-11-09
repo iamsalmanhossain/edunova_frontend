@@ -37,6 +37,7 @@ export interface TeacherProfileData {
   dateOfBirth?: string | null;
   dateOfJoining?: string | null;
   bio?: string | null;
+  approvalStatus?: string | null;
   institute?: InstituteRef | null;
   department?: DepartmentRef | null;
 }
