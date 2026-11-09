@@ -411,7 +411,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
               "Student registration submitted successfully! Redirecting to email verification..."
           );
           setTimeout(() => {
-            router.push("/verify-email");
+            router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
           }, 1800);
         }
       } else {
