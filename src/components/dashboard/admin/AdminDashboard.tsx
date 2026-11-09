@@ -64,7 +64,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
   const handleApprove = async (teacher: PendingTeacherRegistration) => {
     const confirmed = await appConfirm({
       title: "Approve Faculty Registration",
-      message: `Are you sure you want to approve registration for ${teacher.name}? Please confirm to proceed.`,
+      message: `Are you sure you want to approve registration for ${teacher.name}? This will activate faculty credentials and grant class attendance and mark submission privileges.`,
       confirmText: "Approve Faculty",
       variant: "default",
     });
