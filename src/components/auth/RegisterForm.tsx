@@ -411,7 +411,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
               "Student registration submitted successfully! Redirecting to email verification..."
           );
           setTimeout(() => {
-            router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+            router.push("/verify-email");
           }, 1800);
         }
       } else {
@@ -435,9 +435,11 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
           }
           setSuccess(
             res.message ||
-              "Teacher registration submitted successfully! Pending administrator approval."
+              "Teacher registration submitted successfully! Redirecting to email verification..."
           );
-          setTimeout(() => router.push("/login"), 2500);
+          setTimeout(() => {
+            router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+          }, 1800);
         }
       }
     } catch (err: unknown) {
