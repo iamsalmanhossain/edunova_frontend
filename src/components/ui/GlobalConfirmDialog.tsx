@@ -89,14 +89,14 @@ export default function GlobalConfirmDialog() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-none animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isLoading) {
           handleCancel();
         }
       }}
     >
-      <div className="bg-white rounded-3xl border border-[#dce3df] shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200 space-y-5">
+      <div className="bg-white rounded-3xl border border-[#dce3df] shadow-2xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3.5">
             {getIcon()}
