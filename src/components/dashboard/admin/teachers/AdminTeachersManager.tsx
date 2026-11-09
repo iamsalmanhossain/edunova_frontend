@@ -139,7 +139,7 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
   const handleApprove = async (teacherId: string, name: string) => {
     const confirmed = await appConfirm({
       title: "Approve Faculty Registration",
-      message: `Confirm registration approval for faculty instructor "${name}"? Please confirm this action.`,
+      message: `Confirm registration approval for faculty instructor "${name}"? This will activate their credentials and grant full department privileges.`,
       confirmText: "Approve Instructor",
       variant: "default",
     });
