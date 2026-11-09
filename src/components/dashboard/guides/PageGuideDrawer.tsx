@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { academicFeaturesService } from "@/services/academic-features.service";
+import { appConfirm } from "@/store/useConfirmStore";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
@@ -261,9 +262,13 @@ export default function PageGuideDrawer({
 
   // Handle Reset to Default (Admin Only)
   const handleResetToDefault = async () => {
-    if (!confirm(`Are you sure you want to reset "${activeKey}" to default system documentation? Custom edits will be deleted.`)) {
-      return;
-    }
+    const confirmed = await appConfirm({
+      title: "Reset Documentation to Default",
+      message: `Are you sure you want to reset "${activeKey}" to default system documentation? Any custom edits or added sections will be permanently reverted.`,
+      confirmText: "Reset to Default",
+      variant: "warning",
+    });
+    if (!confirmed) return;
 
     try {
       setIsResetting(true);
