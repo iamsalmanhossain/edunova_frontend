@@ -16,7 +16,7 @@ export default function TeacherApprovalAlert({
   if (status !== "PENDING") return null;
 
   return (
-    <Alert className="bg-amber-50 border-amber-300 text-amber-900 shadow-sm">
+    <Alert className="bg-amber-50 border-amber-300 text-amber-900 shadow-xs">
       <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
       <div className="ml-2">
         <AlertTitle className="text-xs font-bold uppercase tracking-wider text-amber-900">
