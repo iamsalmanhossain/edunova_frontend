@@ -79,3 +79,4 @@ export const appConfirm = (options: ConfirmOptions): Promise<boolean> => {
     });
   });
 };
+
