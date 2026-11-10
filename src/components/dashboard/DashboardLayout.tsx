@@ -84,8 +84,7 @@ export default function DashboardLayout({
   }, [pathname, role]);
 
   const handleLogout = async () => {
-    await authService.logout();
-    router.push("/login");
+    await authService.logout("/login");
   };
 
   // Role specific navigation configs
