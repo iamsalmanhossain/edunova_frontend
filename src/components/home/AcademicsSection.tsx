@@ -28,10 +28,10 @@ const ACADEMIC_PILLARS: AcademicFeature[] = [
     icon: Layers,
     title: "Semester-Based Curriculum",
     description:
-      "A structured 8-semester sequence established under BTEB regulations, progressing from foundational mathematics and sciences to advanced branch engineering.",
+      "A structured 7-semester sequence established under BTEB regulations, progressing from foundational mathematics and sciences to advanced branch engineering.",
     linkText: "View Academic System",
     href: "/academics",
-    badge: "8 Semesters",
+    badge: "7 Semesters",
   },
   {
     icon: Clock,
