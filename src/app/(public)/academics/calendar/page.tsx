@@ -23,7 +23,7 @@ const TERMS = [
     ],
   },
   {
-    semester: "Even Semesters (2nd, 4th, 6th, 8th)",
+    semester: "Even Semesters (2nd, 4th, 6th)",
     duration: "January — June",
     events: [
       { date: "January 05", title: "Semester Registration & Theory Start" },
