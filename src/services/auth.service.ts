@@ -171,8 +171,8 @@ export const authService = {
   /**
    * Logout user and purge state
    */
-  async logout(): Promise<void> {
-    await useAuthStore.getState().logout();
+  async logout(redirectTo: string = "/login"): Promise<void> {
+    await useAuthStore.getState().logout(redirectTo);
   },
 
   /**
