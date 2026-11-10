@@ -80,7 +80,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
       {
         name: "Class Routine",
         href: "/academics/routine",
-        description: "Shift-wise schedules for 1st through 8th semesters",
+        description: "Shift-wise schedules for 1st through 7th semesters",
       },
       {
         name: "Academic Calendar",
