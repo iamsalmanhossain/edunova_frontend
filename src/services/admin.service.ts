@@ -371,4 +371,24 @@ export const adminService = {
     const res = await apiClient.post<any>("/dashboard/admin/result-guide", payload);
     return res.data ?? res;
   },
+
+  /**
+   * 16. Soft Delete Teacher (Admin Only)
+   * DELETE /dashboard/admin/teachers/:id
+   */
+  async deleteTeacher(id: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.delete<any>(`/dashboard/admin/teachers/${id}`);
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 17. Soft Delete Student (Admin Only)
+   * DELETE /dashboard/admin/students/:id
+   */
+  async deleteStudent(id: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.delete<any>(`/dashboard/admin/students/${id}`);
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
 };
