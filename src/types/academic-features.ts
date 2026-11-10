@@ -18,6 +18,17 @@ export interface MasterOverviewStudentRow {
   studentId: string;
   rollNo: string;
   studentName: string;
+  // Theory Attendance
+  theoryClassesHeld: number;
+  theoryPresent: number;
+  theoryAbsent: number;
+  theoryAttdPct: number;
+  // Practical Attendance
+  practicalClassesHeld: number;
+  practicalPresent: number;
+  practicalAbsent: number;
+  practicalAttdPct: number;
+  // Combined Attendance
   totalClassesHeld: number;
   totalPresent: number;
   totalAbsent: number;
@@ -39,6 +50,8 @@ export interface SubjectMasterOverviewData {
   subjectName: string;
   subjectCode: string;
   teacherName: string;
+  theoryClassesHeld: number;
+  practicalClassesHeld: number;
   totalClassesHeld: number;
   classAvgAttendance: number;
   classAvgMarksPct: number;
