@@ -9,6 +9,7 @@ import { AuthUser } from "@/types/auth";
 
 export default function StudentDashboardPage() {
   const storeUser = useAuthStore((state) => state.user);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
 
@@ -17,6 +18,10 @@ export default function StudentDashboardPage() {
     const currentUser = storeUser || authService.getCurrentUser();
     setUser(currentUser);
   }, [storeUser]);
+
+  if (isLoggingOut) {
+    return null;
+  }
 
   if (!mounted || !user) {
     return <StudentDashboardSkeleton />;
