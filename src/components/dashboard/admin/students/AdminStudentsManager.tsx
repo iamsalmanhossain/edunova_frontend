@@ -11,6 +11,8 @@ import { adminService } from "@/services/admin.service";
 import AdminStudentsSkeleton from "@/components/dashboard/skeletons/AdminStudentsSkeleton";
 import StudentDetailsModal from "./StudentDetailsModal";
 import UserStatusModal from "../teachers/UserStatusModal";
+import { appToast } from "@/store/useToastStore";
+import { appConfirm } from "@/store/useConfirmStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 
 interface AdminStudentsManagerProps {
@@ -95,6 +98,29 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
     await loadStudents(meta.page);
   };
 
+  const handleDeleteStudent = async (student: AdminStudentItem) => {
+    const confirmed = await appConfirm({
+      title: "Soft Delete Student",
+      message: `Are you sure you want to soft delete "${student.name}" (Roll: ${student.studentProfile?.rollNo || "N/A"})? Their account will be deactivated and hidden from the roster. Academic records remain safely preserved.`,
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await adminService.deleteStudent(student.id);
+      appToast.success(`Student "${student.name}" soft deleted successfully.`);
+      await loadStudents(meta.page);
+    } catch (err: unknown) {
+      appToast.error(
+        "Failed to delete student: " + (err instanceof Error ? err.message : "Error"),
+        "Deletion Failed"
+      );
+    }
+  };
+
   const getStatusBadge = (userStatus: UserAccountStatus) => {
     switch (userStatus) {
       case "ACTIVE":
@@ -160,7 +186,7 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
                 className="h-9 px-3 text-xs font-semibold rounded-xl border border-[#e2e8e4] bg-white text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
               >
                 <option value="">All Semesters</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                   <option key={s} value={s.toString()}>Semester {s}</option>
                 ))}
               </select>
@@ -235,7 +261,14 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
                     {safeStudents.map((s) => (
                       <tr key={s.id} className="hover:bg-[#fcfdfc] transition-colors">
                         <td className="py-3.5 px-4">
-                          <span className="font-bold text-[#0f1f17] block">{s.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-[#0f1f17] block">{s.name}</span>
+                            {s.studentProfile?.institute?.code && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-black tracking-wide bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                                {s.studentProfile.institute.code}
+                              </span>
+                            )}
+                          </div>
                           <span className="text-xs text-[#5a6b62] block">{s.email}</span>
                           <span className="text-[11px] font-mono text-[#0a4b32] font-semibold block">
                             Roll: {s.studentProfile?.rollNo || "N/A"} • Reg: {s.studentProfile?.registrationNo || "N/A"}
@@ -284,6 +317,16 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
                               <ShieldAlert className="w-3.5 h-3.5 mr-1" />
                               Status
                             </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteStudent(s)}
+                              className="h-8 px-2.5 rounded-xl border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 hover:border-red-300"
+                              title="Soft Delete Student"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 mr-1" />
+                              Delete
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -298,7 +341,14 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
                   <div key={s.id} className="p-4 space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h4 className="text-sm font-bold text-[#0f1f17]">{s.name}</h4>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-sm font-bold text-[#0f1f17]">{s.name}</h4>
+                          {s.studentProfile?.institute?.code && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                              {s.studentProfile.institute.code}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs font-mono font-bold text-[#0a4b32]">
                           Roll: {s.studentProfile?.rollNo}
                         </p>
@@ -340,6 +390,15 @@ export default function AdminStudentsManager({ user }: AdminStudentsManagerProps
                         className="flex-1 min-h-[44px] rounded-xl text-xs font-semibold text-amber-800 border-amber-200 hover:bg-amber-50 cursor-pointer"
                       >
                         <ShieldAlert className="w-4 h-4 mr-1.5" /> Status
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteStudent(s)}
+                        className="min-h-[44px] px-3 rounded-xl text-xs font-semibold text-red-600 border-red-200 hover:bg-red-50 cursor-pointer"
+                        title="Soft Delete Student"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>
                     </div>
                   </div>
