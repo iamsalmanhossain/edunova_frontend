@@ -168,7 +168,7 @@ export default function PreEnrollStudentModal({
                 onChange={(e) => setSemester(Number(e.target.value))}
                 className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-[#dce3df] bg-white focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
               >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                   <option key={s} value={s}>
                     Semester {s} ({s === 1 ? "1st" : s === 2 ? "2nd" : s === 3 ? "3rd" : `${s}th`})
                   </option>
