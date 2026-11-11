@@ -42,9 +42,13 @@ export default function StudentResultsSkeleton() {
       {/* 3. Filter Bar Skeleton */}
       <Card className="border-[#e2e8e4] bg-white rounded-2xl shadow-xs overflow-hidden">
         <CardContent className="p-3 sm:p-4">
-          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 max-w-lg">
-            <Skeleton className="h-9 w-full rounded-xl" />
-            <Skeleton className="h-9 w-full rounded-xl" />
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5 sm:gap-3">
+            <Skeleton className="h-9.5 flex-1 rounded-xl" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 shrink-0 lg:w-[540px]">
+              <Skeleton className="h-9.5 rounded-xl" />
+              <Skeleton className="h-9.5 rounded-xl" />
+              <Skeleton className="h-9.5 rounded-xl" />
+            </div>
           </div>
         </CardContent>
       </Card>

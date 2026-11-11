@@ -23,9 +23,13 @@ export default function StudentResultsManager({ user }: StudentResultsManagerPro
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
+  // Enrolled student active semester
+  const enrolledSemester = user.studentProfile?.semester ?? null;
+  const [userChangedSemester, setUserChangedSemester] = useState(false);
+
+  // Filters - default to student's enrolled active semester
   const [filters, setFilters] = useState({
-    semester: "",
+    semester: enrolledSemester ? String(enrolledSemester) : "",
     examType: "ALL",
   });
 
@@ -54,7 +58,20 @@ export default function StudentResultsManager({ user }: StudentResultsManagerPro
     loadResults();
   }, [loadResults]);
 
+  // If user profile didn't have semester at mount, but API returned student's semester, auto-select it
+  useEffect(() => {
+    if (!userChangedSemester && !filters.semester && data?.student?.semester) {
+      setFilters((prev) => ({
+        ...prev,
+        semester: String(data.student.semester),
+      }));
+    }
+  }, [data?.student?.semester, userChangedSemester, filters.semester]);
+
   const handleFilterChange = (key: string, value: string) => {
+    if (key === "semester") {
+      setUserChangedSemester(true);
+    }
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -155,10 +172,11 @@ export default function StudentResultsManager({ user }: StudentResultsManagerPro
       {/* 2. Stats KPI Cards */}
       <StudentResultsStatsCard stats={data?.stats || null} />
 
-      {/* 3. Results List with Mobile Cards */}
+      {/* 3. Results List with Mobile Cards, Live Search & Subject Filter */}
       <StudentResultsList
         results={data?.results || []}
         filters={filters}
+        currentSemester={enrolledSemester ?? data?.student?.semester}
         onFilterChange={handleFilterChange}
         onViewDetails={(examId) => setSelectedExamId(examId)}
         onDownloadPdf={handleDownloadPdf}
