@@ -18,6 +18,7 @@ let activeBaseUrl: string = CONFIGURED_API_URL;
 interface RequestOptions extends RequestInit {
   skipAuth?: boolean;
   retryCount?: number;
+  timeout?: number;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -215,10 +216,19 @@ export async function fetchClient<T = unknown>(
 
   const targetUrl = makeUrl(activeBaseUrl);
 
+  // Configure timeout signal if provided
+  let signal = options.signal;
+  if (!signal && options.timeout) {
+    if (typeof AbortSignal !== "undefined" && "timeout" in AbortSignal) {
+      signal = AbortSignal.timeout(options.timeout);
+    }
+  }
+
   try {
     const response = await fetch(targetUrl, {
       ...options,
       headers,
+      signal,
     });
 
     // Handle 401 Unauthorized with silent JWT refresh
