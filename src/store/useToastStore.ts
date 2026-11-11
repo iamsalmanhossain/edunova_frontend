@@ -75,5 +75,20 @@ export const appToast = {
   error: (message: string, title?: string) => useToastStore.getState().error(message, title),
   info: (message: string, title?: string) => useToastStore.getState().info(message, title),
   warning: (message: string, title?: string) => useToastStore.getState().warning(message, title),
+  attendanceSaved: (count?: number) =>
+    useToastStore.getState().success(
+      count !== undefined ? `Attendance record for ${count} students saved successfully.` : "Attendance saved successfully.",
+      "Attendance Recorded"
+    ),
+  resultPublished: (subject?: string) =>
+    useToastStore.getState().success(
+      subject ? `Assessment results for ${subject} submitted successfully.` : "Examination results submitted successfully.",
+      "Results Saved"
+    ),
+  diaryCreated: () =>
+    useToastStore.getState().success(
+      "Classroom diary entry published and visible to students.",
+      "Diary Published"
+    ),
 };
 
