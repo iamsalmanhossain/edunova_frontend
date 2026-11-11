@@ -142,30 +142,30 @@ export default function AttendanceSessionDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-[#dce3df] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef2ef] bg-[#fafbf9]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-[#0a4b32] flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-emerald-700" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eef2ef] bg-[#fafbf9]">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-[#0a4b32] flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700" />
             </div>
-            <div>
-              <h2 className="text-base font-bold text-[#0f1f17]">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-extrabold text-[#0f1f17] truncate">
                 Attendance Session Breakdown
               </h2>
-              <p className="text-xs text-[#5a6b62]">
+              <p className="text-[11px] sm:text-xs text-[#5a6b62] truncate">
                 Date: {data ? new Date(data.session.date).toLocaleDateString() : "—"} • {data?.session.type}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {loading && (
             <div className="py-16 flex flex-col items-center justify-center gap-3 text-slate-400">
               <Loader2 className="w-8 h-8 animate-spin text-[#0a4b32]" />
@@ -282,7 +282,7 @@ export default function AttendanceSessionDetailModal({
                     >
                       <div className="flex items-center gap-3">
                         <span className="font-mono font-bold text-xs text-[#0a4b32] w-14">
-                          #{record.student?.rollNo}
+                          {String(record.student?.rollNo || "").replace(/^#+/, "")}
                         </span>
                         <div>
                           <p className="font-bold text-[#0f1f17] leading-tight">
@@ -332,7 +332,7 @@ export default function AttendanceSessionDetailModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-[#eef2ef] bg-[#fafbf9] flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3 border-t border-[#eef2ef] bg-[#fafbf9] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           <div>
             {isEditing && (
               <span className="text-[11px] text-[#5a6b62]">
@@ -341,7 +341,7 @@ export default function AttendanceSessionDetailModal({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             {isEditing && (
               <Button
                 type="button"
