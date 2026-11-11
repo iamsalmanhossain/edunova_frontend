@@ -448,7 +448,7 @@ export default function StudentEditProfileModal({
                   {...register("semester", { valueAsNumber: true })}
                   className="mt-1 w-full h-9 rounded-md border border-input bg-white px-3 py-1 text-xs shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0a4b32]"
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                  {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                     <option key={s} value={s}>
                       Semester {s} ({s === 1 ? "1st" : s === 2 ? "2nd" : s === 3 ? "3rd" : `${s}th`})
                     </option>
