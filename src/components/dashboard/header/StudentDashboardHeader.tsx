@@ -61,14 +61,13 @@ export default function StudentDashboardHeader({
   }, []);
 
   const handleLogout = async () => {
-    await authService.logout();
-    router.push("/login");
+    await authService.logout("/login");
   };
 
   return (
-    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs select-none relative">
+    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2.5 sm:gap-4 shadow-xs select-none relative">
       {/* Left: Sidebar Toggle + Student Portal Identity */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1 sm:flex-initial overflow-hidden">
         {/* Desktop Sidebar Collapse Toggle */}
         <button
           type="button"
@@ -95,11 +94,11 @@ export default function StudentDashboardHeader({
         </button>
 
         {/* Student Portal Crest */}
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 overflow-hidden">
           <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 flex items-center justify-center shrink-0">
             <GraduationCap className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1.5">
               <h1 className="text-xs sm:text-sm font-extrabold text-[#0f1f17] tracking-tight truncate">
                 Student Portal
@@ -109,7 +108,8 @@ export default function StudentDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              {instituteName} • {shiftName}
+              <span className="sm:hidden font-medium">{student?.institute?.code || "KIPI"} • {shiftName}</span>
+              <span className="hidden sm:inline">{instituteName} • {shiftName}</span>
             </p>
           </div>
         </div>

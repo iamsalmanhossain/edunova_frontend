@@ -91,7 +91,7 @@ export default function InstituteOverview() {
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#0a4b32] shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <h4 className="text-xs sm:text-sm font-semibold text-[#0f1f17]">
-                    Standardized 8-Semester Diploma Curricula
+                    Standardized 7-Semester Diploma Curricula
                   </h4>
                   <p className="text-[11px] sm:text-xs text-[#5a6b62] mt-0.5 leading-snug">
                     Rigorous theoretical foundations combined with extensive laboratory practicums and industrial attachment.
@@ -112,10 +112,10 @@ export default function InstituteOverview() {
             </div>
 
             {/* Statistics Counters with Animated Count-Up */}
-            <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 border-t border-[#e2e8e4]">
+            <div className="pt-4 grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 border-t border-[#e2e8e4]">
               <div className="min-w-0">
                 <p className="text-xl sm:text-3xl font-extrabold text-[#0a4b32] tracking-tight">
-                  <CountUp to={1250} suffix="+" duration={2.2} />
+                  <CountUp to={1891} suffix="+" duration={2.2} />
                 </p>
                 <p className="text-[11px] sm:text-xs text-[#5a6b62] font-medium mt-0.5 leading-tight">
                   Enrolled Students
@@ -127,13 +127,13 @@ export default function InstituteOverview() {
                   <CountUp to={4} duration={1.5} />
                 </p>
                 <p className="text-[11px] sm:text-xs text-[#5a6b62] font-medium mt-0.5 leading-tight">
-                  Key Departments
+                Departments
                 </p>
               </div>
 
               <div className="min-w-0">
                 <p className="text-xl sm:text-3xl font-extrabold text-[#0a4b32] tracking-tight">
-                  <CountUp to={48} suffix="+" duration={1.8} />
+                  <CountUp to={103} suffix="+" duration={1.8} />
                 </p>
                 <p className="text-[11px] sm:text-xs text-[#5a6b62] font-medium mt-0.5 leading-tight">
                   Faculty &amp; Staff
@@ -146,6 +146,14 @@ export default function InstituteOverview() {
                 </p>
                 <p className="text-[11px] sm:text-xs text-[#5a6b62] font-medium mt-0.5 leading-tight">
                   Semesters
+                </p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-xl sm:text-3xl font-extrabold text-[#0a4b32] tracking-tight">
+                  <CountUp to={16} duration={1.5} />
+                </p>
+                <p className="text-[11px] sm:text-xs text-[#5a6b62] font-medium mt-0.5 leading-tight">
+                  Labs
                 </p>
               </div>
             </div>

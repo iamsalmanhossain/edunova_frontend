@@ -44,6 +44,7 @@ export default function TeacherDashboardHeader({
   const teacher = user.teacherProfile;
   const instituteName = teacher?.institute?.name || "Kishoreganj Polytechnic Institute";
   const deptName = teacher?.department?.name || "Computer Science & Technology";
+  const deptCode = teacher?.department?.code || "CST";
   const designation = teacher?.designation || "Faculty Instructor";
   const shiftText = teacher?.shift === "SECOND_SHIFT" ? "Shift 2 (Day)" : "Shift 1 (Morning)";
 
@@ -65,14 +66,13 @@ export default function TeacherDashboardHeader({
   };
 
   const handleLogout = async () => {
-    await authService.logout();
-    router.push("/login");
+    await authService.logout("/login");
   };
 
   return (
-    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs select-none relative">
+    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2.5 sm:gap-4 shadow-xs select-none relative">
       {/* Left: Sidebar Toggle + Faculty Identity */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1 sm:flex-initial overflow-hidden">
         {/* Desktop Sidebar Collapse Toggle */}
         <button
           type="button"
@@ -99,11 +99,11 @@ export default function TeacherDashboardHeader({
         </button>
 
         {/* Faculty Portal Crest */}
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 overflow-hidden">
           <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-800 flex items-center justify-center shrink-0">
             <Briefcase className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1.5">
               <h1 className="text-xs sm:text-sm font-extrabold text-[#0f1f17] tracking-tight truncate">
                 Faculty Portal
@@ -113,7 +113,8 @@ export default function TeacherDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              {deptName} • {designation}
+              <span className="sm:hidden font-medium">{deptCode} • {designation}</span>
+              <span className="hidden sm:inline">{deptName} • {designation}</span>
             </p>
           </div>
         </div>

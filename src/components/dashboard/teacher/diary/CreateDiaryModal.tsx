@@ -138,17 +138,17 @@ export default function CreateDiaryModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="relative w-full max-w-2xl max-h-[92vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[#dce3df]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#0a4b32] text-white">
-          <div className="flex items-center gap-2.5">
-            <BookOpen className="w-5 h-5 text-[#c48b28]" />
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold">New Class Diary &amp; Lecture Note</h2>
-                <span className="text-[10px] bg-white/20 text-white font-bold px-2 py-0.5 rounded-full">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 bg-[#0a4b32] text-white">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <BookOpen className="w-5 h-5 text-[#c48b28] shrink-0" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-sm sm:text-base font-bold truncate">New Class Diary &amp; Lecture Note</h2>
+                <span className="text-[10px] bg-white/20 text-white font-bold px-2 py-0.5 rounded-full shrink-0">
                   {shiftLabel}
                 </span>
               </div>
-              <p className="text-[11px] text-white/80 mt-0.5">
+              <p className="text-[10px] sm:text-[11px] text-white/80 mt-0.5 line-clamp-1">
                 Log today's taught chapters, upcoming topics, and upload lecture note materials
               </p>
             </div>
@@ -156,14 +156,14 @@ export default function CreateDiaryModal({
           <button
             onClick={onClose}
             type="button"
-            className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3.5 sm:space-y-4">
           {error && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -184,7 +184,7 @@ export default function CreateDiaryModal({
                 onChange={handleSemesterChange}
                 className="w-full h-10 px-3 rounded-xl border border-[#dce3df] bg-white text-xs font-semibold text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
               >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                   <option key={s} value={s}>
                     Semester {s}
                   </option>

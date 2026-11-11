@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Users,
   Search,
@@ -8,12 +8,22 @@ import {
   ShieldCheck,
   UserPlus,
   AlertCircle,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { teacherService } from "@/services/teacher.service";
 import { TeacherStudentItem } from "@/types/teacher";
 import PreEnrollStudentModal from "../attendance/PreEnrollStudentModal";
+import Pagination from "@/components/ui/pagination";
+
+const getSemesterName = (sem?: number) => {
+  if (!sem) return "Semester";
+  if (sem === 1) return "1st Semester";
+  if (sem === 2) return "2nd Semester";
+  if (sem === 3) return "3rd Semester";
+  return `${sem}th Semester`;
+};
 
 export default function TeacherStudentDirectory() {
   const [students, setStudents] = useState<TeacherStudentItem[]>([]);
@@ -24,6 +34,11 @@ export default function TeacherStudentDirectory() {
   const [semesterFilter, setSemesterFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isPreEnrollOpen, setIsPreEnrollOpen] = useState(false);
+
+  // Pagination State: 10 items per page
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 10;
+  const tableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -62,10 +77,33 @@ export default function TeacherStudentDirectory() {
     };
   }, [semesterFilter, searchQuery]);
 
+  // Reset to page 1 whenever search query or semester filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [semesterFilter, searchQuery]);
+
+  // Paginated students slice (10 per page)
+  const paginatedStudents = useMemo(() => {
+    if (students.length > pageSize) {
+      const startIndex = (currentPage - 1) * pageSize;
+      return students.slice(startIndex, startIndex + pageSize);
+    }
+    return students;
+  }, [students, currentPage, pageSize]);
+
+  const totalPages = Math.ceil((totalCount || students.length) / pageSize) || 1;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    if (tableRef.current) {
+      tableRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12" ref={tableRef}>
       {/* Top Banner & Actions */}
-      <div className="bg-white rounded-3xl border border-[#dce3df] p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#dce3df] p-4 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-xl bg-emerald-100 text-[#0a4b32]">
@@ -75,7 +113,7 @@ export default function TeacherStudentDirectory() {
               Department Student Roll Directory
             </h1>
           </div>
-          <p className="text-xs text-[#5a6b62] mt-1">
+          <p className="text-xs text-[#5a6b62] mt-1 font-medium">
             Registered students enrolled in your department and academic shift
           </p>
         </div>
@@ -84,52 +122,65 @@ export default function TeacherStudentDirectory() {
           <Button
             type="button"
             onClick={() => setIsPreEnrollOpen(true)}
-            className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm cursor-pointer"
+            className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm cursor-pointer h-10 px-4"
           >
-            <UserPlus className="w-4 h-4" />
-            Pre-Enroll Student
+            <UserPlus className="w-4 h-4 text-[#c48b28]" />
+            <span>Pre-Enroll Student</span>
           </Button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl border border-[#dce3df] p-4 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="bg-white rounded-2xl border border-[#dce3df] p-3.5 sm:p-4 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Search */}
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by roll or student name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#e2e8e4] bg-[#fafbf9] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
+            className="w-full pl-9 pr-8 py-2 text-xs font-semibold rounded-xl border border-[#e2e8e4] bg-[#fafbf9] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
-        {/* Semester Filter */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs font-bold text-[#5a6b62] shrink-0">Semester:</span>
-          <select
-            value={semesterFilter}
-            onChange={(e) => setSemesterFilter(e.target.value)}
-            className="px-3 py-2 text-xs font-semibold rounded-xl border border-[#dce3df] bg-white focus:outline-none focus:ring-2 focus:ring-[#0a4b32] w-full sm:w-auto"
-          >
-            <option value="ALL">All Semesters</option>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-              <option key={s} value={s}>
-                Semester {s}
-              </option>
-            ))}
-          </select>
+        {/* Semester Filter and Total Count */}
+        <div className="flex items-center justify-between gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+            <span className="text-xs font-bold text-[#5a6b62] shrink-0">Semester:</span>
+            <select
+              value={semesterFilter}
+              onChange={(e) => setSemesterFilter(e.target.value)}
+              className="w-full sm:w-auto px-2.5 sm:px-3 py-2 text-xs font-bold rounded-xl border border-[#dce3df] bg-white text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32] cursor-pointer"
+            >
+              <option value="ALL">All Semesters</option>
+              {[1, 2, 3, 4, 5, 6, 7].map((s) => (
+                <option key={s} value={s}>
+                  Semester {s}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <span className="text-xs font-bold px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0">
-            Total Students: {totalCount}
+          <span className="text-[11px] sm:text-xs font-black px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 whitespace-nowrap">
+            <span className="hidden sm:inline">Total Students: </span>
+            <span className="sm:hidden">Total: </span>
+            {totalCount}
           </span>
         </div>
       </div>
 
-      {/* Students Table */}
-      <div className="bg-white rounded-3xl border border-[#dce3df] shadow-xs overflow-hidden">
+      {/* Students Table & Cards Container */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#dce3df] shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-4 sm:p-5 space-y-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -169,7 +220,7 @@ export default function TeacherStudentDirectory() {
           </div>
         ) : (
           <>
-            {/* Desktop Table View */}
+            {/* Desktop Table View with Smooth Animated Page Switch */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
@@ -182,8 +233,11 @@ export default function TeacherStudentDirectory() {
                     <th className="py-3 px-4 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f0f4f1]">
-                  {students.map((student) => (
+                <tbody
+                  key={currentPage}
+                  className="divide-y divide-[#f0f4f1] animate-in fade-in-50 slide-in-from-bottom-2 duration-300"
+                >
+                  {paginatedStudents.map((student) => (
                     <tr
                       key={student.id}
                       className="hover:bg-emerald-50/30 transition-colors"
@@ -191,7 +245,7 @@ export default function TeacherStudentDirectory() {
                       {/* Roll */}
                       <td className="py-3 px-4">
                         <span className="font-mono font-extrabold text-xs text-[#0a4b32]">
-                          {student.rollNo}
+                          {String(student.rollNo || "").replace(/^#+/, "")}
                         </span>
                       </td>
 
@@ -218,7 +272,7 @@ export default function TeacherStudentDirectory() {
                       {/* Semester & Session */}
                       <td className="py-3 px-4">
                         <p className="font-bold text-[#0f1f17]">
-                          {student.semester}th Semester
+                          {getSemesterName(student.semester)}
                         </p>
                         <p className="text-[10px] text-[#5a6b62]">
                           {student.session || "2024-2025"}
@@ -259,9 +313,12 @@ export default function TeacherStudentDirectory() {
               </table>
             </div>
 
-            {/* Mobile Cards View */}
-            <div className="md:hidden divide-y divide-[#f0f4f1]">
-              {students.map((student) => (
+            {/* Mobile Cards View with Smooth Animated Page Switch */}
+            <div
+              key={`mobile-page-${currentPage}`}
+              className="md:hidden divide-y divide-[#f0f4f1] animate-in fade-in-50 slide-in-from-bottom-2 duration-300"
+            >
+              {paginatedStudents.map((student) => (
                 <div key={student.id} className="p-4 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5">
@@ -282,7 +339,9 @@ export default function TeacherStudentDirectory() {
                   <div className="grid grid-cols-2 gap-2 text-xs bg-[#fcfdfc] p-2.5 rounded-xl border border-[#f0f4f1]">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Roll Number</span>
-                      <span className="font-mono font-extrabold text-[#0a4b32]">{student.rollNo}</span>
+                      <span className="font-mono font-extrabold text-[#0a4b32]">
+                        {String(student.rollNo || "").replace(/^#+/, "")}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Registration</span>
@@ -290,7 +349,7 @@ export default function TeacherStudentDirectory() {
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Semester</span>
-                      <span className="font-bold text-[#0f1f17]">{student.semester}th Semester</span>
+                      <span className="font-bold text-[#0f1f17]">{getSemesterName(student.semester)}</span>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#5a6b62] block">Session</span>
@@ -307,6 +366,16 @@ export default function TeacherStudentDirectory() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination Component */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalCount || students.length}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              itemLabel="students"
+            />
           </>
         )}
       </div>

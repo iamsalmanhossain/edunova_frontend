@@ -236,7 +236,14 @@ export default function NotificationBellPopover() {
 
       {/* Notification Dropdown Popover */}
       {isOpen && (
-        <div className="absolute right-0 mt-2.5 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm bg-white rounded-2xl shadow-2xl border border-[#dce3df] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+        <>
+          {/* Mobile Backdrop for outside tap dismiss */}
+          <div
+            className="fixed inset-0 bg-black/25 z-40 sm:hidden animate-in fade-in duration-150"
+            onClick={() => setIsOpen(false)}
+          />
+
+          <div className="fixed left-3 right-3 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2.5 sm:w-96 max-w-md sm:max-w-sm mx-auto sm:mx-0 bg-white rounded-2xl shadow-2xl border border-[#dce3df] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
           {/* Header */}
           <div className="p-3.5 sm:p-4 bg-[#fcfdfc] border-b border-[#e2e8e4] flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -380,7 +387,8 @@ export default function NotificationBellPopover() {
               </span>
             </div>
           )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

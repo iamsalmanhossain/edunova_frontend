@@ -261,7 +261,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
                   className="h-8 px-2.5 text-xs font-semibold rounded-xl border border-[#e2e8e4] bg-white text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
                 >
                   <option value="">All Semesters</option>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                  {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                     <option key={s} value={s.toString()}>
                       Semester {s}
                     </option>
@@ -462,7 +462,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
                     onChange={(e) => setSubjSemester(Number(e.target.value))}
                     className="w-full text-xs p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
                   >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                       <option key={s} value={s}>Semester {s}</option>
                     ))}
                   </select>

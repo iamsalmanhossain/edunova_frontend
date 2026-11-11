@@ -5,7 +5,7 @@ import { X, CheckCircle2, AlertCircle, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TeacherSubject, ExamType, AttendanceEligibleStudent } from "@/types/teacher";
+import { TeacherSubject, ExamType, AttendanceEligibleStudent, TeacherResultListItem } from "@/types/teacher";
 import { teacherService } from "@/services/teacher.service";
 
 interface CreateResultModalProps {
@@ -14,6 +14,7 @@ interface CreateResultModalProps {
   subjects: TeacherSubject[];
   currentShift: "FIRST_SHIFT" | "SECOND_SHIFT";
   onResultCreated: () => void;
+  existingResults?: TeacherResultListItem[];
 }
 
 interface ResultEntryStudent {
@@ -32,6 +33,7 @@ export default function CreateResultModal({
   subjects: initialSubjects,
   currentShift,
   onResultCreated,
+  existingResults,
 }: CreateResultModalProps) {
   const [semester, setSemester] = useState<number>(() => initialSubjects[0]?.semester || 4);
   const [availableSubjects, setAvailableSubjects] = useState<TeacherSubject[]>(initialSubjects);
@@ -52,6 +54,58 @@ export default function CreateResultModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fetchedExamNames, setFetchedExamNames] = useState<string[]>([]);
+
+  // Fetch existing exams for the current semester and subject to validate duplicate names
+  useEffect(() => {
+    let mounted = true;
+    if (!isOpen) return;
+
+    async function loadExams() {
+      try {
+        const res = await teacherService.getResults({
+          semester: Number(semester),
+        });
+        if (mounted && res?.results) {
+          const names = res.results
+            .filter((r) => {
+              if (!subjectId) return true;
+              return r.subject?.id === subjectId;
+            })
+            .map((r) => (r.name || "").trim())
+            .filter(Boolean);
+          setFetchedExamNames(names);
+        }
+      } catch {
+        // Ignore fallback
+      }
+    }
+
+    loadExams();
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen, semester, subjectId]);
+
+  const existingExamNames = React.useMemo(() => {
+    const listFromProps = (existingResults || [])
+      .filter((r) => {
+        const matchesSemester = r.semester === Number(semester);
+        const matchesSubject = subjectId ? r.subject?.id === subjectId : true;
+        return matchesSemester && matchesSubject;
+      })
+      .map((r) => (r.name || "").trim())
+      .filter(Boolean);
+
+    const merged = new Set([...listFromProps, ...fetchedExamNames]);
+    return Array.from(merged);
+  }, [existingResults, fetchedExamNames, semester, subjectId]);
+
+  const isDuplicateExamName = React.useMemo(() => {
+    const trimmed = examName.trim().toLowerCase();
+    if (!trimmed) return false;
+    return existingExamNames.some((n) => n.trim().toLowerCase() === trimmed);
+  }, [examName, existingExamNames]);
 
   // Sync available subjects when semester changes or on open
   useEffect(() => {
@@ -225,6 +279,10 @@ export default function CreateResultModal({
       setError("Please provide an Exam Title.");
       return;
     }
+    if (isDuplicateExamName) {
+      setError(`এই বিষয়ের জন্য "${examName.trim()}" নামের পরীক্ষা ইতিমধ্যে তৈরি করা রয়েছে। অনুগ্রহ করে ভিন্ন নাম দিন (যেমন: CT-1, CT-2, Midterm ইত্যাদি)।`);
+      return;
+    }
     const numTotal = Number(totalMarks);
     if (!numTotal || numTotal <= 0) {
       setError("Total marks must be greater than 0.");
@@ -289,17 +347,17 @@ export default function CreateResultModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] shadow-2xl border border-[#dce3df] flex flex-col my-auto animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-3xl max-h-[92vh] shadow-2xl border border-[#dce3df] flex flex-col my-auto animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b border-[#f0f4f1] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#0a4b32]/10 text-[#0a4b32] flex items-center justify-center">
-              <Award className="w-5 h-5" />
+        <div className="p-4 sm:p-5 border-b border-[#f0f4f1] flex items-center justify-between shrink-0 bg-[#fafbf9]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-[#0a4b32] flex items-center justify-center shrink-0">
+              <Award className="w-5 h-5 text-emerald-800" />
             </div>
-            <div>
-              <h2 className="text-base font-extrabold text-[#0f1f17]">Enter Class Exam Results</h2>
-              <p className="text-xs text-[#5a6b62]">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-black text-[#0f1f17] truncate">Enter Class Exam Results</h2>
+              <p className="text-[11px] sm:text-xs text-[#5a6b62] truncate">
                 Create new exam marksheet and record marks for all enrolled students
               </p>
             </div>
@@ -307,14 +365,14 @@ export default function CreateResultModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg bg-[#f0f4f1] hover:bg-[#e4ece7] text-[#0f1f17] flex items-center justify-center transition-colors cursor-pointer shrink-0 ml-2"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto p-5 sm:p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5">
           {success && (
             <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-2 text-xs font-semibold">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -342,7 +400,7 @@ export default function CreateResultModal({
                   onChange={(e) => setSemester(Number(e.target.value))}
                   className="mt-1 w-full h-9 rounded-md border border-input bg-white px-3 py-1 text-xs shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#0a4b32]"
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                  {[1, 2, 3, 4, 5, 6, 7].map((sem) => (
                     <option key={sem} value={sem}>
                       Semester {sem}
                     </option>
@@ -373,12 +431,20 @@ export default function CreateResultModal({
               <div>
                 <Label className="text-xs font-bold text-[#0f1f17]">Exam Title *</Label>
                 <Input
-                  placeholder="e.g. Midterm Examination 2024"
+                  placeholder="e.g. CT-1, CT-2, Midterm 2026"
                   value={examName}
                   onChange={(e) => setExamName(e.target.value)}
                   required
-                  className="mt-1 text-xs"
+                  className={`mt-1 text-xs ${isDuplicateExamName ? "border-amber-400 focus-visible:ring-amber-500" : ""}`}
                 />
+                {isDuplicateExamName && (
+                  <div className="mt-1.5 p-2 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-semibold flex items-start gap-1.5 animate-in fade-in">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-600 mt-0.5" />
+                    <span>
+                      এই বিষয়ের জন্য &quot;{examName.trim()}&quot; পরীক্ষা ইতিমধ্যে তৈরি রয়েছে। অনুগ্রহ করে ভিন্ন নাম দিন (যেমন: CT-1, CT-2, Midterm ইত্যাদি)।
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -481,28 +547,112 @@ export default function CreateResultModal({
                 No enrolled students found for the selected subject and semester. Please verify student enrollment.
               </div>
             ) : (
-              <div className="border border-[#e2e8e4] rounded-xl overflow-hidden max-h-64 overflow-y-auto">
-                <table className="w-full text-xs">
-                  <thead className="bg-[#f0f7f3] text-[#0f1f17] font-bold sticky top-0 border-b border-[#e2e8e4]">
-                    <tr>
-                      <th className="py-2.5 px-3 text-left">Roll No</th>
-                      <th className="py-2.5 px-3 text-left">Student Name</th>
-                      <th className="py-2.5 px-3 text-left w-32">Obtained Marks</th>
-                      <th className="py-2.5 px-3 text-left w-20">Percentage</th>
-                      <th className="py-2.5 px-3 text-left">Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#f0f4f1]">
-                    {students.map((student) => {
-                      const entry = studentMarks[student.id] || { marks: 0, remarks: "" };
-                      const numericMark = typeof entry.marks === "number" ? entry.marks : parseFloat(String(entry.marks)) || 0;
-                      const numTotal = Number(totalMarks) || 100;
-                      const pct = numTotal > 0 ? ((numericMark / numTotal) * 100).toFixed(0) : "0";
-                      return (
-                        <tr key={student.id} className="hover:bg-[#f9fbfa]">
-                          <td className="py-2 px-3 font-bold text-[#0f1f17]">{student.rollNo}</td>
-                          <td className="py-2 px-3 text-[#5a6b62]">{student.name || student.user?.name || "Student"}</td>
-                          <td className="py-2 px-3">
+              <div>
+                {/* Desktop View Table (md+) */}
+                <div className="hidden md:block border border-[#e2e8e4] rounded-xl overflow-hidden max-h-64 overflow-y-auto">
+                  <table className="w-full text-xs">
+                    <thead className="bg-[#f0f7f3] text-[#0f1f17] font-bold sticky top-0 border-b border-[#e2e8e4]">
+                      <tr>
+                        <th className="py-2.5 px-3 text-left">Roll No</th>
+                        <th className="py-2.5 px-3 text-left">Student Name</th>
+                        <th className="py-2.5 px-3 text-left w-32">Obtained Marks</th>
+                        <th className="py-2.5 px-3 text-left w-20">Percentage</th>
+                        <th className="py-2.5 px-3 text-left">Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f0f4f1]">
+                      {students.map((student) => {
+                        const entry = studentMarks[student.id] || { marks: 0, remarks: "" };
+                        const numericMark = typeof entry.marks === "number" ? entry.marks : parseFloat(String(entry.marks)) || 0;
+                        const numTotal = Number(totalMarks) || 100;
+                        const pct = numTotal > 0 ? ((numericMark / numTotal) * 100).toFixed(0) : "0";
+                        return (
+                          <tr key={student.id} className="hover:bg-[#f9fbfa]">
+                            <td className="py-2 px-3 font-bold text-[#0f1f17]">
+                              {String(student.rollNo || "").replace(/^#+/, "")}
+                            </td>
+                            <td className="py-2 px-3 text-[#5a6b62] font-semibold">{student.name || student.user?.name || "Student"}</td>
+                            <td className="py-2 px-3">
+                              <Input
+                                type="number"
+                                step="any"
+                                min="0"
+                                max={numTotal}
+                                placeholder="0"
+                                value={entry.marks === 0 ? "0" : entry.marks}
+                                onFocus={(e) => {
+                                  if (e.target.value === "0") {
+                                    handleMarkChange(student.id, "");
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const raw = e.target.value;
+                                  if (raw === "") {
+                                    handleMarkChange(student.id, "");
+                                  } else {
+                                    const clean = raw.length > 1 && raw.startsWith("0") && !raw.startsWith("0.")
+                                      ? raw.replace(/^0+/, "")
+                                      : raw;
+                                    handleMarkChange(student.id, clean);
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  if (e.target.value === "") {
+                                    handleMarkChange(student.id, 0);
+                                  }
+                                }}
+                                className="h-8 text-xs font-semibold"
+                              />
+                            </td>
+                            <td className="py-2 px-3 font-semibold text-[#0a4b32]">{pct}%</td>
+                            <td className="py-2 px-3">
+                              <Input
+                                placeholder="Remarks (opt)"
+                                value={entry.remarks}
+                                onChange={(e) =>
+                                  handleStudentRemarksChange(student.id, e.target.value)
+                                }
+                                className="h-8 text-xs"
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile View Cards (< md) */}
+                <div className="block md:hidden space-y-2.5 max-h-72 overflow-y-auto pr-0.5">
+                  {students.map((student) => {
+                    const entry = studentMarks[student.id] || { marks: 0, remarks: "" };
+                    const numericMark = typeof entry.marks === "number" ? entry.marks : parseFloat(String(entry.marks)) || 0;
+                    const numTotal = Number(totalMarks) || 100;
+                    const pct = numTotal > 0 ? ((numericMark / numTotal) * 100).toFixed(0) : "0";
+                    return (
+                      <div
+                        key={student.id}
+                        className="p-3 bg-[#fafbf9] border border-[#e2e8e4] rounded-2xl space-y-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-mono font-bold text-xs px-2 py-0.5 rounded-lg bg-[#eaf4ef] text-[#0a4b32] shrink-0">
+                              {String(student.rollNo || "").replace(/^#+/, "")}
+                            </span>
+                            <span className="font-bold text-xs text-[#0f1f17] truncate">
+                              {student.name || student.user?.name || "Student"}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-black text-[#0a4b32] bg-emerald-100 px-2 py-0.5 rounded-lg shrink-0">
+                            {pct}%
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#f0f4f1]">
+                          <div>
+                            <label className="text-[10px] font-bold text-[#5a6b62] block mb-1">
+                              Marks (Max {totalMarks})
+                            </label>
                             <Input
                               type="number"
                               step="any"
@@ -531,25 +681,28 @@ export default function CreateResultModal({
                                   handleMarkChange(student.id, 0);
                                 }
                               }}
-                              className="h-8 text-xs font-semibold"
+                              className="h-8 text-xs font-bold bg-white"
                             />
-                          </td>
-                          <td className="py-2 px-3 font-semibold text-[#0a4b32]">{pct}%</td>
-                          <td className="py-2 px-3">
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-bold text-[#5a6b62] block mb-1">
+                              Remarks (Optional)
+                            </label>
                             <Input
-                              placeholder="Remarks (opt)"
+                              placeholder="e.g. Good"
                               value={entry.remarks}
                               onChange={(e) =>
                                 handleStudentRemarksChange(student.id, e.target.value)
                               }
-                              className="h-8 text-xs"
+                              className="h-8 text-xs bg-white"
                             />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -586,10 +739,18 @@ export default function CreateResultModal({
             </Button>
             <Button
               type="submit"
-              disabled={submitting || students.length === 0}
-              className="h-9 px-5 text-xs font-bold bg-[#0a4b32] hover:bg-[#073825] text-white cursor-pointer"
+              disabled={submitting || students.length === 0 || isDuplicateExamName}
+              className={`h-9 px-5 text-xs font-bold transition-all ${
+                isDuplicateExamName
+                  ? "bg-slate-300 text-slate-600 border border-slate-300 shadow-none cursor-not-allowed"
+                  : "bg-[#0a4b32] hover:bg-[#073825] text-white cursor-pointer"
+              }`}
             >
-              {submitting ? "Saving Results..." : "Submit Results"}
+              {submitting
+                ? "Saving Results..."
+                : isDuplicateExamName
+                ? "ভিন্ন নাম দিন (Duplicate Name)"
+                : "Submit Results"}
             </Button>
           </div>
         </form>

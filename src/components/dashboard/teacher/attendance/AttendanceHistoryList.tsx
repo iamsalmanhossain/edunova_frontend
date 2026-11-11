@@ -8,6 +8,7 @@ import {
   AlertCircle,
   FileText,
   Filter,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { teacherService } from "@/services/teacher.service";
@@ -72,36 +73,36 @@ export default function AttendanceHistoryList({
   });
 
   return (
-    <div className="bg-white rounded-3xl border border-[#dce3df] shadow-xs overflow-hidden">
+    <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#dce3df] shadow-xs overflow-hidden">
       {/* Header */}
-      <div className="p-5 sm:p-6 border-b border-[#eef2ef] bg-[#fafbf9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-800">
-            <History className="w-4 h-4 text-emerald-700" />
+      <div className="p-4 sm:p-6 border-b border-[#eef2ef] bg-[#fafbf9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="p-1.5 rounded-xl bg-emerald-100 text-[#0a4b32]">
+            <History className="w-4 h-4 text-emerald-800" />
           </span>
           <div>
-            <h2 className="text-base sm:text-lg font-extrabold text-[#0f1f17]">
-              Attendance Session History &amp; Logs
+            <h2 className="text-base sm:text-lg font-black text-[#0f1f17] tracking-tight">
+              Attendance Session Logs &amp; History
             </h2>
-            <p className="text-xs text-[#5a6b62]">
-              Historical records of past roll call sessions, categories, and rates
+            <p className="text-xs text-[#5a6b62] mt-0.5 font-medium">
+              Past roll call sessions, lecture dates, class types, and student turnouts
             </p>
           </div>
         </div>
 
-        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#f0f7f3] text-[#0a4b32] self-start sm:self-auto">
+        <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#f0f7f3] text-[#0a4b32] self-start sm:self-auto border border-emerald-100">
           Total Sessions: {displayedSessions.length}
         </span>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 sm:px-6 bg-white border-b border-[#eef2ef] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-3.5 sm:p-5 bg-white border-b border-[#eef2ef] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Category Pills (All, Theory, Practical) */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#f4f7f5] rounded-xl border border-[#e2e8e4]">
+        <div className="flex items-center gap-1 p-1 bg-[#f4f7f5] rounded-xl border border-[#e2e8e4] self-start sm:self-auto overflow-x-auto no-scrollbar">
           <button
             type="button"
             onClick={() => setTypeFilter("ALL")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               typeFilter === "ALL"
                 ? "bg-[#0a4b32] text-white shadow-xs"
                 : "text-[#5a6b62] hover:text-[#0f1f17]"
@@ -112,7 +113,7 @@ export default function AttendanceHistoryList({
           <button
             type="button"
             onClick={() => setTypeFilter("THEORY")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               typeFilter === "THEORY"
                 ? "bg-[#0a4b32] text-white shadow-xs"
                 : "text-[#5a6b62] hover:text-[#0f1f17]"
@@ -123,7 +124,7 @@ export default function AttendanceHistoryList({
           <button
             type="button"
             onClick={() => setTypeFilter("PRACTICAL")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               typeFilter === "PRACTICAL"
                 ? "bg-[#0a4b32] text-white shadow-xs"
                 : "text-[#5a6b62] hover:text-[#0f1f17]"
@@ -134,16 +135,16 @@ export default function AttendanceHistoryList({
         </div>
 
         {/* Semester Dropdown */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <Filter className="w-3.5 h-3.5 text-[#5a6b62]" />
           <span className="text-xs font-bold text-[#5a6b62]">Semester:</span>
           <select
             value={semesterFilter}
             onChange={(e) => setSemesterFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-[#dce3df] bg-white focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
+            className="px-3 py-1.5 text-xs font-bold rounded-xl border border-[#dce3df] bg-white text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32] cursor-pointer"
           >
             <option value="ALL">All Semesters</option>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((s) => (
               <option key={s} value={s}>
                 Semester {s}
               </option>
@@ -153,7 +154,7 @@ export default function AttendanceHistoryList({
       </div>
 
       {/* Body List */}
-      <div className="p-5 sm:p-6">
+      <div className="p-4 sm:p-6">
         {loading ? (
           <SessionHistorySkeleton />
         ) : error ? (
@@ -168,7 +169,7 @@ export default function AttendanceHistoryList({
               No matching attendance sessions found
             </p>
             <p className="text-xs text-[#5a6b62]">
-              Try adjusting your category or semester filter.
+              Try adjusting your class type or semester filter.
             </p>
           </div>
         ) : (
@@ -182,11 +183,11 @@ export default function AttendanceHistoryList({
               return (
                 <div
                   key={session.id}
-                  className="p-4 rounded-2xl border border-[#eef2ef] hover:border-emerald-200 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white"
+                  className="p-3.5 sm:p-4 rounded-2xl border border-[#eef2ef] hover:border-emerald-200 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white"
                 >
-                  <div className="space-y-1">
+                  <div className="space-y-1.5 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-xs text-[#0f1f17]">
+                      <span className="font-black text-xs sm:text-sm text-[#0f1f17]">
                         {session.subject?.code} - {session.subject?.name}
                       </span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -203,25 +204,25 @@ export default function AttendanceHistoryList({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-[#5a6b62]">
-                      <span className="flex items-center gap-1">
+                    <div className="flex items-center gap-3 text-xs text-[#5a6b62] flex-wrap">
+                      <span className="flex items-center gap-1 font-semibold text-[#0f1f17]">
                         <Calendar className="w-3.5 h-3.5 text-[#0a4b32]" />
                         {new Date(session.date).toLocaleDateString()}
                       </span>
                       {session.remarks && (
-                        <span className="text-amber-700 text-[11px] truncate max-w-xs">
-                          Note: {session.remarks}
+                        <span className="text-amber-800 text-[11px] truncate max-w-xs bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                          {session.remarks}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#f0f4f1]">
-                    <div className="text-right">
-                      <p className="text-xs font-extrabold text-[#0a4b32]">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-[#f0f4f1]">
+                    <div className="text-left sm:text-right">
+                      <p className="text-xs sm:text-sm font-black text-[#0a4b32]">
                         {rate}% ({presentCount}/{totalCount})
                       </p>
-                      <p className="text-[10px] text-[#5a6b62]">Attendance Rate</p>
+                      <p className="text-[10px] text-[#5a6b62] font-semibold">Attendance Turnout</p>
                     </div>
 
                     <Button
@@ -229,10 +230,10 @@ export default function AttendanceHistoryList({
                       variant="outline"
                       size="sm"
                       onClick={() => setActiveSessionId(session.id)}
-                      className="h-8 text-xs font-semibold text-[#0a4b32] border-[#dce3df] hover:bg-emerald-50 gap-1.5 cursor-pointer"
+                      className="h-8 px-3 text-xs font-bold text-[#0a4b32] border-[#dce3df] hover:bg-emerald-50 gap-1.5 cursor-pointer rounded-xl"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      View &amp; Edit
+                      <span>View &amp; Edit</span>
                     </Button>
                   </div>
                 </div>

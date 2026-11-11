@@ -998,7 +998,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                       disabled={loading}
                       className="w-full h-8.5 px-2 rounded-md border border-[#dce3df] bg-white text-xs text-[#0f1f17] focus:outline-none focus:ring-2 focus:ring-[#0a4b32]"
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                      {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                         <option key={s} value={s}>
                           Semester {s} ({s === 1 ? "1st" : s === 2 ? "2nd" : s === 3 ? "3rd" : `${s}th`})
                         </option>

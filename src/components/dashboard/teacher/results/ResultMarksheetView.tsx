@@ -537,8 +537,8 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
           </div>
         </div>
 
-        {/* Marksheet Table */}
-        <div className="overflow-x-auto">
+        {/* Desktop Marksheet Table (md+) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="bg-[#f0f7f3] text-[#0f1f17] font-bold border-b border-[#e2e8e4]">
               <tr>
@@ -568,7 +568,9 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
 
                   return (
                     <tr key={s.studentId} className="hover:bg-[#f9fbfa] transition-colors">
-                      <td className="py-3 px-4 font-bold text-[#0f1f17]">{s.rollNo}</td>
+                      <td className="py-3 px-4 font-bold text-[#0f1f17]">
+                        {String(s.rollNo || "").replace(/^#+/, "")}
+                      </td>
                       <td className="py-3 px-4 font-semibold text-[#0f1f17]">{s.name}</td>
                       <td className="py-3 px-4 text-[#5a6b62]">{s.registrationNo || "—"}</td>
                       <td className="py-3 px-4 text-center font-extrabold">
@@ -632,6 +634,107 @@ export default function ResultMarksheetView({ resultId }: ResultMarksheetViewPro
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Student Cards List (< md) */}
+        <div className="block md:hidden p-3 space-y-3">
+          {filteredStudents.length === 0 ? (
+            <div className="py-8 text-center text-xs text-[#5a6b62]">
+              No students matching &quot;{searchTerm}&quot;
+            </div>
+          ) : (
+            filteredStudents.map((s) => {
+              const entry = s.marksEntry;
+              const hasMark = entry !== null && entry !== undefined;
+              const isPass = hasMark && entry.obtainedMarks >= (data.exam.passMarks ?? 40);
+
+              return (
+                <div
+                  key={s.studentId}
+                  className="p-3.5 bg-[#fafbf9] border border-[#e2e8e4] rounded-2xl space-y-2.5"
+                >
+                  {/* Top: Roll, Name & Actions */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-black text-xs px-2 py-0.5 rounded-lg bg-[#eaf4ef] text-[#0a4b32]">
+                          {String(s.rollNo || "").replace(/^#+/, "")}
+                        </span>
+                        <h4 className="font-black text-xs text-[#0f1f17] truncate">
+                          {s.name}
+                        </h4>
+                      </div>
+                      {s.registrationNo && (
+                        <p className="text-[10px] text-[#5a6b62] mt-0.5">
+                          Reg: {s.registrationNo}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedStudent(s);
+                          setIsEditModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 text-xs font-bold bg-[#0a4b32] text-white rounded-lg shadow-2xs flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadStudentPdf(s.studentId, s.name)}
+                        disabled={actionLoading === `student-${s.studentId}`}
+                        className="p-1 rounded-lg bg-white border border-[#dce3df] text-[#0f1f17] cursor-pointer"
+                        title="Download PDF"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Marks Metrics Bar */}
+                  <div className="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-white border border-[#eef2ef] text-center">
+                    <div>
+                      <span className="text-[10px] text-[#5a6b62] block font-medium">Marks</span>
+                      <span className={`text-xs font-black ${hasMark ? (isPass ? "text-[#0a4b32]" : "text-rose-600") : "text-slate-400"}`}>
+                        {hasMark ? entry.obtainedMarks : "Pending"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-[#5a6b62] block font-medium">Percentage</span>
+                      <span className="text-xs font-bold text-[#0f1f17]">
+                        {hasMark ? `${entry.percentage.toFixed(0)}%` : "—"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-[#5a6b62] block font-medium">Grade</span>
+                      <span className={`text-xs font-black ${hasMark ? (isPass ? "text-emerald-700" : "text-rose-600") : "text-slate-400"}`}>
+                        {hasMark ? entry.grade : "—"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-[#5a6b62] block font-medium">GPA</span>
+                      <span className="text-xs font-bold text-[#0f1f17]">
+                        {hasMark ? entry.gradePoint.toFixed(2) : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {entry?.remarks && (
+                    <p className="text-[10px] text-[#5a6b62] italic px-1">
+                      Note: {entry.remarks}
+                    </p>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

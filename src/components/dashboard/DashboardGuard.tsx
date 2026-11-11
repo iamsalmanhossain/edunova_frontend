@@ -19,20 +19,23 @@ export default function DashboardGuard({
 }: DashboardGuardProps) {
   const router = useRouter();
   const storeUser = useAuthStore((state) => state.user);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const [mounted, setMounted] = useState(false);
   const user = storeUser || (typeof window !== "undefined" ? authService.getCurrentUser() : null);
 
   useEffect(() => {
     setMounted(true);
 
+    if (isLoggingOut) return;
+
     if (!authService.isAuthenticated()) {
-      router.push("/login");
+      router.replace("/login");
       return;
     }
 
     const currentUser = storeUser || authService.getCurrentUser();
     if (!currentUser) {
-      router.push("/login");
+      router.replace("/login");
       return;
     }
 
@@ -48,12 +51,22 @@ export default function DashboardGuard({
 
     if (!isAllowed) {
       const correctPath = authService.getRoleDashboardPath(role);
-      router.push(correctPath);
+      router.replace(correctPath);
     }
-  }, [allowedRoles, router, storeUser]);
+  }, [allowedRoles, router, storeUser, isLoggingOut]);
+
+  if (isLoggingOut) {
+    return (
+      <CentralBrandLoader
+        message="Signing out safely..."
+        subMessage="Clearing active session and credentials..."
+        fullScreen={true}
+      />
+    );
+  }
 
   // Initial SSR mount: render clean skeleton shell to avoid SSR/client hydration mismatch
-  if (!mounted || !user) {
+  if (!mounted) {
     return (
       <div className="h-screen w-full overflow-hidden bg-[#f4f7f5] flex select-none" suppressHydrationWarning>
         <aside className="hidden lg:flex w-64 xl:w-72 bg-[#073825] h-full shrink-0 border-r border-[#0a4b32]" />
@@ -62,6 +75,16 @@ export default function DashboardGuard({
           <main className="flex-1 overflow-y-auto bg-[#f4f7f5] p-3 sm:p-5 lg:p-6" />
         </div>
       </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <CentralBrandLoader
+        message="Authenticating session..."
+        subMessage="Verifying credentials and access permissions..."
+        fullScreen={true}
+      />
     );
   }
 
@@ -95,7 +118,7 @@ export default function DashboardGuard({
             </Button>
             <Button
               variant="outline"
-              onClick={() => authService.logout().then(() => router.push("/login"))}
+              onClick={() => authService.logout("/login")}
               className="text-xs cursor-pointer"
             >
               Sign In with Other Role

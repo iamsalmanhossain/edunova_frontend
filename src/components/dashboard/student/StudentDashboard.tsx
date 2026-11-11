@@ -92,7 +92,7 @@ export default function StudentDashboard({ user }: StudentDashboardProps) {
 
   const availableSemesters = data?.availableSemesters && data.availableSemesters.length > 0
     ? data.availableSemesters
-    : [1, 2, 3, 4, 5, 6, 7, 8].filter((s) => s <= (student?.semester || 8));
+    : [1, 2, 3, 4, 5, 6, 7].filter((s) => s <= (student?.semester || 7));
 
   return (
     <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-200">

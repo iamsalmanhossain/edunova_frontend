@@ -58,7 +58,6 @@ export default function StudentResultsList({
     { label: "Semester 5", value: "5" },
     { label: "Semester 6", value: "6" },
     { label: "Semester 7", value: "7" },
-    { label: "Semester 8", value: "8" },
   ];
 
   return (

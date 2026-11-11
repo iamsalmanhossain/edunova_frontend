@@ -209,6 +209,18 @@ export default function TeacherDetailsModal({
 
               <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 space-y-1">
                 <span className="text-[#5a6b62] flex items-center gap-1">
+                  <Building2 className="w-3 h-3" /> Institute:
+                </span>
+                <p className="font-bold text-[#0f1f17] flex items-center gap-2">
+                  <span>{teacher.teacherProfile?.institute?.name || "Kishoreganj Polytechnic Institute"}</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                    {teacher.teacherProfile?.institute?.code || "KIPI"}
+                  </span>
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 space-y-1">
+                <span className="text-[#5a6b62] flex items-center gap-1">
                   <Building2 className="w-3 h-3" /> Department &amp; Designation:
                 </span>
                 <p className="font-bold text-[#0f1f17]">

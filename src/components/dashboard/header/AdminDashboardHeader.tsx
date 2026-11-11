@@ -52,14 +52,13 @@ export default function AdminDashboardHeader({
   }, []);
 
   const handleLogout = async () => {
-    await authService.logout();
-    router.push("/login");
+    await authService.logout("/login");
   };
 
   return (
-    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs select-none relative">
+    <header className="h-16 shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#e2e8e4] px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2.5 sm:gap-4 shadow-xs select-none relative">
       {/* Left: Sidebar Toggle + System Governance Identity */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1 sm:flex-initial overflow-hidden">
         {/* Desktop Sidebar Collapse Toggle */}
         <button
           type="button"
@@ -86,11 +85,11 @@ export default function AdminDashboardHeader({
         </button>
 
         {/* Admin Crest */}
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 overflow-hidden">
           <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-800 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1.5">
               <h1 className="text-xs sm:text-sm font-extrabold text-[#0f1f17] tracking-tight truncate">
                 Admin Console
@@ -100,7 +99,8 @@ export default function AdminDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              Kishoreganj Polytechnic Institute • Institutional Administration
+              <span className="sm:hidden font-medium">KIPI • Governance</span>
+              <span className="hidden sm:inline">Kishoreganj Polytechnic Institute • Institutional Administration</span>
             </p>
           </div>
         </div>

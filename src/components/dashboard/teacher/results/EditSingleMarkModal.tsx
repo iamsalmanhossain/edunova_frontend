@@ -82,7 +82,7 @@ function EditSingleMarkForm({
         <div>
           <h2 className="text-base font-extrabold text-[#0f1f17]">Edit Student Mark</h2>
           <p className="text-xs text-[#5a6b62]">
-            {student.name} (Roll: {student.rollNo})
+            {student.name} (Roll: {String(student.rollNo || "").replace(/^#+/, "")})
           </p>
         </div>
         <button

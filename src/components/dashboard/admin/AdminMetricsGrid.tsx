@@ -27,7 +27,7 @@ export default function AdminMetricsGrid({
             <h3 className="text-2xl font-black text-[#0a4b32] mt-1">{totalStudents}</h3>
             <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
               <CheckCircle2 className="w-3 h-3" />
-              Across 8 Semesters
+              Across 7 Semesters
             </p>
           </div>
           <div className="w-11 h-11 rounded-xl bg-[#0a4b32]/10 text-[#0a4b32] flex items-center justify-center shrink-0">

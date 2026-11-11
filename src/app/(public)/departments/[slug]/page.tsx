@@ -86,7 +86,7 @@ export default async function DepartmentDetailPage({ params }: PageProps) {
                 <span>Program Highlights &amp; Laboratory Focus</span>
               </h3>
               <p className="text-sm text-[#5a6b62] leading-relaxed">
-                Students enrolled in the {dept.name} department undergo 8 semesters of structured coursework. Laboratory sessions accompany every major theory module, with full hands-on engagement in our dedicated department laboratories.
+                Students enrolled in the {dept.name} department undergo 7 semesters of structured coursework. Laboratory sessions accompany every major theory module, with full hands-on engagement in our dedicated department laboratories.
               </p>
 
               {dept.highlights && dept.highlights.length > 0 && (
@@ -121,7 +121,7 @@ export default async function DepartmentDetailPage({ params }: PageProps) {
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-[#e2e8e4]">
                     <span className="text-[#5a6b62]">Total Semesters</span>
-                    <span className="font-semibold text-[#0f1f17]">8 Semesters</span>
+                    <span className="font-semibold text-[#0f1f17]">7 Semesters</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-[#e2e8e4]">
                     <span className="text-[#5a6b62]">Shift Availability</span>

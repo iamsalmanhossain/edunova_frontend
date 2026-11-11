@@ -23,6 +23,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   isInitialized: boolean;
+  isLoggingOut: boolean;
 
   // Actions
   setAuth: (user: AuthUser, accessToken: string, refreshToken?: string) => void;
@@ -36,7 +37,7 @@ interface AuthState {
   registerStudent: (payload: StudentRegisterPayload) => Promise<AuthResponse>;
   registerTeacher: (payload: TeacherRegisterPayload) => Promise<AuthResponse>;
   claimStudentAccount: (payload: ClaimStudentAccountPayload) => Promise<AuthResponse>;
-  logout: () => Promise<void>;
+  logout: (redirectTo?: string) => Promise<void>;
   refreshSession: () => Promise<boolean>;
 }
 
@@ -49,6 +50,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       isInitialized: false,
+      isLoggingOut: false,
 
       setAuth: (user, accessToken, refreshToken) => {
         if (typeof window !== "undefined") {
@@ -66,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
           isLoading: false,
           isInitialized: true,
+          isLoggingOut: false,
         });
       },
 
@@ -83,6 +86,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           isLoading: false,
           isInitialized: true,
+          isLoggingOut: get().isLoggingOut,
         });
       },
 
@@ -285,14 +289,33 @@ export const useAuthStore = create<AuthState>()(
        * Complete Logout
        * Endpoint: POST /auth/logout
        */
-      logout: async () => {
+      logout: async (redirectTo = "/login") => {
+        set({ isLoggingOut: true });
         const refreshToken = get().refreshToken || undefined;
+
+        // Clear local storage tokens immediately
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("edunova_token");
+          localStorage.removeItem("edunova_refresh_token");
+          localStorage.removeItem("edunova_user");
+        }
+
         try {
-          await apiClient.post("/auth/logout", { refreshToken });
+          if (refreshToken) {
+            // Give server request up to 500ms so slow networks/sleeping servers never freeze logout
+            const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 500));
+            await Promise.race([
+              apiClient.post("/auth/logout", { refreshToken }).catch(() => {}),
+              timeoutPromise,
+            ]);
+          }
         } catch {
           // Proceed with local clearance even if network fails
         } finally {
           get().clearAuth();
+          if (typeof window !== "undefined") {
+            window.location.replace(redirectTo);
+          }
         }
       },
 
