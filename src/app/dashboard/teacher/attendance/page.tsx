@@ -69,100 +69,105 @@ export default function TeacherAttendancePage() {
     "";
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
-            {/* Page Top Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="p-2 rounded-xl bg-emerald-100 text-[#0a4b32]">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-800" />
-                  </span>
-                  <h1 className="text-xl sm:text-2xl font-black text-[#0f1f17] tracking-tight">
-                    Attendance &amp; Roll Call Management
-                  </h1>
-                </div>
-                <p className="text-xs text-[#5a6b62] mt-1">
-                  Department:{" "}
-                  <span className="font-bold text-[#0f1f17]">
-                    {overviewData?.scope?.departmentName ||
-                      overviewData?.profile?.department?.name ||
-                      user?.teacherProfile?.department?.name ||
-                      "Loading..."}
-                  </span>{" "}
-                  • Shift:{" "}
-                  <span className="font-bold text-[#0a4b32]">
-                    {overviewData?.scope?.shift === "SECOND_SHIFT"
-                      ? "2nd Shift (Day/Afternoon)"
-                      : "1st Shift (Morning)"}
-                  </span>
-                </p>
-              </div>
-
-              {/* Quick Pre-enroll Trigger */}
-              <Button
-                type="button"
-                onClick={() => setIsPreEnrollOpen(true)}
-                className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm cursor-pointer self-start sm:self-auto"
-              >
-                <UserPlus className="w-4 h-4" />
-                Pre-Enroll Students
-              </Button>
+    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto pb-24 sm:pb-12">
+      {/* Page Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-50/60 via-white to-slate-50/40 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#dce3df]">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-emerald-100 text-[#0a4b32]">
+              <CheckCircle2 className="w-5 h-5 text-emerald-800" />
+            </span>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-[#0f1f17] tracking-tight">
+                Attendance &amp; Roll Call
+              </h1>
+              <p className="text-xs text-[#5a6b62] mt-0.5 font-medium">
+                Digital campus attendance, roll sheets, and session analytics
+              </p>
             </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap text-xs text-[#5a6b62] mt-3">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#dce3df] font-semibold text-[#0f1f17]">
+              Dept: {overviewData?.scope?.departmentName ||
+                overviewData?.profile?.department?.name ||
+                user?.teacherProfile?.department?.name ||
+                "Loading..."}
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100/70 border border-emerald-200 font-bold text-[#0a4b32]">
+              {overviewData?.scope?.shift === "SECOND_SHIFT"
+                ? "2nd Shift (Day)"
+                : "1st Shift (Morning)"}
+            </span>
+          </div>
+        </div>
 
-            {/* Tab Switcher */}
-            <div className="flex items-center gap-2 border-b border-[#dce3df] pb-px">
-              <button
-                type="button"
-                onClick={() => setActiveTab("take")}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-                  activeTab === "take"
-                    ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/50 rounded-t-xl"
-                    : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
-                }`}
-              >
-                <Calendar className="w-4 h-4" />
-                Take Attendance
-              </button>
+        {/* Quick Pre-enroll Trigger */}
+        <Button
+          type="button"
+          onClick={() => setIsPreEnrollOpen(true)}
+          className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs font-bold gap-1.5 shadow-sm cursor-pointer self-start sm:self-auto h-9"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>Pre-Enroll Students</span>
+        </Button>
+      </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab("history")}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-                  activeTab === "history"
-                    ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/50 rounded-t-xl"
-                    : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
-                }`}
-              >
-                <History className="w-4 h-4" />
-                Session History
-              </button>
+      {/* Tab Switcher - Mobile Scrollable */}
+      <div className="border-b border-[#dce3df] pb-px">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("take")}
+            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === "take"
+                ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/70 rounded-t-xl"
+                : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
+            }`}
+          >
+            <Calendar className="w-4 h-4 shrink-0" />
+            <span>Take Attendance</span>
+          </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab("stats")}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-                  activeTab === "stats"
-                    ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/50 rounded-t-xl"
-                    : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
-                }`}
-              >
-                <BarChart3 className="w-4 h-4" />
-                Analytics &amp; Stats
-              </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("history")}
+            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === "history"
+                ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/70 rounded-t-xl"
+                : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
+            }`}
+          >
+            <History className="w-4 h-4 shrink-0" />
+            <span>Session History</span>
+          </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab("register")}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-                  activeTab === "register"
-                    ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/50 rounded-t-xl"
-                    : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
-                }`}
-              >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-                Attendance Register (PDF/Excel)
-              </button>
-            </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab("stats")}
+            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === "stats"
+                ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/70 rounded-t-xl"
+                : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
+            }`}
+          >
+            <BarChart3 className="w-4 h-4 shrink-0" />
+            <span>Analytics &amp; Stats</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("register")}
+            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              activeTab === "register"
+                ? "border-[#0a4b32] text-[#0a4b32] bg-emerald-50/70 rounded-t-xl"
+                : "border-transparent text-[#5a6b62] hover:text-[#0f1f17]"
+            }`}
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700 shrink-0" />
+            <span>Attendance Register</span>
+          </button>
+        </div>
+      </div>
 
             {/* Loading / Error States */}
             {loading ? (
