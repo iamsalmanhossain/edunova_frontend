@@ -21,17 +21,17 @@ const HIGHLIGHTS: HighlightItem[] = [
   {
     icon: Layers,
     title: "4 Core Departments",
-    subtitle: "CST, Electrical, Civil & Mechanical",
+    subtitle: "CST, ENT, Food and RAC",
   },
   {
     icon: Users,
     title: "Dedicated Faculty",
-    subtitle: "Experienced engineers & instructors",
+    subtitle: "50+ Professional Instructors",
   },
   {
     icon: Cpu,
     title: "Modern Laboratories",
-    subtitle: "Advanced computing & heavy workshop",
+    subtitle: "16+ Hi-Tech Labs & Workshops",
   },
   {
     icon: GraduationCap,
