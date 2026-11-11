@@ -34,6 +34,7 @@ import {
   ChevronRight,
   RefreshCw,
   Clock,
+  Trash2,
 } from "lucide-react";
 
 interface AdminTeachersManagerProps {
@@ -185,6 +186,29 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
   const handleSaveProfile = async (id: string, payload: UpdateTeacherPayload) => {
     await adminService.updateTeacher(id, payload);
     await loadTeachers(meta.page);
+  };
+
+  const handleDeleteTeacher = async (teacher: AdminTeacherItem) => {
+    const confirmed = await appConfirm({
+      title: "Soft Delete Faculty Member",
+      message: `Are you sure you want to soft delete "${teacher.name}"? Their account will be deactivated and hidden from the faculty directory. All institutional records and attendance history remain safely preserved.`,
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await adminService.deleteTeacher(teacher.id);
+      appToast.success(`Faculty member "${teacher.name}" soft deleted successfully.`);
+      await loadTeachers(meta.page);
+    } catch (err: unknown) {
+      appToast.error(
+        "Failed to delete teacher: " + (err instanceof Error ? err.message : "Error"),
+        "Deletion Failed"
+      );
+    }
   };
 
   const getStatusBadge = (userStatus: UserAccountStatus) => {
@@ -371,7 +395,14 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
                         {safeTeachers.map((t) => (
                           <tr key={t.id} className="hover:bg-[#fcfdfc] transition-colors">
                             <td className="py-3.5 px-4">
-                              <span className="font-bold text-[#0f1f17] block">{t.name}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-[#0f1f17] block">{t.name}</span>
+                                {t.teacherProfile?.institute?.code && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-black tracking-wide bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                                    {t.teacherProfile.institute.code}
+                                  </span>
+                                )}
+                              </div>
                               <span className="text-xs text-[#5a6b62] block">{t.email}</span>
                               <span className="text-[11px] text-[#5a6b62] block">{t.phone || "No phone"}</span>
                             </td>
@@ -415,6 +446,16 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
                                   <ShieldAlert className="w-3.5 h-3.5 mr-1" />
                                   Status
                                 </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteTeacher(t)}
+                                  className="h-8 px-2.5 rounded-xl border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 hover:border-red-300"
+                                  title="Soft Delete Faculty Member"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 mr-1" />
+                                  Delete
+                                </Button>
                               </div>
                             </td>
                           </tr>
@@ -429,7 +470,14 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
                       <div key={t.id} className="p-4 space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h4 className="text-sm font-bold text-[#0f1f17]">{t.name}</h4>
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-sm font-bold text-[#0f1f17]">{t.name}</h4>
+                              {t.teacherProfile?.institute?.code && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                                  {t.teacherProfile.institute.code}
+                                </span>
+                              )}
+                            </div>
                             <p className="text-xs text-[#5a6b62]">{t.email}</p>
                           </div>
                           <div className="flex flex-col items-end gap-1">
@@ -470,7 +518,16 @@ export default function AdminTeachersManager({ user }: AdminTeachersManagerProps
                             }
                             className="flex-1 min-h-[44px] rounded-xl text-xs font-semibold text-amber-800 border-amber-200 hover:bg-amber-50 cursor-pointer"
                           >
-                            <ShieldAlert className="w-4 h-4 mr-1.5" /> Access Status
+                            <ShieldAlert className="w-4 h-4 mr-1.5" /> Status
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteTeacher(t)}
+                            className="min-h-[44px] px-3 rounded-xl text-xs font-semibold text-red-600 border-red-200 hover:bg-red-50 cursor-pointer"
+                            title="Soft Delete Faculty Member"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-600" />
                           </Button>
                         </div>
                       </div>
