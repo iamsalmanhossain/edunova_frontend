@@ -12,13 +12,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "EduNova — Digital Campus Platform",
-    template: "%s | EduNova",
+    default: "EduNova — Digital Campus Platform | Kishoreganj Polytechnic Institute",
+    template: "%s | EduNova KIPI",
   },
   description:
-    "EduNova is an enterprise digital campus platform empowering institutional excellence, academic operations, student success, and administration.",
+    "EduNova is an enterprise digital campus platform empowering Kishoreganj Polytechnic Institute (KIPI) — institutional excellence, automated attendance, academic results, and faculty management.",
   keywords: [
     "EduNova",
+    "Kishoreganj Polytechnic Institute",
+    "KIPI",
+    "BTEB Diploma",
     "Digital Campus",
     "Institutional Management",
     "Polytechnic",
@@ -28,12 +31,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Md Salman Hossain" }],
   openGraph: {
-    title: "EduNova — Digital Campus Platform",
+    title: "EduNova — Digital Campus Platform | Kishoreganj Polytechnic Institute",
     description:
-      "Enterprise digital campus platform empowering institutional excellence and academic operations.",
+      "Enterprise digital campus platform empowering institutional excellence, BTEB academic operations, and student success at KIPI.",
     type: "website",
     locale: "en_US",
-    siteName: "EduNova Digital Campus",
+    siteName: "EduNova KIPI Digital Campus",
   },
 };
 
