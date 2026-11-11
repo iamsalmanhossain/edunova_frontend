@@ -173,7 +173,7 @@ export default function StudentDetailsModal({
                     onChange={(e) => setSemester(Number(e.target.value))}
                     className="w-full p-2.5 rounded-xl border border-[#e2e8e4] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
                   >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((s) => (
                       <option key={s} value={s}>Semester {s}</option>
                     ))}
                   </select>
@@ -243,6 +243,21 @@ export default function StudentDetailsModal({
                   <span className="font-mono font-bold text-[#0a4b32] text-sm block">Roll: {profile?.rollNo}</span>
                   <span className="text-[11px] text-[#5a6b62] font-mono">Reg: {profile?.registrationNo}</span>
                 </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 space-y-1">
+                <span className="text-[#5a6b62] flex items-center gap-1">
+                  <Building2 className="w-3 h-3" /> Institute &amp; Department:
+                </span>
+                <p className="font-bold text-[#0f1f17] flex items-center gap-2">
+                  <span>{profile?.institute?.name || "Kishoreganj Polytechnic Institute"}</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
+                    {profile?.institute?.code || "KIPI"}
+                  </span>
+                </p>
+                <p className="text-xs text-[#5a6b62]">
+                  Department: <span className="font-semibold text-[#0f1f17]">{profile?.department?.name || "General"}</span>
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
