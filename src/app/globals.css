@@ -97,3 +97,35 @@
 .animate-progress-sweep {
   animation: progressSweep 1.5s ease-in-out infinite;
 }
+
+/* Official Academic Marksheet & Attendance Roster Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+
+  .no-print,
+  aside,
+  header,
+  nav,
+  button,
+  .btn-print-hide {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .page-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 1.2cm;
+  }
+}
