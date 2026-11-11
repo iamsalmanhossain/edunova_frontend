@@ -14,18 +14,22 @@ export default function TeacherDashboardSkeleton() {
       </div>
 
       {/* KPI Metrics Grid Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="p-4 sm:p-5 bg-white rounded-2xl border border-[#e2e8e4] shadow-xs flex items-center justify-between"
+            className="p-3.5 sm:p-5 bg-white rounded-2xl border border-[#e2e8e4] shadow-xs flex flex-col justify-between"
           >
-            <div className="space-y-2">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-7 w-28 rounded-lg" />
-              <Skeleton className="h-2.5 w-20" />
+            <div className="flex items-center justify-between gap-2">
+              <Skeleton className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl" />
             </div>
-            <Skeleton className="w-11 h-11 rounded-xl" />
+            <div className="space-y-1.5 mt-3">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-6 w-24 rounded-lg" />
+            </div>
+            <div className="mt-2 pt-2 border-t border-[#f0f4f1]">
+              <Skeleton className="h-2.5 w-16" />
+            </div>
           </div>
         ))}
       </div>
