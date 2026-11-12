@@ -208,5 +208,34 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  // Restore Database from an existing Cloud Backup
+  const handleRestoreArchive = async (item: BackupHistoryItem) => {
+    if (!isSuperAdmin) {
+      toast.error("Only Super Administrators can restore databases.", "Forbidden");
+      return;
+    }
+
+    const confirmed = await appConfirm({
+      title: "CRITICAL: Restore Database Snapshot",
+      message: `WARNING: Restoring from "${item.fileName}" will download the snapshot from Google Drive, decrypt it with AES-256-GCM, and restore all tables and data into your active PostgreSQL database. Do you want to proceed?`,
+      confirmText: "Restore Database Now",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setIsRestoringId(item.id);
+      toast.info(`Downloading and restoring database from ${item.fileName}... This may take 20-40 seconds.`, "Restoring");
+      const res = await backupService.restoreBackup(item.id);
+      toast.success(res.message || "Database successfully restored from archive!", "Restore Complete");
+      await loadBackups(meta.page);
+    } catch (err: any) {
+      toast.error(err.message || "Database restore failed. Please check server logs.", "Restore Error");
+    } finally {
+      setIsRestoringId(null);
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
