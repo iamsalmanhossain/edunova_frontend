@@ -237,5 +237,44 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  // Trigger Local File Input
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.click();
+    }
+  };
+
+  // Import & Restore from uploaded local file
+  const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const confirmed = await appConfirm({
+      title: "Import & Restore Database Dump",
+      message: `WARNING: You are about to import "${file.name}" (${(file.size / (1024 * 1024)).toFixed(2)} MB) into the PostgreSQL database. If encrypted, it will be automatically decrypted with your AES-256 key. Do you want to proceed?`,
+      confirmText: "Import & Restore",
+      variant: "destructive",
+    });
+
+    if (!confirmed) {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    try {
+      setIsImporting(true);
+      toast.info(`Uploading and importing "${file.name}" into database...`, "Import in Progress");
+      const res = await backupService.importBackupFile(file);
+      toast.success(res.message || "Database successfully restored from imported file!", "Import Successful");
+      await loadBackups(1);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to import backup file.", "Import Error");
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
