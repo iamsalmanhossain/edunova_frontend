@@ -476,6 +476,72 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
         </Card>
       </div>
 
+      {/* History & Table Container */}
+      <Card className="border border-[#e2e8e4] bg-white shadow-sm overflow-hidden">
+        <CardHeader className="border-b border-[#f0f3f1] p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <CardTitle className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+              <FileCode className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span>Backup History & Cloud Storage</span>
+            </CardTitle>
+
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <select
+                aria-label="Filter by Status"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="text-xs bg-[#f8faf9] border border-[#d8e0db] rounded-lg px-2.5 py-1.5 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 flex-1 sm:flex-none"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="SUCCESS">Success</option>
+                <option value="FAILED">Failed</option>
+                <option value="IN_PROGRESS">In Progress</option>
+              </select>
+
+              <select
+                aria-label="Filter by Trigger"
+                value={triggerFilter}
+                onChange={(e) => setTriggerFilter(e.target.value as any)}
+                className="text-xs bg-[#f8faf9] border border-[#d8e0db] rounded-lg px-2.5 py-1.5 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 flex-1 sm:flex-none"
+              >
+                <option value="ALL">All Triggers</option>
+                <option value="SCHEDULED">Scheduled (Cron)</option>
+                <option value="MANUAL">Manual (Admin)</option>
+              </select>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => loadBackups(meta.page)}
+                disabled={loading}
+                className="text-xs h-8 px-3"
+              >
+                {loading ? (
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin text-slate-600" />
+                ) : (
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                )}
+                {loading ? "Refreshing..." : "Refresh"}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {/* Loading / Empty States */}
+          {loading && backups.length === 0 ? (
+            <div className="py-14 text-center text-slate-400">
+              <Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-emerald-600" />
+              <p className="text-sm">Loading backup archive records...</p>
+            </div>
+          ) : backups.length === 0 ? (
+            <div className="py-14 text-center text-slate-400">
+              <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+              <p className="text-sm">No database backups found matching current filters.</p>
+            </div>
+          ) : (
+        </CardContent>
+      </Card>
     </div>
   );
 }
