@@ -30,3 +30,24 @@ export interface BackupHistoryItem {
     role: string;
   } | null;
 }
+
+export interface BackupPaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface BackupHistoryResponse {
+  meta: BackupPaginationMeta;
+  data: BackupHistoryItem[];
+}
+
+export interface QueryBackupParams {
+  page?: number;
+  limit?: number;
+  status?: BackupStatus;
+  triggeredBy?: BackupTriggerType;
+  startDate?: string;
+  endDate?: string;
+}
