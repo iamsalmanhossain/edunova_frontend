@@ -276,5 +276,22 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  // Download Backup (Decrypted SQL or Encrypted)
+  const handleDownload = async (item: BackupHistoryItem, decrypted = false) => {
+    try {
+      setDownloadingId(item.id);
+      toast.info(
+        `Preparing ${decrypted ? "Decrypted SQL (.sql)" : "Encrypted (.sql.enc)"} download...`,
+        "Downloading",
+      );
+      await backupService.downloadBackup(item.id, decrypted, item.fileName);
+      toast.success("Download started successfully.", "Download Ready");
+    } catch (err: any) {
+      toast.error(err.message || "Download failed.", "Download Error");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
