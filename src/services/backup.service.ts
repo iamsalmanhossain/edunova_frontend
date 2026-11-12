@@ -73,12 +73,18 @@ export const backupService = {
     return raw?.data ?? raw;
   },
 
-  /**
-   * 7. Check Google Drive Service Account Status
-   * GET /backups/google-drive/test
-   */
   async testGoogleDrive(): Promise<GoogleDriveStatusResponse> {
     const res = await apiClient.get<any>("/backups/google-drive/test");
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 8. Restore Database from Archive
+   * POST /backups/:id/restore
+   */
+  async restoreBackup(id: string): Promise<{ message: string; durationMs?: number }> {
+    const res = await apiClient.post<any>(`/backups/${id}/restore`, {});
     const raw = res.data ?? res;
     return raw?.data ?? raw;
   },
