@@ -103,5 +103,35 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   }, [loadBackups, isSuperAdmin]);
 
+  // Test Google Drive Connection
+  const checkDriveConnection = async () => {
+    try {
+      setDriveStatus((prev) => ({ ...prev, loading: true }));
+      const result = await backupService.testGoogleDrive();
+      setDriveStatus({
+        tested: true,
+        connected: result.connected,
+        folderAccessible: result.folderAccessible,
+        loading: false,
+      });
+
+      if (result.connected && result.folderAccessible) {
+        toast.success("Google Drive authenticated and target folder verified.", "Connected");
+      } else if (result.connected && !result.folderAccessible) {
+        toast.warning("Google Drive connected, but target backup folder is not accessible.", "Folder Missing");
+      } else {
+        toast.error(result.message || "Could not connect to Google Drive", "Connection Failed");
+      }
+    } catch (err: any) {
+      setDriveStatus({
+        tested: true,
+        connected: false,
+        folderAccessible: false,
+        loading: false,
+      });
+      toast.error(err.message || "Google Drive connection test failed", "Drive Error");
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
