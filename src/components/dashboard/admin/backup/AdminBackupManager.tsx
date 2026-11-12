@@ -746,6 +746,167 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
                 </table>
               </div>
 
+              {/* Mobile Card View (screens under md) */}
+              <div className="block md:hidden divide-y divide-[#f0f3f1]">
+                {backups.map((item) => {
+                  const driveUrl =
+                    item.metadata?.webViewLink ||
+                    (item.fileId ? `https://drive.google.com/file/d/${item.fileId}/view` : null);
+
+                  return (
+                    <div key={item.id} className="p-4 space-y-3 bg-white">
+                      {/* Top Header of Card: Name + Status */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Lock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="font-mono text-xs font-semibold text-slate-800 truncate">
+                            {item.fileName}
+                          </span>
+                        </div>
+                        <div className="shrink-0">{getStatusBadge(item.status)}</div>
+                      </div>
+
+                      {/* Card Meta Grid */}
+                      <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block uppercase">Size</span>
+                          <span className="font-semibold text-slate-700">{formatFileSize(item.fileSize)}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 block uppercase">Trigger</span>
+                          <span className="font-semibold text-slate-700">
+                            {item.triggeredBy === "SCHEDULED" ? "CRON (System)" : item.user?.name || "Super Admin"}
+                          </span>
+                        </div>
+                        <div className="col-span-2 pt-1 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
+                          <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                          <span>{new Date(item.createdAt).toLocaleTimeString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons Toolbar for Mobile */}
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1">
+                        <div className="flex items-center gap-1">
+                          {driveUrl && (
+                            <a
+                              href={driveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg border border-slate-200"
+                              title="Open in Google Drive"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
+
+                          {item.status === "SUCCESS" && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={downloadingId === item.id}
+                                  className="text-xs h-9 px-2.5 text-slate-700 border-slate-200 flex items-center gap-1"
+                                >
+                                  {downloadingId === item.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                                  ) : (
+                                    <Download className="w-3.5 h-3.5 text-slate-600" />
+                                  )}
+                                  <span>Download</span>
+                                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="start"
+                                className="w-64 bg-white p-1.5 shadow-xl border border-slate-200 rounded-xl z-50"
+                              >
+                                <DropdownMenuItem
+                                  onClick={() => handleDownload(item, true)}
+                                  className="flex items-start gap-2 p-2 rounded-lg cursor-pointer hover:bg-emerald-50 text-slate-700"
+                                >
+                                  <FileText className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                                  <div>
+                                    <div className="font-semibold text-xs text-slate-800">Decrypted (.sql)</div>
+                                    <div className="text-[10px] text-slate-500">Plain text readable SQL</div>
+                                  </div>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="my-1 border-slate-100" />
+                                <DropdownMenuItem
+                                  onClick={() => handleDownload(item, false)}
+                                  className="flex items-start gap-2 p-2 rounded-lg cursor-pointer hover:bg-slate-100 text-slate-700"
+                                >
+                                  <Lock className="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
+                                  <div>
+                                    <div className="font-semibold text-xs text-slate-800">Encrypted (.sql.enc)</div>
+                                    <div className="text-[10px] text-slate-500">AES-256 secure backup</div>
+                                  </div>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          {item.status === "SUCCESS" && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={isRestoringId === item.id}
+                                onClick={() => handleRestoreArchive(item)}
+                                className="text-xs h-9 px-2 text-amber-700 border-amber-200 hover:bg-amber-50"
+                              >
+                                {isRestoringId === item.id ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" />
+                                ) : (
+                                  <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+                                )}
+                                <span className="ml-1">Restore</span>
+                              </Button>
+
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={verifyingId === item.id}
+                                onClick={() => handleVerify(item)}
+                                className="text-xs h-9 px-2 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                              >
+                                {verifyingId === item.id ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                                ) : (
+                                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                )}
+                                <span className="ml-1">Verify</span>
+                              </Button>
+                            </>
+                          )}
+
+                          {isSuperAdmin && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={deletingId === item.id}
+                              onClick={() => handleDelete(item)}
+                              className="text-xs h-9 px-2.5 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                              title="Delete permanently"
+                            >
+                              {deletingId === item.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-600" />
+                              ) : (
+                                <Trash2 className="w-3.5 h-3.5" />
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
         </CardContent>
       </Card>
     </div>
