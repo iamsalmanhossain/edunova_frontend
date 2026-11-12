@@ -335,6 +335,45 @@ export const adminService = {
     return raw?.data ?? raw;
   },
 
+  async createBulkSubjects(
+    subjects: Array<{
+      name: string;
+      code: string;
+      semester: number;
+      credit: number;
+      departmentId: string;
+    }>
+  ): Promise<{ successCount: number; failedCount: number; errors: string[] }> {
+    try {
+      const res = await apiClient.post<any>("/subjects/bulk", { subjects });
+      const raw = res.data ?? res;
+      if (raw && (Array.isArray(raw) || raw.success || raw.data)) {
+        return { successCount: subjects.length, failedCount: 0, errors: [] };
+      }
+    } catch {
+      // Endpoint /subjects/bulk not available, proceed to robust fallback
+    }
+
+    let successCount = 0;
+    const errors: string[] = [];
+
+    for (const item of subjects) {
+      try {
+        await apiClient.post("/subjects", item);
+        successCount++;
+      } catch (err: any) {
+        const errMsg = err?.response?.data?.message || err?.message || "Failed to save";
+        errors.push(`${item.name} (${item.code}): ${errMsg}`);
+      }
+    }
+
+    return {
+      successCount,
+      failedCount: subjects.length - successCount,
+      errors,
+    };
+  },
+
   async updateSubject(
     id: string,
     payload: Partial<{ name: string; code: string; semester: number; credit: number }>

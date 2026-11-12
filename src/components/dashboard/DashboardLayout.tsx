@@ -22,6 +22,7 @@ import {
   Layers,
   Settings,
   HelpCircle,
+  Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -110,6 +111,9 @@ export default function DashboardLayout({
     { label: "Student Management", href: "/dashboard/admin/students", icon: Users },
     { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
     { label: "System Audit Logs", href: "/dashboard/admin/audit-logs", icon: ShieldCheck },
+    ...(user.role === "SUPER_ADMIN"
+      ? [{ label: "Database Backups", href: "/dashboard/admin/backups", icon: Database }]
+      : []),
   ];
 
   const navItems =
