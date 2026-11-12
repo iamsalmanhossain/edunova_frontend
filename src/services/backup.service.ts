@@ -79,12 +79,21 @@ export const backupService = {
     return raw?.data ?? raw;
   },
 
-  /**
-   * 8. Restore Database from Archive
-   * POST /backups/:id/restore
-   */
   async restoreBackup(id: string): Promise<{ message: string; durationMs?: number }> {
     const res = await apiClient.post<any>(`/backups/${id}/restore`, {});
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 9. Import and Restore from Uploaded Backup File (.sql or .sql.enc)
+   * POST /backups/import
+   */
+  async importBackupFile(file: File): Promise<{ message: string; durationMs?: number }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await apiClient.post<any>("/backups/import", formData);
     const raw = res.data ?? res;
     return raw?.data ?? raw;
   },
