@@ -9,10 +9,6 @@ import {
 } from "@/types/backup";
 
 export const backupService = {
-  /**
-   * 1. Get Paginated Backup History
-   * GET /backups
-   */
   async getBackups(params?: QueryBackupParams): Promise<BackupHistoryResponse> {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", params.page.toString());
@@ -42,5 +38,15 @@ export const backupService = {
       },
       data: Array.isArray(raw) ? raw : [],
     };
+  },
+
+  /**
+   * 2. Trigger Instant Manual Backup
+   * POST /backups
+   */
+  async triggerManualBackup(): Promise<BackupHistoryItem> {
+    const res = await apiClient.post<any>("/backups", {}, { timeout: 180000 });
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
   },
 };
