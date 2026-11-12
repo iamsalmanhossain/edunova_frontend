@@ -133,5 +133,34 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  // Trigger Instant Manual Backup
+  const handleTriggerBackup = async () => {
+    if (!isSuperAdmin) {
+      toast.error("Only Super Administrators can trigger database backups.", "Forbidden");
+      return;
+    }
+
+    const confirmed = await appConfirm({
+      title: "Trigger Immediate Database Backup",
+      message:
+        "This will take a full dump of the PostgreSQL database, encrypt it with AES-256-GCM, and upload it to Google Drive. The process takes around 25-30 seconds. Do you want to proceed?",
+      confirmText: "Start Backup Now",
+      variant: "default",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setIsTriggering(true);
+      toast.info("Database dump initiated. Encrypting and uploading to Google Drive...", "Backup in Progress");
+      await backupService.triggerManualBackup();
+      toast.success("Backup successfully generated, encrypted, and uploaded to Google Drive!", "Backup Complete");
+      await loadBackups(1);
+    } catch (err: any) {
+      toast.error(err.message || "Manual backup failed. Please check server logs.", "Backup Failed");
+    } finally {
+      setIsTriggering(false);
+    }
+  };
   return <div>Backup Manager Initializing...</div>;
 }
