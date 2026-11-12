@@ -162,5 +162,23 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
       setIsTriggering(false);
     }
   };
+
+  // Verify Backup Integrity
+  const handleVerify = async (item: BackupHistoryItem) => {
+    try {
+      setVerifyingId(item.id);
+      toast.info(`Downloading and verifying integrity for ${item.fileName}...`, "Verifying");
+      const res = await backupService.verifyBackupIntegrity(item.id);
+      toast.success(
+        res.message || "AES-256-GCM integrity verified! Authentication tag and checksum match.",
+        "Integrity Valid",
+      );
+    } catch (err: any) {
+      toast.error(err.message || "Integrity verification failed for this backup file.", "Verification Failed");
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
