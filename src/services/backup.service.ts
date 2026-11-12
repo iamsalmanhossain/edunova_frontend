@@ -67,12 +67,18 @@ export const backupService = {
     return raw?.data ?? raw;
   },
 
-  /**
-   * 6. Download stream and verify AES-256-GCM integrity
-   * POST /backups/:id/verify
-   */
   async verifyBackupIntegrity(id: string): Promise<VerifyBackupResponse> {
     const res = await apiClient.post<any>(`/backups/${id}/verify`, {});
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 7. Check Google Drive Service Account Status
+   * GET /backups/google-drive/test
+   */
+  async testGoogleDrive(): Promise<GoogleDriveStatusResponse> {
+    const res = await apiClient.get<any>("/backups/google-drive/test");
     const raw = res.data ?? res;
     return raw?.data ?? raw;
   },
