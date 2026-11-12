@@ -53,8 +53,11 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
   const [meta, setMeta] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
   const [isTriggering, setIsTriggering] = useState(false);
+  const [backupElapsedSeconds, setBackupElapsedSeconds] = useState(0);
   const [isImporting, setIsImporting] = useState(false);
+  const [importElapsedSeconds, setImportElapsedSeconds] = useState(0);
   const [isRestoringId, setIsRestoringId] = useState<string | null>(null);
+  const [restoreElapsedSeconds, setRestoreElapsedSeconds] = useState(0);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -102,6 +105,54 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
       loadBackups(1);
     }
   }, [loadBackups, isSuperAdmin]);
+
+  // Live elapsed second timer for manual backup trigger
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (isTriggering) {
+      setBackupElapsedSeconds(0);
+      timer = setInterval(() => {
+        setBackupElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setBackupElapsedSeconds(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isTriggering]);
+
+  // Live elapsed second timer for file import & restore
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (isImporting) {
+      setImportElapsedSeconds(0);
+      timer = setInterval(() => {
+        setImportElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setImportElapsedSeconds(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isImporting]);
+
+  // Live elapsed second timer for archive restore
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (isRestoringId) {
+      setRestoreElapsedSeconds(0);
+      timer = setInterval(() => {
+        setRestoreElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setRestoreElapsedSeconds(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isRestoringId]);
 
   // Test Google Drive Connection
   const checkDriveConnection = async () => {
@@ -400,20 +451,32 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
                   ) : (
                     <Upload className="w-4 h-4 mr-2" />
                   )}
-                  {isImporting ? "Importing & Restoring..." : "Import & Restore File"}
+                  {isImporting ? (
+                    <span className="inline-flex items-center gap-1">
+                      Importing &amp; Restoring (<span className="tabular-nums font-mono font-bold">{importElapsedSeconds}s</span>)...
+                    </span>
+                  ) : (
+                    "Import & Restore File"
+                  )}
                 </Button>
 
                 <Button
                   onClick={handleTriggerBackup}
                   disabled={isTriggering}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg hover:shadow-emerald-500/30 transition-all text-xs sm:text-sm w-full sm:w-auto justify-center"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg hover:shadow-emerald-500/30 transition-all text-xs sm:text-sm w-full sm:w-auto justify-center min-w-[210px]"
                 >
                   {isTriggering ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
                   ) : (
                     <Database className="w-4 h-4 mr-2" />
                   )}
-                  {isTriggering ? "Backing up Database (25-30s)..." : "Trigger Instant Backup"}
+                  {isTriggering ? (
+                    <span className="inline-flex items-center gap-1">
+                      Backing up Database (<span className="tabular-nums font-mono font-bold">{backupElapsedSeconds}s</span>)...
+                    </span>
+                  ) : (
+                    "Trigger Instant Backup"
+                  )}
                 </Button>
               </>
             )}
@@ -698,7 +761,11 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
                                     ) : (
                                       <RotateCcw className="w-3.5 h-3.5 mr-1 text-amber-600" />
                                     )}
-                                    {isRestoringId === item.id ? "Restoring..." : "Restore"}
+                                    {isRestoringId === item.id ? (
+                                      <span>Restoring (<span className="tabular-nums font-mono font-bold">{restoreElapsedSeconds}s</span>)...</span>
+                                    ) : (
+                                      "Restore"
+                                    )}
                                   </Button>
 
                                   {/* Verify Button */}
@@ -862,7 +929,13 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
                                 ) : (
                                   <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
                                 )}
-                                <span className="ml-1">Restore</span>
+                                <span className="ml-1">
+                                  {isRestoringId === item.id ? (
+                                    <>Restoring (<span className="tabular-nums font-mono font-bold">{restoreElapsedSeconds}s</span>)...</>
+                                  ) : (
+                                    "Restore"
+                                  )}
+                                </span>
                               </Button>
 
                               <Button
