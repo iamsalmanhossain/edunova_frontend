@@ -40,12 +40,31 @@ export const backupService = {
     };
   },
 
-  /**
-   * 2. Trigger Instant Manual Backup
-   * POST /backups
-   */
   async triggerManualBackup(): Promise<BackupHistoryItem> {
     const res = await apiClient.post<any>("/backups", {}, { timeout: 180000 });
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 3. Get Single Backup by ID
+   * GET /backups/:id
+   */
+  async getBackupById(id: string): Promise<BackupHistoryItem> {
+    const res = await apiClient.get<any>(`/backups/${id}`);
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 4. Update Backup Metadata / Notes
+   * PATCH /backups/:id
+   */
+  async updateBackupMetadata(
+    id: string,
+    payload: UpdateBackupPayload,
+  ): Promise<BackupHistoryItem> {
+    const res = await apiClient.patch<any>(`/backups/${id}`, payload);
     const raw = res.data ?? res;
     return raw?.data ?? raw;
   },
