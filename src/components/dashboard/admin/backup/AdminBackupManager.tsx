@@ -329,5 +329,22 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
-  return <div>Backup Manager Initializing...</div>;
+  if (!isSuperAdmin) {
+    return (
+      <div className="max-w-2xl mx-auto mt-16 p-8 bg-white border border-amber-200 rounded-2xl shadow-sm text-center">
+        <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-700">
+          <ShieldAlert className="w-7 h-7" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-800">Super Administrator Privileges Required</h2>
+        <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+          Database dumps, AES-256 encryption keys, Google Drive cloud backups, and permanent deletion controls are restricted strictly to <strong>Super Administrators</strong>.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
+          Your current account role: <span className="font-bold">{user.role}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return <div>Super Admin Area</div>;
 }
