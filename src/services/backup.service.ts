@@ -61,12 +61,18 @@ export const backupService = {
     return raw?.data ?? raw;
   },
 
-  /**
-   * 5. Permanently Delete Backup (Google Drive + DB)
-   * DELETE /backups/:id
-   */
   async deleteBackup(id: string): Promise<{ message: string }> {
     const res = await apiClient.delete<any>(`/backups/${id}`);
+    const raw = res.data ?? res;
+    return raw?.data ?? raw;
+  },
+
+  /**
+   * 6. Download stream and verify AES-256-GCM integrity
+   * POST /backups/:id/verify
+   */
+  async verifyBackupIntegrity(id: string): Promise<VerifyBackupResponse> {
+    const res = await apiClient.post<any>(`/backups/${id}/verify`, {});
     const raw = res.data ?? res;
     return raw?.data ?? raw;
   },
