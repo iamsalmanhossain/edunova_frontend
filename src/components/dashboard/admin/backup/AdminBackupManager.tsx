@@ -346,5 +346,81 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     );
   }
 
-  return <div>Super Admin Area</div>;
+  return (
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 px-2 sm:px-4">
+      {/* Top Header Banner */}
+      <div className="bg-gradient-to-r from-[#073825] to-[#0d5c3d] rounded-2xl p-5 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase tracking-wider border border-emerald-400/30">
+              <ShieldCheck className="w-4 h-4" /> Production Disaster Recovery
+            </div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
+              Automated Database Backups
+            </h1>
+            <p className="text-emerald-100/80 text-xs sm:text-sm max-w-2xl leading-relaxed">
+              AES-256-GCM encrypted PostgreSQL snapshots scheduled twice daily (01:00 & 13:00) with Google Drive cloud synchronization, 30-day retention pruning, and immutable audit logs.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto">
+            {/* Hidden file input for backup import */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileImport}
+              accept=".sql,.enc"
+              className="hidden"
+            />
+
+            <Button
+              onClick={checkDriveConnection}
+              disabled={driveStatus.loading}
+              variant="outline"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs sm:text-sm w-full sm:w-auto justify-center"
+            >
+              {driveStatus.loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
+              ) : (
+                <Cloud className="w-4 h-4 mr-2" />
+              )}
+              {driveStatus.loading ? "Testing..." : "Test Google Drive"}
+            </Button>
+
+            {isSuperAdmin && (
+              <>
+                <Button
+                  onClick={triggerFileInput}
+                  disabled={isImporting}
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-medium text-xs sm:text-sm w-full sm:w-auto justify-center"
+                >
+                  {isImporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
+                  ) : (
+                    <Upload className="w-4 h-4 mr-2" />
+                  )}
+                  {isImporting ? "Importing & Restoring..." : "Import & Restore File"}
+                </Button>
+
+                <Button
+                  onClick={handleTriggerBackup}
+                  disabled={isTriggering}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg hover:shadow-emerald-500/30 transition-all text-xs sm:text-sm w-full sm:w-auto justify-center"
+                >
+                  {isTriggering ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
+                  ) : (
+                    <Database className="w-4 h-4 mr-2" />
+                  )}
+                  {isTriggering ? "Backing up Database (25-30s)..." : "Trigger Instant Backup"}
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
 }
