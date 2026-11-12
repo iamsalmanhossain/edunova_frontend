@@ -51,3 +51,24 @@ export interface QueryBackupParams {
   startDate?: string;
   endDate?: string;
 }
+
+export interface UpdateBackupPayload {
+  notes?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface VerifyBackupResponse {
+  id: string;
+  fileName: string;
+  verified: boolean;
+  checksum?: string;
+  encryptionAlgorithm: string;
+  message: string;
+}
+
+export interface GoogleDriveStatusResponse {
+  connected: boolean;
+  folderAccessible: boolean;
+  message: string;
+}
+
