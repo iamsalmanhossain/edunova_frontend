@@ -293,5 +293,41 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  const formatFileSize = (bytes?: number | null) => {
+    if (!bytes || bytes === 0) return "0 KB";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  };
+
+  const getStatusBadge = (status: BackupStatus) => {
+    switch (status) {
+      case "SUCCESS":
+        return (
+          <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            SUCCESS
+          </Badge>
+        );
+      case "FAILED":
+        return (
+          <Badge className="bg-rose-100 text-rose-800 border-rose-300 font-medium flex items-center gap-1">
+            <XCircle className="w-3.5 h-3.5 text-rose-600" />
+            FAILED
+          </Badge>
+        );
+      case "IN_PROGRESS":
+        return (
+          <Badge className="bg-amber-100 text-amber-800 border-amber-300 font-medium flex items-center gap-1">
+            <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+            IN PROGRESS
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
