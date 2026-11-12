@@ -180,5 +180,33 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
     }
   };
 
+  // Delete Backup
+  const handleDelete = async (item: BackupHistoryItem) => {
+    if (!isSuperAdmin) {
+      toast.error("Only Super Administrators can delete backups.", "Forbidden");
+      return;
+    }
+
+    const confirmed = await appConfirm({
+      title: "Permanently Delete Backup",
+      message: `Are you sure you want to permanently delete backup "${item.fileName}"? This will permanently remove the encrypted file from Google Drive and the database record. This action cannot be undone.`,
+      confirmText: "Delete Permanently",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(item.id);
+      await backupService.deleteBackup(item.id);
+      toast.success(`Backup [${item.fileName}] was permanently deleted.`, "Deleted");
+      await loadBackups(meta.page);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete backup file.", "Delete Error");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return <div>Backup Manager Initializing...</div>;
 }
