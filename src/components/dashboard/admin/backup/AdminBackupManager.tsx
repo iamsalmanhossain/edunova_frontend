@@ -907,6 +907,35 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
             </>
           )}
 
+          {/* Pagination Footer */}
+          {meta.totalPages > 1 && (
+            <div className="border-t border-[#f0f3f1] p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+              <div>
+                Showing page <span className="font-semibold text-slate-800">{meta.page}</span> of{" "}
+                <span className="font-semibold text-slate-800">{meta.totalPages}</span> ({meta.total} total backups)
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={meta.page <= 1 || loading}
+                  onClick={() => loadBackups(meta.page - 1)}
+                  className="h-8 text-xs flex-1 sm:flex-none justify-center"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={meta.page >= meta.totalPages || loading}
+                  onClick={() => loadBackups(meta.page + 1)}
+                  className="h-8 text-xs flex-1 sm:flex-none justify-center"
+                >
+                  Next <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
