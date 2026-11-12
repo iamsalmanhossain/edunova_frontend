@@ -24,6 +24,7 @@ import {
   Sparkles,
   Layers,
   AlertCircle,
+  Search,
 } from "lucide-react";
 
 interface AdminDepartmentsManagerProps {
@@ -34,6 +35,7 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
   const [departments, setDepartments] = useState<MasterDepartment[]>([]);
   const [selectedDeptId, setSelectedDeptId] = useState<string>("");
   const [selectedSemester, setSelectedSemester] = useState<string>("");
+  const [subjectSearchQuery, setSubjectSearchQuery] = useState<string>("");
   const [subjects, setSubjects] = useState<MasterSubject[]>([]);
   const [loadingDepts, setLoadingDepts] = useState(true);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
@@ -367,6 +369,17 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
     setJsonError(null);
   };
 
+  const filteredSubjects = React.useMemo(() => {
+    if (!subjectSearchQuery.trim()) return subjects;
+    const q = subjectSearchQuery.toLowerCase().trim();
+    return subjects.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.code.toLowerCase().includes(q) ||
+        `sem ${s.semester}`.includes(q)
+    );
+  }, [subjects, subjectSearchQuery]);
+
   const handleDeleteSubject = async (subjId: string, name: string) => {
     const confirmed = await appConfirm({
       title: "Delete Subject Course",
@@ -391,176 +404,288 @@ export default function AdminDepartmentsManager({ user }: AdminDepartmentsManage
   const activeDepartment = departments.find((d) => d.id === selectedDeptId);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-200">
-      {/* Header Banner */}
-      <div className="bg-white rounded-2xl p-6 border border-[#e2e8e4] shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0a4b32]" />
-            <h1 className="text-xl sm:text-2xl font-black text-[#0f1f17]">
-              Academic Departments &amp; Subjects
+    <div className="h-[calc(100vh-125px)] sm:h-[calc(100vh-140px)] min-h-[580px] flex flex-col space-y-3.5 sm:space-y-4 max-w-7xl mx-auto overflow-hidden animate-in fade-in duration-200">
+      {/* 1. Header Banner - Matching App Signature Theme */}
+      <div className="shrink-0 relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#073825] via-[#0a4b32] to-[#042417] text-white p-4 sm:p-5 shadow-lg shadow-[#0a4b32]/10 border border-[#0d593c]">
+        {/* Ambient background decoration */}
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-[#c48b28]/15 blur-2xl" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="space-y-1.5 flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/12 text-white text-[10px] sm:text-[11px] font-semibold border border-white/15 backdrop-blur-xs">
+                <Building2 className="w-3 h-3 text-[#c48b28]" />
+                <span>{departments.length} Academic Faculties</span>
+              </span>
+              <span className="hidden xs:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 text-[10px] font-bold border border-emerald-400/25">
+                <BookOpen className="w-3 h-3 text-[#c48b28]" />
+                <span>BTEB 4-Year Diploma Curricula</span>
+              </span>
+            </div>
+
+            <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <span>Academic Departments &amp; Subjects</span>
             </h1>
+
+            <p className="text-[11px] sm:text-xs text-emerald-100/80 max-w-xl leading-relaxed">
+              Configure institute faculties, BTEB diploma curricula, credit allocations, and course syllabi across all semesters.
+            </p>
           </div>
-          <p className="text-xs sm:text-sm text-[#5a6b62] mt-1">
-            Configure institute faculties, BTEB diploma curricula, and subject credit structures
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => setIsDeptModalOpen(true)}
-            className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-9 font-bold px-3"
-          >
-            <Plus className="w-4 h-4 mr-1" /> Add Department
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              loadDepartments();
-              if (selectedDeptId) loadSubjects(selectedDeptId);
-            }}
-            className="h-9 px-3 rounded-xl border-[#e2e8e4] text-xs font-semibold text-[#0a4b32]"
-          >
-            <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Refresh
-          </Button>
+
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <Button
+              size="sm"
+              onClick={() => setIsDeptModalOpen(true)}
+              className="h-8.5 sm:h-9 px-3.5 rounded-xl bg-white text-[#0a4b32] hover:bg-emerald-50 font-bold text-xs shadow-xs cursor-pointer gap-1.5 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Department</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                loadDepartments();
+                if (selectedDeptId) loadSubjects(selectedDeptId);
+              }}
+              className="h-8.5 sm:h-9 px-3 rounded-xl border-white/25 bg-white/12 hover:bg-white/20 text-white text-xs font-bold transition-all shadow-xs cursor-pointer backdrop-blur-xs gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-[#c48b28]" />
+              <span className="hidden xs:inline">Refresh</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Main 2-Column: Departments List & Selected Subjects */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Department Cards */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-[#0f1f17]">
-            Active Departments ({departments.length})
-          </h3>
-          <div className="space-y-2.5">
-            {departments.map((dept) => (
-              <div
-                key={dept.id}
-                onClick={() => setSelectedDeptId(dept.id)}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                  selectedDeptId === dept.id
-                    ? "bg-[#0a4b32] text-white border-[#0a4b32] shadow-sm"
-                    : "bg-white text-[#0f1f17] border-[#e2e8e4] hover:border-[#0a4b32]/40"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <Badge
-                    variant="outline"
-                    className={`font-mono text-xs ${
-                      selectedDeptId === dept.id
-                        ? "bg-white/10 text-white border-white/20"
-                        : "bg-[#f0f4f1] text-[#0a4b32] border-[#e2e8e4]"
+      {/* 2. Main 2-Column: Left Departments & Right Subjects with Independent Scrolling */}
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 overflow-hidden">
+        {/* Left Column: Department List with Independent Scroll */}
+        <div className="h-full flex flex-col overflow-hidden bg-white rounded-2xl border border-[#e2e8e4] shadow-xs">
+          <div className="p-3.5 sm:p-4 border-b border-[#f0f4f1] flex items-center justify-between shrink-0 bg-[#fcfdfc]">
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-[#0f1f17] flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-[#0a4b32]" />
+                <span>Active Faculties</span>
+              </h3>
+              <p className="text-[10px] sm:text-[11px] text-[#5a6b62]">Select to view course curriculum</p>
+            </div>
+            <Badge
+              variant="outline"
+              className="text-[10px] font-mono font-bold bg-[#0a4b32]/10 text-[#0a4b32] border-[#0a4b32]/20"
+            >
+              {departments.length} Depts
+            </Badge>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto p-2.5 sm:p-3 space-y-2">
+            {departments.map((dept) => {
+              const isSelected = selectedDeptId === dept.id;
+              return (
+                <div
+                  key={dept.id}
+                  onClick={() => setSelectedDeptId(dept.id)}
+                  className={`p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2.5 ${
+                    isSelected
+                      ? "bg-gradient-to-r from-[#073825] to-[#0a4b32] text-white border-[#0a4b32] shadow-sm"
+                      : "bg-[#fcfdfc] text-[#0f1f17] border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:bg-white"
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span
+                        className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                          isSelected
+                            ? "bg-white/15 text-emerald-200 border border-white/20"
+                            : "bg-emerald-50 text-[#0a4b32] border border-emerald-100"
+                        }`}
+                      >
+                        {dept.code}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-xs sm:text-sm line-clamp-1">{dept.name}</h4>
+                  </div>
+
+                  <Building2
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      isSelected ? "text-[#c48b28]" : "text-[#718077]"
                     }`}
-                  >
-                    {dept.code}
-                  </Badge>
-                  <Building2 className={`w-4 h-4 ${selectedDeptId === dept.id ? "text-white/80" : "text-[#5a6b62]"}`} />
+                  />
                 </div>
-                <h4 className="font-bold text-sm line-clamp-1">{dept.name}</h4>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Right: Subjects Management for Selected Department */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card className="border-[#e2e8e4] shadow-xs">
-            <CardHeader className="p-4 sm:p-5 border-b border-[#e2e8e4]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <CardTitle className="text-base font-bold text-[#0f1f17] flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-[#0a4b32]" />
-                  {activeDepartment ? `${activeDepartment.name} (${activeDepartment.code})` : "Department"} Curriculum Subjects
-                </CardTitle>
-                <p className="text-xs text-[#5a6b62]">
-                  Registered courses across semesters for this department ({subjects.length} courses)
-                </p>
+        {/* Right Column: Subjects Management with Sticky Table Header & Independent Scroll */}
+        <div className="lg:col-span-2 h-full flex flex-col overflow-hidden bg-white rounded-2xl border border-[#e2e8e4] shadow-xs">
+          {/* Header Controls */}
+          <div className="p-3.5 sm:p-4 border-b border-[#e2e8e4]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 shrink-0 bg-white">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <BookOpen className="w-4 h-4 text-[#0a4b32] shrink-0" />
+                <h3 className="text-xs sm:text-sm font-bold text-[#0f1f17] truncate">
+                  {activeDepartment ? `${activeDepartment.name}` : "Department"} Curriculum
+                </h3>
+                {activeDepartment && (
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[10px] font-bold bg-[#0a4b32]/10 text-[#0a4b32] border-[#0a4b32]/20"
+                  >
+                    {activeDepartment.code}
+                  </Badge>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                {/* Semester Filter */}
-                <select
-                  value={selectedSemester}
-                  onChange={(e) => setSelectedSemester(e.target.value)}
-                  className="h-8 px-2.5 text-xs font-semibold rounded-xl border border-[#e2e8e4] bg-white text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
-                >
-                  <option value="">All Semesters</option>
-                  {[1, 2, 3, 4, 5, 6, 7].map((s) => (
-                    <option key={s} value={s.toString()}>
-                      Semester {s}
-                    </option>
-                  ))}
-                </select>
+              <p className="text-[10px] sm:text-[11px] text-[#5a6b62] mt-0.5">
+                {filteredSubjects.length !== subjects.length
+                  ? `Showing ${filteredSubjects.length} of ${subjects.length} registered courses`
+                  : `${subjects.length} total courses registered`}
+              </p>
+            </div>
 
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              {/* Search input */}
+              <div className="relative flex-1 sm:w-44 min-w-[130px]">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#718077] pointer-events-none" />
+                <input
+                  type="text"
+                  value={subjectSearchQuery}
+                  onChange={(e) => setSubjectSearchQuery(e.target.value)}
+                  placeholder="Search code / name..."
+                  className="w-full h-8 pl-8 pr-6 text-xs font-medium rounded-xl border border-[#e2e8e4] bg-[#fcfdfc] text-[#0f1f17] placeholder:text-[#88998f] focus:outline-none focus:ring-1 focus:ring-[#0a4b32]"
+                />
+                {subjectSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSubjectSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+
+              {/* Semester Filter */}
+              <select
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+                className="h-8 px-2.5 text-xs font-semibold rounded-xl border border-[#e2e8e4] bg-[#fcfdfc] text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32] cursor-pointer shrink-0"
+              >
+                <option value="">All Semesters</option>
+                {[1, 2, 3, 4, 5, 6, 7].map((s) => (
+                  <option key={s} value={s.toString()}>
+                    Semester {s}
+                  </option>
+                ))}
+              </select>
+
+              {/* Add Subject Button */}
+              <Button
+                size="sm"
+                onClick={() => {
+                  setIsSubjModalOpen(true);
+                  resetSubjModal();
+                }}
+                disabled={!selectedDeptId}
+                className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-8 font-bold px-3 shrink-0 shadow-xs cursor-pointer gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Subject</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Table Area with Independent Scroll & Sticky Header */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {loadingSubjects ? (
+              <div className="p-8 text-center text-[#5a6b62]">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto text-[#0a4b32] mb-2" />
+                <p className="text-xs">Loading curriculum subjects...</p>
+              </div>
+            ) : subjects.length === 0 ? (
+              <div className="p-12 text-center text-[#5a6b62] space-y-2">
+                <BookOpen className="w-10 h-10 mx-auto text-gray-300" />
+                <p className="text-sm font-semibold text-[#0f1f17]">No subjects registered yet</p>
+                <p className="text-xs max-w-sm mx-auto">
+                  Click &quot;Add Subject&quot; above to add courses individually, in bulk rows, or via JSON array.
+                </p>
                 <Button
                   size="sm"
                   onClick={() => setIsSubjModalOpen(true)}
-                  disabled={!selectedDeptId}
-                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-8 font-bold px-3 shrink-0"
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white rounded-xl text-xs h-8 font-bold px-3 mt-2 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Subject
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Curriculum Subject
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              {loadingSubjects ? (
-                <div className="p-8 text-center text-[#5a6b62]">
-                  <Loader2 className="w-8 h-8 animate-spin mx-auto text-[#0a4b32] mb-2" />
-                  <p className="text-xs">Loading curriculum subjects...</p>
-                </div>
-              ) : subjects.length === 0 ? (
-                <div className="p-12 text-center text-[#5a6b62]">
-                  <BookOpen className="w-10 h-10 mx-auto text-gray-300 mb-2" />
-                  <p className="text-sm font-semibold">No subjects registered yet</p>
-                  <p className="text-xs mt-1">Click &quot;Add Subject&quot; above to create curriculum courses.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-[#fcfdfc] text-xs font-semibold text-[#5a6b62] border-b border-[#e2e8e4]">
-                      <tr>
-                        <th className="py-3 px-4">Subject Name</th>
-                        <th className="py-3 px-4">Subject Code</th>
-                        <th className="py-3 px-4">Semester</th>
-                        <th className="py-3 px-4">Credit Hours</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#f0f4f1] text-[#0f1f17]">
-                      {subjects.map((s) => (
-                        <tr key={s.id} className="hover:bg-[#fcfdfc] transition-colors">
-                          <td className="py-3.5 px-4 font-bold text-[#0f1f17]">
-                            {s.name}
-                          </td>
-                          <td className="py-3.5 px-4 font-mono text-xs text-[#0a4b32] font-bold">
+            ) : filteredSubjects.length === 0 ? (
+              <div className="p-10 text-center text-[#5a6b62] space-y-2">
+                <BookOpen className="w-8 h-8 mx-auto text-gray-300" />
+                <p className="text-xs sm:text-sm font-bold text-[#0f1f17]">
+                  No matching subjects found
+                </p>
+                <p className="text-xs">
+                  No courses matched &quot;{subjectSearchQuery}&quot; for {selectedSemester ? `Semester ${selectedSemester}` : "this department"}.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSubjectSearchQuery("")}
+                  className="h-8 px-3 text-xs rounded-xl border-[#e2e8e4] text-[#0f1f17] cursor-pointer"
+                >
+                  Clear Search
+                </Button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="sticky top-0 z-10 bg-[#fcfdfc] text-xs font-semibold text-[#5a6b62] border-b border-[#e2e8e4] backdrop-blur-xs">
+                    <tr>
+                      <th className="py-2.5 px-4">Subject Name</th>
+                      <th className="py-2.5 px-4">BTEB Code</th>
+                      <th className="py-2.5 px-4">Semester</th>
+                      <th className="py-2.5 px-4">Credit Hours</th>
+                      <th className="py-2.5 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f4f1] text-[#0f1f17]">
+                    {filteredSubjects.map((s) => (
+                      <tr key={s.id} className="hover:bg-[#fcfdfc] transition-colors">
+                        <td className="py-3 px-4 font-bold text-[#0f1f17] text-xs">
+                          <span className="block truncate max-w-[240px] xl:max-w-md">{s.name}</span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="font-mono text-xs font-bold text-[#0a4b32] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
                             {s.code}
-                          </td>
-                          <td className="py-3.5 px-4 text-xs">
-                            <Badge variant="outline" className="bg-[#f0f4f1] border-[#e2e8e4]">
-                              Semester {s.semester}
-                            </Badge>
-                          </td>
-                          <td className="py-3.5 px-4 text-xs font-semibold text-[#5a6b62]">
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-xs">
+                          <Badge variant="outline" className="bg-[#f0f4f1] text-[#0f1f17] border-[#e2e8e4] font-semibold text-[11px]">
+                            Semester {s.semester}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 text-xs">
+                          <span className="inline-flex items-center text-xs font-semibold text-[#5a6b62] bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded">
                             {s.credit} Credits
-                          </td>
-                          <td className="py-3.5 px-4 text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteSubject(s.id, s.name)}
-                              className="h-8 w-8 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSubject(s.id, s.name)}
+                            className="h-8 w-8 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl cursor-pointer"
+                            title="Delete Course"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
