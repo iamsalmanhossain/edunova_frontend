@@ -421,6 +421,61 @@ export default function AdminBackupManager({ user }: AdminBackupManagerProps) {
         </div>
       </div>
 
+      {/* Metric & Info Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="border border-[#e2e8e4] bg-white shadow-sm p-3 sm:p-5">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-0">
+            <CardTitle className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Total Backups
+            </CardTitle>
+            <Database className="w-4 h-4 text-emerald-600 shrink-0" />
+          </CardHeader>
+          <CardContent className="p-0 pt-2">
+            <div className="text-xl sm:text-2xl font-bold text-slate-800">{meta.total}</div>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">Recorded in database</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-[#e2e8e4] bg-white shadow-sm p-3 sm:p-5">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-0">
+            <CardTitle className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Encryption Protocol
+            </CardTitle>
+            <Lock className="w-4 h-4 text-emerald-600 shrink-0" />
+          </CardHeader>
+          <CardContent className="p-0 pt-2">
+            <div className="text-base sm:text-lg font-bold text-slate-800">AES-256-GCM</div>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">Authenticated AEAD</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-[#e2e8e4] bg-white shadow-sm p-3 sm:p-5">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-0">
+            <CardTitle className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Automated Schedule
+            </CardTitle>
+            <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
+          </CardHeader>
+          <CardContent className="p-0 pt-2">
+            <div className="text-base sm:text-lg font-bold text-slate-800">1:00 AM & 1:00 PM</div>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">Twice daily full dumps</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-[#e2e8e4] bg-white shadow-sm p-3 sm:p-5">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-0">
+            <CardTitle className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Retention Policies
+            </CardTitle>
+            <HardDrive className="w-4 h-4 text-emerald-600 shrink-0" />
+          </CardHeader>
+          <CardContent className="p-0 pt-2">
+            <div className="text-base sm:text-lg font-bold text-slate-800">30d Backup / 7d Audit</div>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">Auto-purged by cron</p>
+          </CardContent>
+        </Card>
+      </div>
+
     </div>
   );
 }
