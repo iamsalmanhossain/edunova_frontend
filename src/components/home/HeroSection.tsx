@@ -22,33 +22,27 @@ import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 
 // 5 Kishoreganj Polytechnic Institute (KIPI) Campus Images
-// Order strictly maintained:
-// 1. kipi.jpg (Main Campus Academic Building)
-// 2. kipi-gate.jpg (Main Entrance Gate)
-// 3. kipi-aerial.jpg (Campus Landscape & Aerial Grounds)
-// 4. kipi-ground.jpg (Campus Grounds & Walkways)
-// 5. kipi-academic.jpg (Academic & Lab Infrastructure)
 const HERO_SLIDES = [
   {
     url: "/images/hero/kipi.jpg",
     title: "KIPI Central Academic Building",
     caption: "Main administrative & 4-storey academic campus building",
-    badge: "Main Campus Building",
+    badge: "Academic Building",
     category: "Campus Architecture",
   },
   {
     url: "/images/hero/kipi-gate.jpg",
     title: "KIPI Main Campus Gate",
     caption: "Official entrance gateway of Kishoreganj Polytechnic Institute",
-    badge: "Campus Entrance",
-    category: "Main Entrance",
+    badge: "Main Entrance",
+    category: "Campus Gateway",
   },
   {
     url: "/images/hero/kipi-aerial.jpg",
     title: "Vibrant Campus Landscape",
     caption: "Panoramic aerial view of grounds & academic complex",
-    badge: "Aerial Landscape",
-    category: "Scenic Overview",
+    badge: "Campus Grounds",
+    category: "Scenic Aerial View",
   },
   {
     url: "/images/hero/kipi-ground.jpg",
@@ -61,8 +55,8 @@ const HERO_SLIDES = [
     url: "/images/hero/kipi-academic.jpg",
     title: "Technical Labs & Academic Wing",
     caption: "Modern engineering classrooms & laboratory facilities",
-    badge: "Academic Wing",
-    category: "Engineering Labs",
+    badge: "Laboratories & Labs",
+    category: "Engineering Facilities",
   },
 ];
 
@@ -134,7 +128,6 @@ export default function HeroSection() {
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartXRef.current - touchEndX;
 
-    // Minimum swipe threshold of 45px
     if (Math.abs(diff) > 45) {
       if (diff > 0) {
         nextSlide();
@@ -148,285 +141,283 @@ export default function HeroSection() {
   const activeSlide = HERO_SLIDES[currentSlide];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#041f15] via-[#073825] to-[#031810] text-white">
-      {/* Ambient background lighting */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#0a5237]/35 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#c48b28]/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
+    <section
+      className="relative overflow-hidden bg-[#021810] text-white min-h-[580px] sm:min-h-[640px] lg:min-h-[680px] flex flex-col justify-between"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* =========================================================================
+          FULL-BLEED CINEMATIC BACKGROUND SLIDER
+         ========================================================================= */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={activeSlide.url}
+            initial={{ opacity: 0, scale: 1.06 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={activeSlide.url}
+              alt={activeSlide.title}
+              fill
+              priority={currentSlide === 0}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Multi-layered Gradients for Ultra-Crisp Typography & Visual Depth */}
+        {/* 1. Left-to-Right reading gradient (dark on left for text, transparent on right for campus visual) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#02160e]/95 via-[#02160e]/85 sm:via-[#02160e]/75 to-[#02160e]/40 z-10" />
+
+        {/* 2. Top-to-Bottom gradient (dark on top and bottom for smooth blending into navbar and highlights) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#02160e] via-transparent to-[#02160e]/85 z-10" />
+
+        {/* 3. Subtle ambient brand glow */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#0a5237]/40 blur-3xl z-10" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#c48b28]/25 blur-3xl z-10" />
       </div>
 
-      <Container size="wide" className="relative z-10 py-8 sm:py-12 lg:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
-          {/* Left Column: Institutional Info & CTAs */}
-          <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-center min-w-0">
-            {/* Institutional Accreditation Pill */}
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 rounded-full bg-[#0a4b32]/90 border border-[#c48b28]/40 backdrop-blur-md text-white text-[11px] sm:text-xs font-medium mb-3 shadow-sm w-fit max-w-full"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#c48b28] animate-pulse shrink-0" />
-              <span className="text-[#fef8ec] font-semibold truncate">Institutional Campus</span>
-              <span className="text-white/40 hidden xs:inline">•</span>
-              <span className="text-white/90 hidden xs:inline truncate">Kishoreganj Polytechnic Institute</span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-2xl xs:text-3xl sm:text-4xl md:text-[42px] lg:text-[40px] xl:text-[46px] font-extrabold text-white tracking-tight leading-[1.15] break-words"
-            >
-              Fostering <span className="text-[#ecdcb9]">Technical Excellence</span> &amp; Modern Engineering
-            </motion.h1>
-
-            {/* Subtitle / Intro */}
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-3 text-xs sm:text-sm md:text-base text-white/85 leading-relaxed font-normal max-w-2xl break-words"
-            >
-              Welcome to EduNova at Kishoreganj Polytechnic Institute. Empowering future diploma engineers through structured technical curriculum, state-of-the-art laboratories, and unified digital academic governance.
-            </motion.p>
-
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
-            >
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 h-10 sm:h-11 text-xs sm:text-sm shadow-lg shadow-black/25"
+      {/* =========================================================================
+          HERO MAIN CONTENT
+         ========================================================================= */}
+      <div className="relative z-20 flex-1 flex flex-col justify-center pt-10 sm:pt-14 lg:pt-16 pb-8">
+        <Container size="wide">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-8 xl:col-span-7 flex flex-col justify-center min-w-0">
+              {/* Institutional Accreditation Pill */}
+              <motion.div
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-[#032014]/85 border border-[#c48b28]/45 backdrop-blur-md text-white text-[11px] sm:text-xs font-medium mb-4 shadow-lg w-fit max-w-full"
               >
-                <Link href="/login" className="flex items-center justify-center gap-2">
-                  <LogIn className="w-4 h-4 shrink-0" />
-                  <span>Access Digital Campus</span>
-                </Link>
-              </Button>
+                <span className="w-2 h-2 rounded-full bg-[#c48b28] animate-pulse shrink-0" />
+                <span className="text-[#fef8ec] font-semibold truncate">Institutional Campus</span>
+                <span className="text-white/40 hidden xs:inline">•</span>
+                <span className="text-white/95 hidden xs:inline truncate">Kishoreganj Polytechnic Institute</span>
+                <span className="text-white/40 hidden sm:inline">•</span>
+                <span className="text-white/80 font-mono text-[10px] hidden sm:inline">EIIN: 66035</span>
+              </motion.div>
 
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 h-10 sm:h-11 text-xs sm:text-sm backdrop-blur-xs"
+              {/* Main Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[52px] font-extrabold text-white tracking-tight leading-[1.12] drop-shadow-md break-words"
               >
-                <Link href="/campus" className="flex items-center justify-center gap-2">
-                  <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                  <span>Explore Campus</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Link>
-              </Button>
-            </motion.div>
+                Fostering <span className="text-[#ecdcb9]">Technical Excellence</span> &amp; Modern Engineering
+              </motion.h1>
 
-            {/* Feature Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="mt-6 pt-4 border-t border-white/15 grid grid-cols-1 xs:grid-cols-3 gap-3 text-white/85 text-xs lg:text-xs xl:text-sm"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <ShieldCheck className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">BTEB Approved Curriculum</span>
-              </div>
-              <div className="flex items-center gap-2 min-w-0">
-                <Building className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">4 Engineering Disciplines</span>
-              </div>
-              <div className="flex items-center gap-2 min-w-0">
-                <Sparkles className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">Shift 1 &amp; Shift 2 Programs</span>
-              </div>
-            </motion.div>
+              {/* Subtitle / Intro */}
+              <motion.p
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-4 text-xs sm:text-sm md:text-base text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-sm break-words"
+              >
+                Welcome to EduNova at Kishoreganj Polytechnic Institute. Empowering future diploma engineers through structured technical curriculum, state-of-the-art laboratories, and unified digital academic governance.
+              </motion.p>
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5"
+              >
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 h-11 text-xs sm:text-sm shadow-xl shadow-black/35 transition-all"
+                >
+                  <Link href="/login" className="flex items-center justify-center gap-2">
+                    <LogIn className="w-4 h-4 shrink-0" />
+                    <span>Access Digital Campus</span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-white/30 bg-black/35 hover:bg-white/20 text-white font-semibold px-6 h-11 text-xs sm:text-sm backdrop-blur-md transition-all shadow-md"
+                >
+                  <Link href="/campus" className="flex items-center justify-center gap-2">
+                    <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+                    <span>Explore Campus</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Link>
+                </Button>
+              </motion.div>
+
+              {/* Feature Badges */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.4 }}
+                className="mt-7 pt-4 border-t border-white/20 grid grid-cols-1 xs:grid-cols-3 gap-3.5 text-white/90 text-xs sm:text-sm font-medium"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <ShieldCheck className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+                  <span className="truncate">BTEB Approved Curriculum</span>
+                </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Building className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+                  <span className="truncate">4 Engineering Disciplines</span>
+                </div>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+                  <span className="truncate">Shift 1 &amp; Shift 2 Programs</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column: Floating Institutional Badge & Atmosphere */}
+            <div className="hidden lg:flex lg:col-span-4 xl:col-span-5 flex-col items-end justify-center pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="p-4 rounded-2xl bg-[#021810]/70 backdrop-blur-xl border border-white/20 shadow-2xl max-w-sm pointer-events-auto"
+              >
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-[#c48b28]/25 border border-[#c48b28]/40 flex items-center justify-center text-[#f5ebd6]">
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm leading-tight">
+                      Kishoreganj Polytechnic
+                    </h4>
+                    <p className="text-[#ecdcb9] text-xs">Govt. Technical Institute</p>
+                  </div>
+                </div>
+                <p className="text-white/80 text-xs leading-relaxed">
+                  Established in 2008 under Bangladesh Technical Education Board (BTEB), providing 4-year Diploma in Engineering.
+                </p>
+                <div className="mt-3 pt-2.5 border-t border-white/15 flex items-center justify-between text-[11px] text-white/80">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Campus Open</span>
+                  </span>
+                  <span className="font-mono text-white/90">BTEB: 66035</span>
+                </div>
+              </motion.div>
+            </div>
           </div>
+        </Container>
+      </div>
 
-          {/* Right Column: Redesigned Modern Glassmorphic Showcase */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-6 xl:col-span-5 w-full flex flex-col items-center"
-          >
-            {/* Ambient subtle glow around showcase card */}
-            <div className="relative w-full group">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-[#c48b28]/25 to-teal-500/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-              {/* Main Cinematic Glassmorphism Container */}
-              <div
-                className="relative w-full rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 bg-gradient-to-b from-white/15 via-white/10 to-black/35 border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-              >
-                {/* Visual Viewport: High Aspect Ratio without image cutoff */}
-                <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#03170e]">
-                  {/* Dynamic background ambient blur */}
-                  <div className="absolute inset-0 z-0 pointer-events-none">
-                    <Image
-                      src={activeSlide.url}
-                      alt=""
-                      fill
-                      className="object-cover blur-2xl opacity-40 scale-125 transition-all duration-700"
-                      sizes="500px"
-                    />
-                  </div>
-
-                  {/* Active Slide Image */}
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeSlide.url}
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.02 }}
-                      transition={{ duration: 0.45, ease: "easeInOut" }}
-                      className="absolute inset-0 z-10 cursor-pointer group/image"
-                      onClick={() => setIsLightboxOpen(true)}
-                    >
-                      <Image
-                        src={activeSlide.url}
-                        alt={activeSlide.title}
-                        fill
-                        priority={currentSlide === 0}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 650px"
-                        className="object-cover object-center transition-transform duration-700 group-hover/image:scale-[1.03]"
-                      />
-                      {/* Gradient scrims for readable overlays */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35 pointer-events-none" />
-                    </motion.div>
-                  </AnimatePresence>
-
-                  {/* 1. Top Story Progress Bars (Apple / Instagram Style) */}
-                  <div className="absolute top-3 sm:top-3.5 left-3 sm:left-4 right-3 sm:right-4 z-30 flex items-center gap-1.5 sm:gap-2">
-                    {HERO_SLIDES.map((slide, idx) => {
-                      const isPast = idx < currentSlide;
-                      const isCurrent = idx === currentSlide;
-                      return (
-                        <button
-                          key={slide.url}
-                          type="button"
-                          onClick={() => goToSlide(idx)}
-                          className="relative h-1 sm:h-1.5 flex-1 rounded-full bg-white/30 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
-                          aria-label={`View slide ${idx + 1}: ${slide.title}`}
-                          title={`Slide ${idx + 1}: ${slide.title}`}
-                        >
-                          <div
-                            className={`h-full rounded-full transition-all ${
-                              isPast
-                                ? "w-full bg-[#ecdcb9]"
-                                : isCurrent
-                                ? "bg-gradient-to-r from-[#ecdcb9] via-emerald-300 to-[#c48b28]"
-                                : "w-0"
-                            }`}
-                            style={
-                              isCurrent
-                                ? {
-                                    width: `${progress}%`,
-                                    transition: isPaused ? "none" : "width 50ms linear",
-                                  }
-                                : undefined
-                            }
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* 2. Top Info & Fullscreen Controls Bar (below progress bars) */}
-                  <div className="absolute top-7 sm:top-8 left-3 sm:left-4 right-3 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium shadow-md">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                      <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 pointer-events-auto">
-                      <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-mono shadow-md">
-                        {String(currentSlide + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setIsLightboxOpen(true)}
-                        className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black/85 hover:border-white/40 flex items-center justify-center transition-all cursor-pointer shadow-md"
-                        title="View Fullscreen"
-                        aria-label="View Fullscreen"
-                      >
-                        <Maximize2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 3. Floating Glassmorphic Caption & Slide Navigation Card (At Bottom) */}
-                  <div className="absolute bottom-3 sm:bottom-3.5 left-3 sm:left-3.5 right-3 sm:right-3.5 z-20 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-black/65 sm:bg-black/55 backdrop-blur-xl border border-white/20 shadow-2xl flex items-center justify-between gap-3 pointer-events-auto">
-                    <div className="min-w-0 pr-1">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <GraduationCap className="w-3.5 h-3.5 text-[#ecdcb9] shrink-0" />
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#ecdcb9] uppercase tracking-wider truncate">
-                          KIPI Campus • {activeSlide.category}
-                        </span>
-                      </div>
-                      <h3 className="text-white font-bold text-sm sm:text-base leading-snug truncate drop-shadow-sm">
-                        {activeSlide.title}
-                      </h3>
-                      <p className="text-white/80 text-[11px] sm:text-xs drop-shadow-sm truncate mt-0.5">
-                        {activeSlide.caption}
-                      </p>
-                    </div>
-
-                    {/* Previous & Next Control Buttons */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={prevSlide}
-                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
-                        aria-label="Previous photo"
-                        title="Previous photo"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={nextSlide}
-                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
-                        aria-label="Next photo"
-                        title="Next photo"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Bottom Sleek Institutional Info Strip (Replaces cramped thumbnails) */}
-                <div className="mt-2 sm:mt-2.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-between gap-2 text-[11px] sm:text-xs text-white/85">
-                  <div className="flex items-center gap-1.5 min-w-0 truncate">
-                    <MapPin className="w-3.5 h-3.5 text-[#ecdcb9] shrink-0" />
-                    <span className="text-white/60">BTEB Code:</span>
-                    <span className="font-mono font-semibold text-white">66035</span>
-                  </div>
-                  <div className="hidden xs:flex items-center gap-1.5 text-white/60">
-                    <span>•</span>
-                    <span className="text-white/90 font-medium">4 Tech Departments</span>
-                    <span>•</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                    <span className="text-emerald-300 font-semibold">1st &amp; 2nd Shift</span>
-                  </div>
-                </div>
+      {/* =========================================================================
+          BOTTOM DOCKED SLIDE CONTROLLER & STORY BAR
+         ========================================================================= */}
+      <div className="relative z-20 pb-12 sm:pb-16 lg:pb-20 pt-4">
+        <Container size="wide">
+          <div className="p-3 sm:p-4 rounded-2xl bg-black/60 sm:bg-black/50 backdrop-blur-xl border border-white/20 shadow-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4">
+            {/* Left: Active Slide Info */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#c48b28]/30 text-[#f5ebd6] border border-[#c48b28]/50 shrink-0">
+                {activeSlide.badge}
+              </span>
+              <div className="min-w-0 pr-2">
+                <p className="text-white font-bold text-xs sm:text-sm truncate drop-shadow-sm">
+                  {activeSlide.title}
+                </p>
+                <p className="text-white/75 text-[11px] sm:text-xs truncate hidden xs:block">
+                  {activeSlide.caption}
+                </p>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </Container>
 
-      {/* Fullscreen High-Resolution Lightbox Modal */}
+            {/* Right: Story Progress Bars & Navigation Controls */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0 justify-between md:justify-end">
+              {/* Segmented Progress Bars */}
+              <div className="flex items-center gap-1.5 w-32 sm:w-44 shrink-0">
+                {HERO_SLIDES.map((slide, idx) => {
+                  const isPast = idx < currentSlide;
+                  const isCurrent = idx === currentSlide;
+                  return (
+                    <button
+                      key={slide.url}
+                      type="button"
+                      onClick={() => goToSlide(idx)}
+                      className="relative h-1.5 flex-1 rounded-full bg-white/25 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
+                      aria-label={`Slide ${idx + 1}: ${slide.title}`}
+                      title={`${slide.title}`}
+                    >
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          isPast
+                            ? "w-full bg-[#ecdcb9]"
+                            : isCurrent
+                            ? "bg-gradient-to-r from-[#ecdcb9] via-emerald-300 to-[#c48b28]"
+                            : "w-0"
+                        }`}
+                        style={
+                          isCurrent
+                            ? {
+                                width: `${progress}%`,
+                                transition: isPaused ? "none" : "width 50ms linear",
+                              }
+                            : undefined
+                        }
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Counter Indicator */}
+              <span className="px-2 py-0.5 rounded-md bg-white/10 font-mono text-[11px] sm:text-xs text-white/90 shrink-0">
+                {String(currentSlide + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}
+              </span>
+
+              {/* Controls: Prev, Next & Fullscreen Lightbox */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={prevSlide}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
+                  aria-label="Previous photo"
+                  title="Previous photo"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextSlide}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
+                  aria-label="Next photo"
+                  title="Next photo"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
+                  aria-label="View Fullscreen"
+                  title="View Fullscreen"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* =========================================================================
+          FULLSCREEN HIGH-RESOLUTION LIGHTBOX MODAL
+         ========================================================================= */}
       <AnimatePresence>
         {isLightboxOpen && (
           <motion.div
