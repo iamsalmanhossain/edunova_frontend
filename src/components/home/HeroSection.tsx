@@ -229,7 +229,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#021810] text-white flex flex-col justify-center items-center select-none pt-4 sm:pt-6 lg:pt-8 pb-10 sm:pb-14"
+      className="relative overflow-hidden bg-[#021810] text-white flex flex-col justify-between items-center select-none min-h-[calc(100vh-105px)] lg:min-h-[calc(100vh-112px)] min-h-[calc(100dvh-105px)] pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-10"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -370,9 +370,9 @@ export default function HeroSection() {
       </div>
 
       {/* =========================================================================
-          2. CENTERED HERO CONTENT (HIGH-DEFINITION STAGGERED TEXT ANIMATIONS)
+          2. CENTERED HERO CONTENT (FULLSCREEN VIEWPORT BALANCED)
          ========================================================================= */}
-      <Container size="default" className="relative z-20 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full">
+      <Container size="default" className="relative z-20 flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full my-auto">
         {/* Dynamic Text Container: Fixed min-height ensures 0 screen jitter ("coto boro hoi na") */}
         <div className="relative w-full min-h-[210px] xs:min-h-[220px] sm:min-h-[235px] md:min-h-[245px] flex items-center justify-center">
           <AnimatePresence mode="popLayout" custom={direction}>
@@ -428,24 +428,64 @@ export default function HeroSection() {
           </AnimatePresence>
         </div>
 
-        {/* Action Buttons (Permanent, Centered & Animated) */}
-        <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-          {/* Primary CTA */}
+        {/* Action Buttons: Primary button features INFINITE CONTINUOUS ANIMATION */}
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          {/* Primary CTA with INFINITE ANIMATION (Ambient Breathing Glow + Laser Light Shimmer + Scale Pulse) */}
           <motion.div
-            whileHover={{ scale: 1.04 }}
+            animate={{
+              scale: [1, 1.025, 1],
+            }}
+            transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
-            className="relative group rounded-lg w-full sm:w-auto"
+            className="relative group rounded-xl w-full sm:w-auto"
           >
-            <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-[#c48b28] via-emerald-400 to-[#c48b28] opacity-60 blur-sm group-hover:opacity-100 transition duration-500 animate-pulse" />
+            {/* Infinite Pulsing Ambient Glow Halo */}
+            <motion.div
+              animate={{
+                opacity: [0.5, 0.95, 0.5],
+                scale: [0.98, 1.06, 0.98],
+              }}
+              transition={{
+                duration: 2.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -inset-1 rounded-xl bg-gradient-to-r from-[#c48b28] via-emerald-400 to-[#c48b28] blur-md pointer-events-none"
+            />
+
             <Button
               asChild
               size="lg"
-              className="relative bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm shadow-xl shadow-black/40 overflow-hidden w-full sm:w-auto cursor-pointer"
+              className="relative bg-gradient-to-r from-[#c48b28] via-[#d6992d] to-[#b07b22] hover:brightness-110 text-white font-bold px-7 sm:px-8 h-12 text-xs sm:text-sm shadow-2xl shadow-black/50 overflow-hidden w-full sm:w-auto cursor-pointer border border-amber-300/30"
             >
-              <Link href="/login" className="flex items-center justify-center gap-2">
-                <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+              <Link href="/login" className="flex items-center justify-center gap-2.5">
+                {/* Infinite Continuous Laser Light Beam Sweep */}
+                <motion.div
+                  animate={{
+                    x: ["-100%", "260%"],
+                  }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    repeatDelay: 0.4,
+                  }}
+                  className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/45 to-transparent -skew-x-12 pointer-events-none"
+                />
+
+                {/* Live Glowing Ping Indicator */}
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-85" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-100" />
+                </span>
+
                 <LogIn className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-6" />
-                <span>Access Digital Campus</span>
+                <span className="tracking-wide">Access Digital Campus</span>
               </Link>
             </Button>
           </motion.div>
@@ -460,7 +500,7 @@ export default function HeroSection() {
               asChild
               size="lg"
               variant="outline"
-              className="border-white/30 bg-black/40 hover:bg-white/20 text-white font-semibold px-6 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm backdrop-blur-md transition-all shadow-md group w-full sm:w-auto cursor-pointer"
+              className="border-white/30 bg-black/40 hover:bg-white/20 text-white font-semibold px-6 sm:px-7 h-12 text-xs sm:text-sm backdrop-blur-md transition-all shadow-md group w-full sm:w-auto cursor-pointer"
             >
               <Link href="/campus" className="flex items-center justify-center gap-2">
                 <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0 transition-transform group-hover:rotate-45" />
@@ -472,7 +512,7 @@ export default function HeroSection() {
         </div>
 
         {/* Minimal Centered Story Progress Indicators & Chevrons */}
-        <div className="mt-6 sm:mt-7 flex items-center justify-center gap-2.5 sm:gap-3">
+        <div className="mt-7 sm:mt-9 flex items-center justify-center gap-2.5 sm:gap-3">
           <motion.button
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
@@ -546,9 +586,13 @@ export default function HeroSection() {
             <Maximize2 className="w-3.5 h-3.5" />
           </motion.button>
         </div>
+      </Container>
 
-        {/* Feature Badges Centered Row */}
-        <div className="mt-6 sm:mt-7 pt-4 sm:pt-5 border-t border-white/20 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-white/90 text-[11px] sm:text-xs md:text-sm font-medium">
+      {/* =========================================================================
+          3. FEATURE BADGES AT HERO BOTTOM FOLD
+         ========================================================================= */}
+      <Container size="default" className="relative z-20 w-full max-w-4xl mx-auto">
+        <div className="pt-4 border-t border-white/15 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-white/90 text-[11px] sm:text-xs md:text-sm font-medium">
           <div className="flex items-center gap-2 group cursor-default">
             <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
               <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
