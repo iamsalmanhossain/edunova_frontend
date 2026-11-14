@@ -15,7 +15,7 @@ import {
   Maximize2,
   X,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 
@@ -75,8 +75,79 @@ const HERO_SLIDES = [
 
 const SLIDE_DURATION = 5500; // 5.5 seconds per slide
 
+// Staggered motion variants for smooth choreographed text reveal
+const textContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.05,
+      staggerDirection: -1,
+    },
+  },
+};
+
+const pillVariants: Variants = {
+  hidden: { opacity: 0, y: -16, scale: 0.9, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    scale: 0.95,
+    filter: "blur(4px)",
+    transition: { duration: 0.25 },
+  },
+};
+
+const headlineVariants: Variants = {
+  hidden: { opacity: 0, y: 26, filter: "blur(8px)", scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -18,
+    filter: "blur(6px)",
+    transition: { duration: 0.3 },
+  },
+};
+
+const subtitleVariants: Variants = {
+  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    filter: "blur(4px)",
+    transition: { duration: 0.25 },
+  },
+};
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -85,16 +156,19 @@ export default function HeroSection() {
   const touchStartXRef = useRef<number | null>(null);
 
   const goToSlide = useCallback((index: number) => {
+    setDirection(index > currentSlide ? 1 : -1);
     setCurrentSlide(index);
     setProgress(0);
-  }, []);
+  }, [currentSlide]);
 
   const nextSlide = useCallback(() => {
+    setDirection(1);
     setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     setProgress(0);
   }, []);
 
   const prevSlide = useCallback(() => {
+    setDirection(-1);
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
     setProgress(0);
   }, []);
@@ -109,6 +183,7 @@ export default function HeroSection() {
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
+          setDirection(1);
           setCurrentSlide((curr) => (curr + 1) % HERO_SLIDES.length);
           return 0;
         }
@@ -161,22 +236,34 @@ export default function HeroSection() {
       onTouchEnd={handleTouchEnd}
     >
       {/* =========================================================================
-          1. CINEMATIC KEN-BURNS BACKGROUND SLIDER (FIXED INSET, NO LAYOUT SHIFT)
+          1. CINEMATIC KEN-BURNS BACKGROUND SLIDER (WITH DEPTH LENS BLUR TRANSITION)
          ========================================================================= */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <AnimatePresence mode="sync">
           <motion.div
             key={activeSlide.url}
-            initial={{ opacity: 0, scale: 1.1 }}
+            initial={{
+              opacity: 0,
+              scale: 1.14,
+              filter: "blur(10px) brightness(0.75)",
+            }}
             animate={{
               opacity: 1,
               scale: 1.02,
-              transition: { duration: 1.1, ease: "easeOut" },
+              filter: "blur(0px) brightness(1)",
+              transition: {
+                duration: 1.3,
+                ease: [0.16, 1, 0.3, 1] as const,
+              },
             }}
             exit={{
               opacity: 0,
-              scale: 0.99,
-              transition: { duration: 0.8, ease: "easeInOut" },
+              scale: 0.98,
+              filter: "blur(8px) brightness(0.7)",
+              transition: {
+                duration: 0.9,
+                ease: "easeInOut",
+              },
             }}
             className="absolute inset-0"
           >
@@ -204,6 +291,18 @@ export default function HeroSection() {
               />
             </motion.div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* Cinematic Golden Lens Flare Sweep on Image Transition */}
+        <AnimatePresence>
+          <motion.div
+            key={`flare-${currentSlide}`}
+            initial={{ opacity: 0.5, scale: 0.9 }}
+            animate={{ opacity: 0, scale: 1.3 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#c48b28]/15 to-transparent pointer-events-none z-10"
+          />
         </AnimatePresence>
 
         {/* Multi-layered Gradients for Contrast & Legibility */}
@@ -271,22 +370,26 @@ export default function HeroSection() {
       </div>
 
       {/* =========================================================================
-          2. CENTERED HERO CONTENT (COMPACT TOP SPACING + ROCK-SOLID CONSTANT HEIGHT)
+          2. CENTERED HERO CONTENT (HIGH-DEFINITION STAGGERED TEXT ANIMATIONS)
          ========================================================================= */}
       <Container size="default" className="relative z-20 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full">
-        {/* Dynamic Text Container: Fixed min-height avoids screen size jumping ("coto boro hoi") */}
+        {/* Dynamic Text Container: Fixed min-height ensures 0 screen jitter ("coto boro hoi na") */}
         <div className="relative w-full min-h-[210px] xs:min-h-[220px] sm:min-h-[235px] md:min-h-[245px] flex items-center justify-center">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="popLayout" custom={direction}>
             <motion.div
               key={currentSlide}
-              initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -14, filter: "blur(4px)" }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              custom={direction}
+              variants={textContainerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               className="w-full flex flex-col items-center justify-center text-center"
             >
-              {/* Dynamic Institutional Badge Pill */}
-              <div className="group relative inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-[#032014]/90 border border-[#c48b28]/50 backdrop-blur-xl text-white text-[11px] sm:text-xs font-medium mb-3 sm:mb-4 shadow-xl overflow-hidden">
+              {/* Dynamic Institutional Badge Pill with Pop & Scale Animation */}
+              <motion.div
+                variants={pillVariants}
+                className="group relative inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-[#032014]/90 border border-[#c48b28]/50 backdrop-blur-xl text-white text-[11px] sm:text-xs font-medium mb-3 sm:mb-4 shadow-xl overflow-hidden"
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
 
                 <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
@@ -297,10 +400,13 @@ export default function HeroSection() {
                 <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
                 <span className="text-white/40">•</span>
                 <span className="text-white/80 font-mono text-[10px] sm:text-xs">EIIN: 66035</span>
-              </div>
+              </motion.div>
 
-              {/* Dynamic Main Headline */}
-              <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-[50px] font-black text-white tracking-tight leading-[1.14] drop-shadow-lg max-w-3xl">
+              {/* Dynamic Main Headline with Staggered Rise & Blur Focus */}
+              <motion.h1
+                variants={headlineVariants}
+                className="text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-[50px] font-black text-white tracking-tight leading-[1.14] drop-shadow-lg max-w-3xl"
+              >
                 {activeSlide.headlinePrefix}
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-[#ecdcb9] via-[#ffffff] via-amber-200 to-[#ecdcb9] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
@@ -309,12 +415,15 @@ export default function HeroSection() {
                   <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#ecdcb9]/0 via-[#c48b28] to-[#ecdcb9]/0" />
                 </span>
                 {activeSlide.headlineSuffix}
-              </h1>
+              </motion.h1>
 
-              {/* Dynamic Subtitle / Description */}
-              <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-md">
+              {/* Dynamic Subtitle with Smooth Follow-Through Animation */}
+              <motion.p
+                variants={subtitleVariants}
+                className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-md"
+              >
                 {activeSlide.subtitle}
-              </p>
+              </motion.p>
             </motion.div>
           </AnimatePresence>
         </div>
