@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Maximize2,
   X,
-  Camera,
+  MapPin,
+  GraduationCap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Container from "@/components/shared/Container";
@@ -31,59 +32,87 @@ const HERO_SLIDES = [
   {
     url: "/images/hero/kipi.jpg",
     title: "KIPI Central Academic Building",
-    caption: "Main administrative & academic campus building",
+    caption: "Main administrative & 4-storey academic campus building",
     badge: "Main Campus Building",
+    category: "Campus Architecture",
   },
   {
     url: "/images/hero/kipi-gate.jpg",
     title: "KIPI Main Campus Gate",
     caption: "Official entrance gateway of Kishoreganj Polytechnic Institute",
     badge: "Campus Entrance",
+    category: "Main Entrance",
   },
   {
     url: "/images/hero/kipi-aerial.jpg",
     title: "Vibrant Campus Landscape",
     caption: "Panoramic aerial view of grounds & academic complex",
     badge: "Aerial Landscape",
+    category: "Scenic Overview",
   },
   {
     url: "/images/hero/kipi-ground.jpg",
     title: "Campus Ground & Garden",
-    caption: "Open green grounds, scenic gardens & walkways",
+    caption: "Open green grounds, scenic gardens & student walkways",
     badge: "Green Grounds",
+    category: "Student Life & Greenery",
   },
   {
     url: "/images/hero/kipi-academic.jpg",
     title: "Technical Labs & Academic Wing",
     caption: "Modern engineering classrooms & laboratory facilities",
     badge: "Academic Wing",
+    category: "Engineering Labs",
   },
 ];
 
+const SLIDE_DURATION = 5500; // 5.5 seconds per slide
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+  // Touch swipe support for mobile
+  const touchStartXRef = useRef<number | null>(null);
+
+  const goToSlide = useCallback((index: number) => {
+    setCurrentSlide(index);
+    setProgress(0);
+  }, []);
+
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    setProgress(0);
   }, []);
 
   const prevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    setProgress(0);
   }, []);
 
-  // Auto-advance slides every 5.5 seconds unless paused or modal is open
+  // Smooth story progress bar & auto-advance timer
   useEffect(() => {
     if (isPaused || isLightboxOpen) return;
+
+    const intervalTime = 50; // update progress every 50ms
+    const step = (intervalTime / SLIDE_DURATION) * 100;
+
     const timer = setInterval(() => {
-      nextSlide();
-    }, 5500);
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setCurrentSlide((curr) => (curr + 1) % HERO_SLIDES.length);
+          return 0;
+        }
+        return prev + step;
+      });
+    }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [isPaused, isLightboxOpen, nextSlide]);
+  }, [isPaused, isLightboxOpen]);
 
-  // Handle keyboard events for lightbox
+  // Handle keyboard events for lightbox & navigation
   useEffect(() => {
     if (!isLightboxOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -95,14 +124,35 @@ export default function HeroSection() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen, nextSlide, prevSlide]);
 
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+
+    // Minimum swipe threshold of 45px
+    if (Math.abs(diff) > 45) {
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    touchStartXRef.current = null;
+  };
+
   const activeSlide = HERO_SLIDES[currentSlide];
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#041f15] via-[#073825] to-[#031810] text-white">
       {/* Ambient background lighting */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#0a5237]/30 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#c48b28]/15 blur-3xl" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#0a5237]/35 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#c48b28]/20 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
       </div>
 
@@ -197,140 +247,179 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right Column: Dedicated Full-Visibility Image Showcase Card */}
+          {/* Right Column: Redesigned Modern Glassmorphic Showcase */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-6 xl:col-span-5 w-full flex flex-col items-center"
           >
-            <div
-              className="relative w-full rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 bg-gradient-to-b from-white/15 via-white/10 to-white/5 border border-white/20 backdrop-blur-xl shadow-2xl shadow-black/50"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {/* Native 4:3 Aspect Ratio Frame: Image is completely visible without severe cropping */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#03170e]">
-                {/* Soft ambient background blur */}
-                <div className="absolute inset-0 z-0">
-                  <Image
-                    src={activeSlide.url}
-                    alt={activeSlide.title}
-                    fill
-                    className="object-cover blur-2xl opacity-40 scale-125"
-                    sizes="500px"
-                  />
-                </div>
+            {/* Ambient subtle glow around showcase card */}
+            <div className="relative w-full group">
+              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-[#c48b28]/25 to-teal-500/20 blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                {/* Main Active Foreground Image */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeSlide.url}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                    className="absolute inset-0 z-10 cursor-pointer group"
-                    onClick={() => setIsLightboxOpen(true)}
-                  >
+              {/* Main Cinematic Glassmorphism Container */}
+              <div
+                className="relative w-full rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 bg-gradient-to-b from-white/15 via-white/10 to-black/35 border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Visual Viewport: High Aspect Ratio without image cutoff */}
+                <div className="relative aspect-[4/3] sm:aspect-[16/11] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#03170e]">
+                  {/* Dynamic background ambient blur */}
+                  <div className="absolute inset-0 z-0 pointer-events-none">
                     <Image
                       src={activeSlide.url}
-                      alt={activeSlide.title}
+                      alt=""
                       fill
-                      priority={currentSlide === 0}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                      className="object-contain sm:object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                      className="object-cover blur-2xl opacity-40 scale-125 transition-all duration-700"
+                      sizes="500px"
                     />
-                    {/* Bottom subtle contrast gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Top Overlay Bar */}
-                <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 z-20 flex items-center justify-between pointer-events-none">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                    <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 pointer-events-auto">
-                    <span className="px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-mono shadow-sm">
-                      {String(currentSlide + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}
-                    </span>
-                    <button
-                      type="button"
+                  {/* Active Slide Image */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeSlide.url}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.02 }}
+                      transition={{ duration: 0.45, ease: "easeInOut" }}
+                      className="absolute inset-0 z-10 cursor-pointer group/image"
                       onClick={() => setIsLightboxOpen(true)}
-                      className="w-7 h-7 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black/90 hover:border-white/40 flex items-center justify-center transition-all cursor-pointer shadow-sm"
-                      title="View Fullscreen"
-                      aria-label="View Fullscreen"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Bottom Caption & Navigation Controls */}
-                <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 z-20 flex items-end justify-between gap-2.5 pointer-events-none">
-                  <div className="min-w-0 pr-2">
-                    <h3 className="text-white font-bold text-sm sm:text-base leading-tight drop-shadow-md truncate">
-                      {activeSlide.title}
-                    </h3>
-                    <p className="text-white/80 text-[11px] sm:text-xs drop-shadow-sm truncate mt-0.5">
-                      {activeSlide.caption}
-                    </p>
-                  </div>
-
-                  {/* Previous & Next Control Buttons */}
-                  <div className="flex items-center gap-1.5 shrink-0 pointer-events-auto">
-                    <button
-                      type="button"
-                      onClick={prevSlide}
-                      className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/25 text-white hover:bg-[#c48b28] hover:border-[#c48b28] flex items-center justify-center transition-all cursor-pointer shadow-md"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={nextSlide}
-                      className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/25 text-white hover:bg-[#c48b28] hover:border-[#c48b28] flex items-center justify-center transition-all cursor-pointer shadow-md"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 5 Clickable Mini Thumbnails Row directly underneath the image */}
-              <div className="grid grid-cols-5 gap-1.5 sm:gap-2 mt-2 sm:mt-2.5">
-                {HERO_SLIDES.map((slide, idx) => {
-                  const isActive = idx === currentSlide;
-                  return (
-                    <button
-                      key={slide.url}
-                      type="button"
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? "ring-2 ring-[#c48b28] shadow-md shadow-[#c48b28]/40 scale-[1.03] opacity-100"
-                          : "opacity-60 hover:opacity-100 hover:scale-[1.02] border border-white/15"
-                      }`}
-                      aria-label={`View ${slide.title}`}
                     >
                       <Image
-                        src={slide.url}
-                        alt={slide.title}
+                        src={activeSlide.url}
+                        alt={activeSlide.title}
                         fill
-                        sizes="120px"
-                        className="object-cover object-center"
+                        priority={currentSlide === 0}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 650px"
+                        className="object-cover object-center transition-transform duration-700 group-hover/image:scale-[1.03]"
                       />
-                      {isActive && (
-                        <div className="absolute inset-0 bg-[#c48b28]/15" />
-                      )}
-                    </button>
-                  );
-                })}
+                      {/* Gradient scrims for readable overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35 pointer-events-none" />
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* 1. Top Story Progress Bars (Apple / Instagram Style) */}
+                  <div className="absolute top-3 sm:top-3.5 left-3 sm:left-4 right-3 sm:right-4 z-30 flex items-center gap-1.5 sm:gap-2">
+                    {HERO_SLIDES.map((slide, idx) => {
+                      const isPast = idx < currentSlide;
+                      const isCurrent = idx === currentSlide;
+                      return (
+                        <button
+                          key={slide.url}
+                          type="button"
+                          onClick={() => goToSlide(idx)}
+                          className="relative h-1 sm:h-1.5 flex-1 rounded-full bg-white/30 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
+                          aria-label={`View slide ${idx + 1}: ${slide.title}`}
+                          title={`Slide ${idx + 1}: ${slide.title}`}
+                        >
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              isPast
+                                ? "w-full bg-[#ecdcb9]"
+                                : isCurrent
+                                ? "bg-gradient-to-r from-[#ecdcb9] via-emerald-300 to-[#c48b28]"
+                                : "w-0"
+                            }`}
+                            style={
+                              isCurrent
+                                ? {
+                                    width: `${progress}%`,
+                                    transition: isPaused ? "none" : "width 50ms linear",
+                                  }
+                                : undefined
+                            }
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 2. Top Info & Fullscreen Controls Bar (below progress bars) */}
+                  <div className="absolute top-7 sm:top-8 left-3 sm:left-4 right-3 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium shadow-md">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                      <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 pointer-events-auto">
+                      <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-mono shadow-md">
+                        {String(currentSlide + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsLightboxOpen(true)}
+                        className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black/85 hover:border-white/40 flex items-center justify-center transition-all cursor-pointer shadow-md"
+                        title="View Fullscreen"
+                        aria-label="View Fullscreen"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 3. Floating Glassmorphic Caption & Slide Navigation Card (At Bottom) */}
+                  <div className="absolute bottom-3 sm:bottom-3.5 left-3 sm:left-3.5 right-3 sm:right-3.5 z-20 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-black/65 sm:bg-black/55 backdrop-blur-xl border border-white/20 shadow-2xl flex items-center justify-between gap-3 pointer-events-auto">
+                    <div className="min-w-0 pr-1">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <GraduationCap className="w-3.5 h-3.5 text-[#ecdcb9] shrink-0" />
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#ecdcb9] uppercase tracking-wider truncate">
+                          KIPI Campus • {activeSlide.category}
+                        </span>
+                      </div>
+                      <h3 className="text-white font-bold text-sm sm:text-base leading-snug truncate drop-shadow-sm">
+                        {activeSlide.title}
+                      </h3>
+                      <p className="text-white/80 text-[11px] sm:text-xs drop-shadow-sm truncate mt-0.5">
+                        {activeSlide.caption}
+                      </p>
+                    </div>
+
+                    {/* Previous & Next Control Buttons */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={prevSlide}
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
+                        aria-label="Previous photo"
+                        title="Previous photo"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={nextSlide}
+                        className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95"
+                        aria-label="Next photo"
+                        title="Next photo"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Bottom Sleek Institutional Info Strip (Replaces cramped thumbnails) */}
+                <div className="mt-2 sm:mt-2.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center justify-between gap-2 text-[11px] sm:text-xs text-white/85">
+                  <div className="flex items-center gap-1.5 min-w-0 truncate">
+                    <MapPin className="w-3.5 h-3.5 text-[#ecdcb9] shrink-0" />
+                    <span className="text-white/60">BTEB Code:</span>
+                    <span className="font-mono font-semibold text-white">66035</span>
+                  </div>
+                  <div className="hidden xs:flex items-center gap-1.5 text-white/60">
+                    <span>•</span>
+                    <span className="text-white/90 font-medium">4 Tech Departments</span>
+                    <span>•</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="text-emerald-300 font-semibold">1st &amp; 2nd Shift</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -344,7 +433,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/92 backdrop-blur-md p-4 sm:p-6"
             onClick={() => setIsLightboxOpen(false)}
           >
             <div
@@ -354,6 +443,12 @@ export default function HeroSection() {
               {/* Lightbox Header Bar */}
               <div className="w-full flex items-center justify-between text-white pb-3 px-1">
                 <div className="min-w-0 pr-4">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c48b28]/30 text-[#f5ebd6] border border-[#c48b28]/50">
+                      {activeSlide.badge}
+                    </span>
+                    <span className="text-white/60 text-xs hidden xs:inline">• Kishoreganj Polytechnic Institute</span>
+                  </div>
                   <h4 className="font-bold text-base sm:text-lg truncate">{activeSlide.title}</h4>
                   <p className="text-white/75 text-xs sm:text-sm truncate">{activeSlide.caption}</p>
                 </div>
@@ -364,7 +459,7 @@ export default function HeroSection() {
                   <button
                     type="button"
                     onClick={() => setIsLightboxOpen(false)}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer"
                     aria-label="Close fullscreen view"
                   >
                     <X className="w-5 h-5" />
