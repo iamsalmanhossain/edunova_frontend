@@ -154,37 +154,36 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#021810] text-white min-h-[600px] sm:min-h-[660px] lg:min-h-[700px] flex flex-col justify-center items-center select-none"
+      className="relative overflow-hidden bg-[#021810] text-white flex flex-col justify-center items-center select-none pt-4 sm:pt-6 lg:pt-8 pb-10 sm:pb-14"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {/* =========================================================================
-          1. CINEMATIC KEN-BURNS BACKGROUND SLIDER (WITH SMOOTH ZOOM & PAN)
+          1. CINEMATIC KEN-BURNS BACKGROUND SLIDER (FIXED INSET, NO LAYOUT SHIFT)
          ========================================================================= */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <AnimatePresence mode="sync">
           <motion.div
             key={activeSlide.url}
-            initial={{ opacity: 0, scale: 1.12, filter: "brightness(0.85)" }}
+            initial={{ opacity: 0, scale: 1.1 }}
             animate={{
               opacity: 1,
-              scale: 1.03,
-              filter: "brightness(1)",
-              transition: { duration: 1.2, ease: "easeOut" },
+              scale: 1.02,
+              transition: { duration: 1.1, ease: "easeOut" },
             }}
             exit={{
               opacity: 0,
-              scale: 0.98,
-              transition: { duration: 0.9, ease: "easeInOut" },
+              scale: 0.99,
+              transition: { duration: 0.8, ease: "easeInOut" },
             }}
             className="absolute inset-0"
           >
             {/* Subtle camera drift while viewing image */}
             <motion.div
               animate={{
-                scale: [1.03, 1.07],
+                scale: [1.02, 1.06],
                 x: [0, -8],
               }}
               transition={{
@@ -207,11 +206,8 @@ export default function HeroSection() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Multi-layered Gradients for Center Text Contrast & Legibility */}
-        {/* Radial Center Scrim: Denser in middle for crisp centered text, open at sides */}
+        {/* Multi-layered Gradients for Contrast & Legibility */}
         <div className="absolute inset-0 bg-radial from-[#02160e]/95 via-[#02160e]/85 to-[#02160e]/75 z-10" />
-
-        {/* Top-to-Bottom Scrim: Blends into topbar and bottom highlights */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#02160e] via-transparent to-[#02160e]/85 z-10" />
 
         {/* Animated Aurora Orbs in Background */}
@@ -248,7 +244,7 @@ export default function HeroSection() {
 
         {/* Floating Micro-Stardust Particles */}
         <div className="absolute inset-0 z-10 pointer-events-none">
-          {[...Array(16)].map((_, i) => (
+          {[...Array(14)].map((_, i) => (
             <motion.span
               key={i}
               className="absolute rounded-full bg-gradient-to-tr from-[#ecdcb9] to-emerald-300"
@@ -275,65 +271,56 @@ export default function HeroSection() {
       </div>
 
       {/* =========================================================================
-          2. CENTERED HERO CONTENT (DYNAMICALLY CHANGES WITH SLIDES + ENTRANCE ANIMATION)
+          2. CENTERED HERO CONTENT (COMPACT TOP SPACING + ROCK-SOLID CONSTANT HEIGHT)
          ========================================================================= */}
-      <Container size="default" className="relative z-20 flex-1 flex flex-col items-center justify-center text-center py-14 sm:py-20 lg:py-24 max-w-4xl mx-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -20, filter: "blur(6px)" }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center text-center w-full"
-          >
-            {/* Dynamic Institutional Badge Pill */}
+      <Container size="default" className="relative z-20 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full">
+        {/* Dynamic Text Container: Fixed min-height avoids screen size jumping ("coto boro hoi") */}
+        <div className="relative w-full min-h-[210px] xs:min-h-[220px] sm:min-h-[235px] md:min-h-[245px] flex items-center justify-center">
+          <AnimatePresence mode="popLayout">
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4 }}
-              className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#032014]/90 border border-[#c48b28]/50 backdrop-blur-xl text-white text-xs sm:text-sm font-medium mb-5 shadow-xl overflow-hidden"
+              key={currentSlide}
+              initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -14, filter: "blur(4px)" }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full flex flex-col items-center justify-center text-center"
             >
-              {/* Subtle light sweep */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+              {/* Dynamic Institutional Badge Pill */}
+              <div className="group relative inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-[#032014]/90 border border-[#c48b28]/50 backdrop-blur-xl text-white text-[11px] sm:text-xs font-medium mb-3 sm:mb-4 shadow-xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
 
-              {/* Radar Status Ping */}
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
-              </span>
-
-              <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
-              <span className="text-white/40">•</span>
-              <span className="text-white/80 font-mono text-xs">EIIN: 66035</span>
-            </motion.div>
-
-            {/* Dynamic Main Headline */}
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-black text-white tracking-tight leading-[1.12] drop-shadow-lg max-w-3xl">
-              {activeSlide.headlinePrefix}
-              <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-[#ecdcb9] via-[#ffffff] via-amber-200 to-[#ecdcb9] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
-                  {activeSlide.headlineHighlight}
+                <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-400" />
                 </span>
-                <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#ecdcb9]/0 via-[#c48b28] to-[#ecdcb9]/0" />
-              </span>
-              {activeSlide.headlineSuffix}
-            </h1>
 
-            {/* Dynamic Subtitle / Description */}
-            <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-md">
-              {activeSlide.subtitle}
-            </p>
-          </motion.div>
-        </AnimatePresence>
+                <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
+                <span className="text-white/40">•</span>
+                <span className="text-white/80 font-mono text-[10px] sm:text-xs">EIIN: 66035</span>
+              </div>
+
+              {/* Dynamic Main Headline */}
+              <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-[50px] font-black text-white tracking-tight leading-[1.14] drop-shadow-lg max-w-3xl">
+                {activeSlide.headlinePrefix}
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-[#ecdcb9] via-[#ffffff] via-amber-200 to-[#ecdcb9] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
+                    {activeSlide.headlineHighlight}
+                  </span>
+                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#ecdcb9]/0 via-[#c48b28] to-[#ecdcb9]/0" />
+                </span>
+                {activeSlide.headlineSuffix}
+              </h1>
+
+              {/* Dynamic Subtitle / Description */}
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-md">
+                {activeSlide.subtitle}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Action Buttons (Permanent, Centered & Animated) */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-7 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto"
-        >
+        <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
           {/* Primary CTA */}
           <motion.div
             whileHover={{ scale: 1.04 }}
@@ -344,7 +331,7 @@ export default function HeroSection() {
             <Button
               asChild
               size="lg"
-              className="relative bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-7 h-11 sm:h-12 text-sm shadow-xl shadow-black/40 overflow-hidden w-full sm:w-auto"
+              className="relative bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm shadow-xl shadow-black/40 overflow-hidden w-full sm:w-auto cursor-pointer"
             >
               <Link href="/login" className="flex items-center justify-center gap-2">
                 <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-in-out pointer-events-none" />
@@ -364,7 +351,7 @@ export default function HeroSection() {
               asChild
               size="lg"
               variant="outline"
-              className="border-white/30 bg-black/40 hover:bg-white/20 text-white font-semibold px-7 h-11 sm:h-12 text-sm backdrop-blur-md transition-all shadow-md group w-full sm:w-auto"
+              className="border-white/30 bg-black/40 hover:bg-white/20 text-white font-semibold px-6 sm:px-7 h-10 sm:h-11 text-xs sm:text-sm backdrop-blur-md transition-all shadow-md group w-full sm:w-auto cursor-pointer"
             >
               <Link href="/campus" className="flex items-center justify-center gap-2">
                 <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0 transition-transform group-hover:rotate-45" />
@@ -373,10 +360,10 @@ export default function HeroSection() {
               </Link>
             </Button>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Minimal Centered Story Progress Indicators & Chevrons */}
-        <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
+        <div className="mt-6 sm:mt-7 flex items-center justify-center gap-2.5 sm:gap-3">
           <motion.button
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
@@ -390,7 +377,7 @@ export default function HeroSection() {
           </motion.button>
 
           {/* 5 Sleek Capsule Story Progress Indicators */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {HERO_SLIDES.map((slide, idx) => {
               const isPast = idx < currentSlide;
               const isCurrent = idx === currentSlide;
@@ -399,7 +386,7 @@ export default function HeroSection() {
                   key={slide.url}
                   type="button"
                   onClick={() => goToSlide(idx)}
-                  className="relative h-1.5 w-8 sm:w-11 rounded-full bg-white/25 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
+                  className="relative h-1.5 w-7 sm:w-10 rounded-full bg-white/25 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
                   aria-label={`Slide ${idx + 1}`}
                   title={slide.caption}
                 >
@@ -452,31 +439,26 @@ export default function HeroSection() {
         </div>
 
         {/* Feature Badges Centered Row */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-8 pt-5 border-t border-white/20 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-white/90 text-xs sm:text-sm font-medium"
-        >
+        <div className="mt-6 sm:mt-7 pt-4 sm:pt-5 border-t border-white/20 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-white/90 text-[11px] sm:text-xs md:text-sm font-medium">
           <div className="flex items-center gap-2 group cursor-default">
             <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
-              <ShieldCheck className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
             </div>
             <span className="group-hover:text-white transition-colors">BTEB Approved Curriculum</span>
           </div>
           <div className="flex items-center gap-2 group cursor-default">
             <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
-              <Building className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+              <Building className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
             </div>
             <span className="group-hover:text-white transition-colors">4 Engineering Disciplines</span>
           </div>
           <div className="flex items-center gap-2 group cursor-default">
             <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
-              <Sparkles className="w-4 h-4 text-[#ecdcb9] shrink-0" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
             </div>
             <span className="group-hover:text-white transition-colors">Shift 1 &amp; Shift 2 Programs</span>
           </div>
-        </motion.div>
+        </div>
       </Container>
 
       {/* =========================================================================
