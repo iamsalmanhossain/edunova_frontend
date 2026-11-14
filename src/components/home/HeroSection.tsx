@@ -428,86 +428,52 @@ export default function HeroSection() {
           </AnimatePresence>
         </div>
 
-        {/* Action Buttons: Primary button features INFINITE CONTINUOUS ANIMATION */}
+        {/* Action Buttons */}
         <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-          {/* Primary CTA with INFINITE ANIMATION (Ambient Breathing Glow + Laser Light Shimmer + Scale Pulse) */}
+          {/* Primary CTA: Clean Solid Gold Button */}
           <motion.div
-            animate={{
-              scale: [1, 1.025, 1],
-            }}
-            transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            className="relative group rounded-xl w-full sm:w-auto"
+            className="rounded-xl w-full sm:w-auto"
           >
-            {/* Infinite Pulsing Ambient Glow Halo */}
-            <motion.div
-              animate={{
-                opacity: [0.5, 0.95, 0.5],
-                scale: [0.98, 1.06, 0.98],
-              }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -inset-1 rounded-xl bg-gradient-to-r from-[#c48b28] via-emerald-400 to-[#c48b28] blur-md pointer-events-none"
-            />
-
             <Button
               asChild
               size="lg"
-              className="relative bg-gradient-to-r from-[#c48b28] via-[#d6992d] to-[#b07b22] hover:brightness-110 text-white font-bold px-7 sm:px-8 h-12 text-xs sm:text-sm shadow-2xl shadow-black/50 overflow-hidden w-full sm:w-auto cursor-pointer border border-amber-300/30"
+              className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 sm:px-7 h-11 text-xs sm:text-sm shadow-xl shadow-black/40 overflow-hidden w-full sm:w-auto cursor-pointer"
             >
-              <Link href="/login" className="flex items-center justify-center gap-2.5">
-                {/* Infinite Continuous Laser Light Beam Sweep */}
-                <motion.div
-                  animate={{
-                    x: ["-100%", "260%"],
-                  }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    repeatDelay: 0.4,
-                  }}
-                  className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/45 to-transparent -skew-x-12 pointer-events-none"
-                />
-
-                {/* Live Glowing Ping Indicator */}
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-85" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-100" />
-                </span>
-
+              <Link href="/login" className="flex items-center justify-center gap-2">
                 <LogIn className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-6" />
-                <span className="tracking-wide">Access Digital Campus</span>
+                <span>Access Digital Campus</span>
               </Link>
             </Button>
           </motion.div>
 
-          {/* Secondary CTA */}
+          {/* Secondary CTA: Infinite Rotating Glowing Border Beam Animation */}
           <motion.div
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            className="rounded-lg w-full sm:w-auto"
+            className="relative p-[1.5px] overflow-hidden rounded-xl group w-full sm:w-auto cursor-pointer shadow-xl shadow-black/40"
           >
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-white/30 bg-black/40 hover:bg-white/20 text-white font-semibold px-6 sm:px-7 h-12 text-xs sm:text-sm backdrop-blur-md transition-all shadow-md group w-full sm:w-auto cursor-pointer"
+            {/* Rotating Conic Light Beam running continuously around border */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 3.5,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute -top-[100%] -left-[100%] w-[300%] h-[300%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_270deg,#ecdcb9_315deg,#c48b28_360deg)] pointer-events-none"
+            />
+
+            {/* Inner Button Content */}
+            <Link
+              href="/campus"
+              className="relative z-10 flex items-center justify-center gap-2 px-6 sm:px-7 h-11 text-xs sm:text-sm font-semibold text-white bg-[#031d13]/90 hover:bg-[#05281a] backdrop-blur-xl rounded-[10px] transition-colors w-full sm:w-auto"
             >
-              <Link href="/campus" className="flex items-center justify-center gap-2">
-                <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0 transition-transform group-hover:rotate-45" />
-                <span>Explore Campus</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+              <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0 transition-transform group-hover:rotate-45" />
+              <span>Explore Campus</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+            </Link>
           </motion.div>
         </div>
 
