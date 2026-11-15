@@ -258,5 +258,47 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
     setIsModalOpen(true);
   };
 
+  // Handle save (Create or Update)
+  const handleSubmitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.designation.trim()) {
+      toastError("Designation is required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload: CreateStaffPayload = {
+        instituteId: formData.instituteId || targetInstituteId,
+        name: formData.name.trim() || undefined,
+        email: formData.email.trim() || undefined,
+        phone: formData.phone.trim() || undefined,
+        avatarUrl: formData.avatarUrl.trim() || undefined,
+        designation: formData.designation.trim(),
+        role: formData.role,
+        shift: formData.shift ? (formData.shift as Shift) : undefined,
+        departmentId: formData.departmentId || undefined,
+        displayOrder: Number(formData.displayOrder) || 0,
+        isPublished: formData.isPublished,
+      };
+
+      if (editingStaff) {
+        await staffService.updateStaff(editingStaff.id, payload);
+        toastSuccess("Staff member updated successfully!");
+      } else {
+        await staffService.createStaff(payload);
+        toastSuccess("Staff member created successfully!");
+      }
+
+      setIsModalOpen(false);
+      fetchStaff();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save staff record";
+      toastError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return <div>Admin Staff Manager</div>;
 }
