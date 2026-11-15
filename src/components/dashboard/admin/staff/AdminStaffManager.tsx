@@ -455,6 +455,105 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
         </Card>
       </div>
 
+      {/* Filter & Search Bar */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8e4] shadow-xs space-y-4">
+        {/* Tab Buttons (Active vs Trash) */}
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewTab("ACTIVE")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                viewTab === "ACTIVE"
+                  ? "bg-[#0a4b32] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              Active Directory ({viewTab === "ACTIVE" ? staffList.length : "..."})
+            </button>
+            <button
+              onClick={() => setViewTab("DELETED")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                viewTab === "DELETED"
+                  ? "bg-rose-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Trash / Soft-Deleted
+            </button>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchStaff}
+            className="text-xs text-gray-500 hover:text-gray-900"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 mr-1 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
+
+        {/* Filter Controls Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search name, title, email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 text-xs"
+            />
+          </div>
+
+          {/* Role Filter */}
+          <div>
+            <select
+              value={filterRole}
+              onChange={(e) => setFilterRole(e.target.value)}
+              className="w-full text-xs font-medium bg-[#f5f8f6] border border-[#e2e8e4] rounded-lg px-3 py-2 text-gray-700"
+            >
+              <option value="ALL">All Sections &amp; Roles</option>
+              {ALL_ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {ROLE_LABELS[r]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Shift Filter */}
+          <div>
+            <select
+              value={filterShift}
+              onChange={(e) => setFilterShift(e.target.value)}
+              className="w-full text-xs font-medium bg-[#f5f8f6] border border-[#e2e8e4] rounded-lg px-3 py-2 text-gray-700"
+            >
+              <option value="ALL">All Shifts</option>
+              <option value="FIRST_SHIFT">1st Shift</option>
+              <option value="SECOND_SHIFT">2nd Shift</option>
+            </select>
+          </div>
+
+          {/* Department Filter */}
+          <div>
+            <select
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              className="w-full text-xs font-medium bg-[#f5f8f6] border border-[#e2e8e4] rounded-lg px-3 py-2 text-gray-700"
+            >
+              <option value="ALL">All Departments</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name} ({d.code})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
