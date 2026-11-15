@@ -76,9 +76,79 @@ export default function PeopleDirectoryClient({
   }, [initialStaff, selectedCategory, selectedShift, selectedDept, searchQuery]);
 
   // Separate principal for featured display if in "ALL" or "LEADERSHIP"
+  const principal = useMemo(() => {
+    if (selectedCategory === "ALL" || selectedCategory === "LEADERSHIP") {
+      return filteredStaff.find((s) => s.role === "PRINCIPAL");
+    }
+    return null;
+  }, [filteredStaff, selectedCategory]);
+
+  const regularStaff = useMemo(() => {
+    if (principal && !searchQuery) {
+      return filteredStaff.filter((s) => s.id !== principal.id);
+    }
+    return filteredStaff;
+  }, [filteredStaff, principal, searchQuery]);
+
+  const resetFilters = () => {
+    setSelectedCategory("ALL");
+    setSelectedShift("ALL");
+    setSelectedDept("ALL");
+    setSearchQuery("");
+  };
+
+  const hasActiveFilters =
+    selectedCategory !== "ALL" ||
+    selectedShift !== "ALL" ||
+    selectedDept !== "ALL" ||
+    searchQuery.trim() !== "";
+
   return (
-    <div className="space-y-6">
-      <div className="text-sm">Filtered Staff: {filteredStaff.length}</div>
+    <div className="space-y-8">
+      {/* Category Pills Bar */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button
+          size="sm"
+          variant={selectedCategory === "ALL" ? "default" : "outline"}
+          onClick={() => setSelectedCategory("ALL")}
+          className={selectedCategory === "ALL" ? "bg-[#0a4b32] text-white" : ""}
+        >
+          All Personnel ({initialStaff.length})
+        </Button>
+        <Button
+          size="sm"
+          variant={selectedCategory === "LEADERSHIP" ? "default" : "outline"}
+          onClick={() => setSelectedCategory("LEADERSHIP")}
+          className={selectedCategory === "LEADERSHIP" ? "bg-[#0a4b32] text-white" : ""}
+        >
+          Administration &amp; Leadership
+        </Button>
+        <Button
+          size="sm"
+          variant={selectedCategory === "FACULTY" ? "default" : "outline"}
+          onClick={() => setSelectedCategory("FACULTY")}
+          className={selectedCategory === "FACULTY" ? "bg-[#0a4b32] text-white" : ""}
+        >
+          Academic Faculty
+        </Button>
+        <Button
+          size="sm"
+          variant={selectedCategory === "CELLS" ? "default" : "outline"}
+          onClick={() => setSelectedCategory("CELLS")}
+          className={selectedCategory === "CELLS" ? "bg-[#0a4b32] text-white" : ""}
+        >
+          Special Units &amp; Cells
+        </Button>
+        <Button
+          size="sm"
+          variant={selectedCategory === "SUPPORT" ? "default" : "outline"}
+          onClick={() => setSelectedCategory("SUPPORT")}
+          className={selectedCategory === "SUPPORT" ? "bg-[#0a4b32] text-white" : ""}
+        >
+          Support &amp; Security Staff
+        </Button>
+      </div>
+
     </div>
   );
 }
