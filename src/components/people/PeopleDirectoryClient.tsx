@@ -34,9 +34,51 @@ export default function PeopleDirectoryClient({
   }, [initialStaff]);
 
   // Filtered staff list
+  const filteredStaff = useMemo(() => {
+    return initialStaff.filter((s) => {
+      // Category filter
+      if (selectedCategory !== "ALL") {
+        const cat = getRoleCategory(s.role);
+        if (cat !== selectedCategory) return false;
+      }
+
+      // Shift filter
+      if (selectedShift !== "ALL") {
+        if (s.shift !== selectedShift) return false;
+      }
+
+      // Department filter
+      if (selectedDept !== "ALL") {
+        if (!s.department || s.department.id !== selectedDept) return false;
+      }
+
+      // Search query
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const name = (s.resolvedName || s.name || "").toLowerCase();
+        const desig = (s.designation || "").toLowerCase();
+        const dept = (s.department?.name || "").toLowerCase();
+        const email = (s.resolvedEmail || s.email || "").toLowerCase();
+        const phone = (s.resolvedPhone || s.phone || "").toLowerCase();
+
+        const match =
+          name.includes(query) ||
+          desig.includes(query) ||
+          dept.includes(query) ||
+          email.includes(query) ||
+          phone.includes(query);
+
+        if (!match) return false;
+      }
+
+      return true;
+    });
+  }, [initialStaff, selectedCategory, selectedShift, selectedDept, searchQuery]);
+
+  // Separate principal for featured display if in "ALL" or "LEADERSHIP"
   return (
     <div className="space-y-6">
-      <div className="text-sm">People Directory ({initialStaff.length})</div>
+      <div className="text-sm">Filtered Staff: {filteredStaff.length}</div>
     </div>
   );
 }
