@@ -554,6 +554,86 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
         </div>
       </div>
 
+      {/* Staff Table / Cards */}
+      <div className="bg-white rounded-2xl border border-[#e2e8e4] shadow-xs overflow-hidden">
+        {isLoading ? (
+          <div className="p-12 text-center text-gray-500">
+            <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#0a4b32] mb-3" />
+            <p className="text-sm">Loading staff members...</p>
+          </div>
+        ) : displayStaff.length === 0 ? (
+          <div className="p-12 text-center text-gray-500">
+            <Users className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+            <h4 className="text-base font-semibold text-gray-800">
+              {viewTab === "DELETED" ? "Trash is empty" : "No staff members found"}
+            </h4>
+            <p className="text-xs text-gray-400 mt-1">
+              {viewTab === "DELETED"
+                ? "There are no soft-deleted staff records."
+                : "Try adjusting your search criteria or add a new staff member."}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#f8faf8] border-b border-[#e2e8e4] text-[#47554f] uppercase tracking-wider font-semibold">
+                <tr>
+                  <th className="py-3.5 px-4">Staff Member</th>
+                  <th className="py-3.5 px-4">Section / Role</th>
+                  <th className="py-3.5 px-4">Designation &amp; Dept</th>
+                  <th className="py-3.5 px-4">Shift</th>
+                  <th className="py-3.5 px-4">Source</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#edf2ee]">
+                {displayStaff.map((staff) => {
+                  const name = staff.resolvedName || staff.name || "Unnamed";
+                  const email = staff.resolvedEmail || staff.email;
+                  const phone = staff.resolvedPhone || staff.phone;
+                  const avatarUrl = staff.resolvedAvatarUrl || staff.avatarUrl;
+
+                  return (
+                    <tr key={staff.id} className="hover:bg-[#fbfdfb] transition-colors">
+                      {/* Name & Photo */}
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-100 ring-1 ring-gray-200 shrink-0">
+                            {avatarUrl ? (
+                              <Image src={avatarUrl} alt={name} fill className="object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-[#0a4b32]/10 text-[#0a4b32] font-bold text-xs">
+                                {name[0]}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-xs sm:text-sm">{name}</p>
+                            <p className="text-[11px] text-gray-500">{email || phone || "No direct contact"}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Role Badge */}
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] border ${getRoleBadgeVariant(
+                            staff.role
+                          )}`}
+                        >
+                          {ROLE_LABELS[staff.role] || staff.role}
+                        </span>
+                      </td>
+
+                      {/* Designation & Dept */}
+                      <td className="py-3 px-4">
+                        <p className="font-medium text-gray-900">{staff.designation}</p>
+                        <p className="text-[11px] text-gray-500">
+                          {staff.department?.name || "General Administration"}
+                        </p>
+                      </td>
+
     </div>
   );
 }
