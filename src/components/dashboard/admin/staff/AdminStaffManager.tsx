@@ -192,5 +192,33 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   }, [staffList, filterRole, filterShift, filterDept, searchQuery]);
 
   // Metrics
-  return <div>Admin Staff Manager: {displayStaff.length}</div>;
+  const metrics = useMemo(() => {
+    const total = staffList.length;
+    const faculty = staffList.filter(
+      (s) =>
+        s.role === "PRINCIPAL" ||
+        s.role === "CHIEF_INSTRUCTOR" ||
+        s.role === "INSTRUCTOR" ||
+        s.role === "JUNIOR_INSTRUCTOR"
+    ).length;
+    const admin = staffList.filter(
+      (s) =>
+        s.role === "ADMINISTRATIVE_SECTION" ||
+        s.role === "ACCOUNTS_SECTION" ||
+        s.role === "STORE_SECTION" ||
+        s.role === "JOB_PLACEMENT_CELL" ||
+        s.role === "ROVER_SCOUT_UNIT" ||
+        s.role === "LIBRARY"
+    ).length;
+    const support = staffList.filter(
+      (s) =>
+        s.role === "SECURITY_SECTION" ||
+        s.role === "FOURTH_CLASS_EMPLOYEE_REVENUE" ||
+        s.role === "OUTSOURCED_STAFF"
+    ).length;
+
+    return { total, faculty, admin, support };
+  }, [staffList]);
+
+  return <div>Admin Staff Manager: {metrics.total}</div>;
 }
