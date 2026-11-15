@@ -300,5 +300,49 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
     }
   };
 
+  // Handle Soft Delete
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await staffService.deleteStaff(deleteTarget.id);
+      toastSuccess(`"${deleteTarget.resolvedName}" moved to trash (soft-deleted).`);
+      setDeleteTarget(null);
+      fetchStaff();
+    } catch {
+      toastError("Failed to soft-delete staff member");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle Restore
+  const handleRestore = async (staff: InstitutionStaff) => {
+    try {
+      await staffService.restoreStaff(staff.id);
+      toastSuccess(`"${staff.resolvedName}" restored successfully!`);
+      fetchStaff();
+    } catch {
+      toastError("Failed to restore staff member");
+    }
+  };
+
+  // Handle Sync Registered Teachers
+  const handleSyncTeachers = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await staffService.syncTeachers(targetInstituteId);
+      toastSuccess(
+        res.message || `Synchronized ${res.syncedCount} teachers into staff directory!`,
+        "Teacher Sync Complete"
+      );
+      fetchStaff();
+    } catch {
+      toastError("Failed to sync registered teachers");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return <div>Admin Staff Manager</div>;
 }
