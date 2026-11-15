@@ -404,6 +404,57 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
         </div>
       </div>
 
+      {/* Overview Metric Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-white border-[#e2e8e4]">
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Staff</p>
+              <h3 className="text-2xl font-bold text-gray-900 mt-1">{metrics.total}</h3>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-[#e6ede8] flex items-center justify-center text-[#0a4b32]">
+              <Users className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-[#e2e8e4]">
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty &amp; Labs</p>
+              <h3 className="text-2xl font-bold text-emerald-700 mt-1">{metrics.faculty}</h3>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-[#e2e8e4]">
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Admin &amp; Accounts</p>
+              <h3 className="text-2xl font-bold text-blue-700 mt-1">{metrics.admin}</h3>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <Building2 className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-[#e2e8e4]">
+          <CardContent className="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Support &amp; Security</p>
+              <h3 className="text-2xl font-bold text-purple-700 mt-1">{metrics.support}</h3>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+              <Shield className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
     </div>
   );
 }
