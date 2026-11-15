@@ -724,6 +724,106 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
         )}
       </div>
 
+      {/* CREATE / EDIT MODAL DIALOG */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                {editingStaff ? <Edit className="w-5 h-5 text-[#0a4b32]" /> : <UserPlus className="w-5 h-5 text-[#0a4b32]" />}
+                {editingStaff ? "Edit Staff Member" : "Add New Staff Member"}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitForm} className="space-y-4 text-xs">
+              {/* Full Name */}
+              <div>
+                <label className="block font-semibold text-gray-700 mb-1">
+                  Full Name <span className="text-rose-500">*</span>
+                </label>
+                <Input
+                  required
+                  placeholder="e.g. Md. Anisur Rahman"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+
+              {/* Designation & Role Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">
+                    Designation / Title <span className="text-rose-500">*</span>
+                  </label>
+                  <Input
+                    required
+                    placeholder="e.g. Head Clerk, Cashier, Librarian"
+                    value={formData.designation}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">
+                    Section / Role <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        role: e.target.value as InstitutionStaffRole,
+                      })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-2 text-xs font-medium focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    {ALL_ROLES.map((r) => (
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Department & Shift */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">Department (Optional)</label>
+                  <select
+                    value={formData.departmentId}
+                    onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2 text-xs font-medium focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    <option value="">None / General Administration</option>
+                    {departments.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} ({d.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">Shift</label>
+                  <select
+                    value={formData.shift}
+                    onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2 text-xs font-medium focus:ring-1 focus:ring-[#0a4b32]"
+                  >
+                    <option value="">General / Both Shifts</option>
+                    <option value="FIRST_SHIFT">1st Shift</option>
+                    <option value="SECOND_SHIFT">2nd Shift</option>
+                  </select>
+                </div>
+              </div>
+
     </div>
   );
 }
