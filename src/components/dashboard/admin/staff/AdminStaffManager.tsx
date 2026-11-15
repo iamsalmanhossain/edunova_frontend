@@ -69,5 +69,58 @@ const ALL_ROLES: InstitutionStaffRole[] = [
 export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   const { success: toastSuccess, error: toastError } = useToastStore();
 
+  const [staffList, setStaffList] = useState<InstitutionStaff[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [institutes, setInstitutes] = useState<Institute[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Filters
+  const [viewTab, setViewTab] = useState<"ACTIVE" | "DELETED">("ACTIVE");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterRole, setFilterRole] = useState<string>("ALL");
+  const [filterShift, setFilterShift] = useState<string>("ALL");
+  const [filterDept, setFilterDept] = useState<string>("ALL");
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editingStaff, setEditingStaff] = useState<InstitutionStaff | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Form State
+  const [formData, setFormData] = useState<{
+    instituteId: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatarUrl: string;
+    designation: string;
+    role: InstitutionStaffRole;
+    shift: string;
+    departmentId: string;
+    displayOrder: number;
+    isPublished: boolean;
+  }>({
+    instituteId: user.instituteId || "",
+    name: "",
+    email: "",
+    phone: "",
+    avatarUrl: "",
+    designation: "",
+    role: "INSTRUCTOR",
+    shift: "",
+    departmentId: "",
+    displayOrder: 10,
+    isPublished: true,
+  });
+
+  // Delete Confirmation Modal
+  const [deleteTarget, setDeleteTarget] = useState<InstitutionStaff | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+  // Target Institute
+  const targetInstituteId = user.instituteId || (institutes[0]?.id ?? "");
+
+  // Load institutes and departments
   return <div>Admin Staff Manager</div>;
 }
