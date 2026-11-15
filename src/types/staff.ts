@@ -120,3 +120,34 @@ export const ROLE_LABELS: Record<InstitutionStaffRole, string> = {
   OUTSOURCED_STAFF: "Outsourced Staff",
 };
 
+export const ROLE_CATEGORIES = {
+  ALL: "All Personnel",
+  LEADERSHIP: "Leadership & Administration",
+  FACULTY: "Academic Faculty",
+  CELLS: "Special Units & Cells",
+  SUPPORT: "Support & Security Staff",
+} as const;
+
+export function getRoleCategory(role: InstitutionStaffRole): keyof typeof ROLE_CATEGORIES {
+  switch (role) {
+    case "PRINCIPAL":
+    case "ADMINISTRATIVE_SECTION":
+    case "ACCOUNTS_SECTION":
+    case "STORE_SECTION":
+      return "LEADERSHIP";
+    case "CHIEF_INSTRUCTOR":
+    case "INSTRUCTOR":
+    case "JUNIOR_INSTRUCTOR":
+      return "FACULTY";
+    case "JOB_PLACEMENT_CELL":
+    case "ROVER_SCOUT_UNIT":
+    case "LIBRARY":
+      return "CELLS";
+    case "SECURITY_SECTION":
+    case "FOURTH_CLASS_EMPLOYEE_REVENUE":
+    case "OUTSOURCED_STAFF":
+      return "SUPPORT";
+    default:
+      return "ALL";
+  }
+}
