@@ -82,4 +82,32 @@ export const staffService = {
   },
 
   /**
+   * Admin creates a staff member
+   * POST /api/v1/institution-staff
+   */
+  async createStaff(payload: CreateStaffPayload): Promise<InstitutionStaff> {
+    const res = await apiClient.post<InstitutionStaff>("/institution-staff", payload);
+    return res.data ?? (res as unknown as InstitutionStaff);
+  },
+
+  /**
+   * Admin updates an existing staff member
+   * PATCH /api/v1/institution-staff/:id
+   */
+  async updateStaff(id: string, payload: UpdateStaffPayload): Promise<InstitutionStaff> {
+    const res = await apiClient.patch<InstitutionStaff>(`/institution-staff/${id}`, payload);
+    return res.data ?? (res as unknown as InstitutionStaff);
+  },
+
+  /**
+   * Admin soft-deletes a staff member
+   * DELETE /api/v1/institution-staff/:id
+   */
+  async deleteStaff(id: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.delete<{ success: boolean; message: string }>(
+      `/institution-staff/${id}`
+    );
+    return res.data ?? { success: true, message: "Staff soft-deleted successfully" };
+  },
+
 };
