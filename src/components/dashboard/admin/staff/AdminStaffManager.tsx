@@ -634,6 +634,96 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                         </p>
                       </td>
 
+                      {/* Shift */}
+                      <td className="py-3 px-4">
+                        {staff.shift ? (
+                          <Badge variant="outline" className="text-[10px] font-medium bg-gray-50">
+                            {staff.shift === "FIRST_SHIFT" ? "1st Shift" : "2nd Shift"}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400 text-[11px]">Regular</span>
+                        )}
+                      </td>
+
+                      {/* Source */}
+                      <td className="py-3 px-4">
+                        {staff.source === "AUTO_TEACHER" ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-medium border border-emerald-200">
+                            <Sparkles className="w-2.5 h-2.5" />
+                            Auto Teacher
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md font-medium">
+                            Manual
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Visibility Status */}
+                      <td className="py-3 px-4">
+                        {staff.deletedAt ? (
+                          <Badge variant="destructive" className="text-[10px]">
+                            Soft-Deleted
+                          </Badge>
+                        ) : staff.isPublished ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-600 text-[11px] font-medium">
+                            <Eye className="w-3.5 h-3.5" />
+                            Published
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-[11px] font-medium">
+                            <EyeOff className="w-3.5 h-3.5" />
+                            Draft
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Action Buttons */}
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {staff.deletedAt ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRestore(staff)}
+                              className="text-emerald-700 border-emerald-200 hover:bg-emerald-50 h-7 text-xs px-2.5"
+                            >
+                              <RotateCcw className="w-3 h-3 mr-1" />
+                              Restore
+                            </Button>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleOpenEdit(staff)}
+                                className="h-7 w-7 p-0 text-gray-600 hover:text-gray-900"
+                                title="Edit staff details"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setDeleteTarget(staff)}
+                                className="h-7 w-7 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                                title="Soft-delete staff member"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
