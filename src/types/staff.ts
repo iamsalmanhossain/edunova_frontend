@@ -104,3 +104,19 @@ export interface StaffListResponse {
   };
 }
 
+export const ROLE_LABELS: Record<InstitutionStaffRole, string> = {
+  PRINCIPAL: "Principal & Head of Institute",
+  CHIEF_INSTRUCTOR: "Chief Instructor",
+  INSTRUCTOR: "Instructor",
+  JUNIOR_INSTRUCTOR: "Junior Instructor",
+  ADMINISTRATIVE_SECTION: "Administrative Section",
+  ACCOUNTS_SECTION: "Accounts Section",
+  JOB_PLACEMENT_CELL: "Job Placement Cell",
+  ROVER_SCOUT_UNIT: "Rover Scout Unit",
+  STORE_SECTION: "Store Section",
+  SECURITY_SECTION: "Security Section",
+  LIBRARY: "Library & Information",
+  FOURTH_CLASS_EMPLOYEE_REVENUE: "4th Class Employee (Revenue)",
+  OUTSOURCED_STAFF: "Outsourced Staff",
+};
+
