@@ -164,5 +164,33 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   }, [fetchStaff]);
 
   // Filtered staff in view
-  return <div>Admin Staff Manager: {staffList.length}</div>;
+  const displayStaff = useMemo(() => {
+    return staffList.filter((s) => {
+      if (filterRole !== "ALL" && s.role !== filterRole) return false;
+      if (filterShift !== "ALL" && s.shift !== filterShift) return false;
+      if (filterDept !== "ALL" && s.departmentId !== filterDept) return false;
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const name = (s.resolvedName || s.name || "").toLowerCase();
+        const desig = (s.designation || "").toLowerCase();
+        const dept = (s.department?.name || "").toLowerCase();
+        const email = (s.resolvedEmail || s.email || "").toLowerCase();
+        const phone = (s.resolvedPhone || s.phone || "").toLowerCase();
+
+        return (
+          name.includes(q) ||
+          desig.includes(q) ||
+          dept.includes(q) ||
+          email.includes(q) ||
+          phone.includes(q)
+        );
+      }
+
+      return true;
+    });
+  }, [staffList, filterRole, filterShift, filterDept, searchQuery]);
+
+  // Metrics
+  return <div>Admin Staff Manager: {displayStaff.length}</div>;
 }
