@@ -80,7 +80,7 @@ export interface CreateStaffPayload {
   displayOrder?: number;
 }
 
-export interface UpdateStaffPayload extends Partial<CreateStaffPayload> {}
+export type UpdateStaffPayload = Partial<CreateStaffPayload>;
 
 export interface QueryStaffParams {
   instituteId?: string;
