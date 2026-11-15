@@ -41,4 +41,19 @@ export const staffService = {
   },
 
   /**
+   * Public retrieval of a single staff record
+   * GET /api/v1/institution-staff/:id
+   */
+  async getStaffById(id: string): Promise<InstitutionStaff | null> {
+    try {
+      const res = await apiClient.get<InstitutionStaff>(`/institution-staff/${id}`, {
+        skipAuth: true,
+      });
+      return res.data ?? (res as unknown as InstitutionStaff);
+    } catch {
+      return null;
+    }
+  },
+
+  /**
 };
