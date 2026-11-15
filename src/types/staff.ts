@@ -14,3 +14,28 @@ export type InstitutionStaffRole =
   | "OUTSOURCED_STAFF";
 
 export type Shift = "FIRST_SHIFT" | "SECOND_SHIFT";
+
+export type StaffSource = "AUTO_TEACHER" | "MANUAL";
+
+export interface StaffInstitute {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface StaffDepartment {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface StaffUser {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  avatarUrl?: string | null;
+  status: string;
+}
+
+export interface InstitutionStaff {
