@@ -149,6 +149,110 @@ export default function PeopleDirectoryClient({
         </Button>
       </div>
 
+      {/* Filter and Search Controls Card */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8e4] shadow-xs space-y-4">
+        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          {/* Search Box */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search by name, designation, department, or phone..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-9 bg-[#fbfdfb] border-[#d7e2da] focus:border-[#0a4b32] focus:ring-[#0a4b32]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Shift Toggles & Department Dropdown */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Shift Filter */}
+            <div className="inline-flex rounded-lg border border-[#e2e8e4] p-0.5 bg-[#f5f8f6]">
+              <button
+                onClick={() => setSelectedShift("ALL")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                  selectedShift === "ALL"
+                    ? "bg-white text-[#0a4b32] shadow-xs font-semibold"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                All Shifts
+              </button>
+              <button
+                onClick={() => setSelectedShift("FIRST_SHIFT")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                  selectedShift === "FIRST_SHIFT"
+                    ? "bg-white text-[#0a4b32] shadow-xs font-semibold"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                1st Shift
+              </button>
+              <button
+                onClick={() => setSelectedShift("SECOND_SHIFT")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                  selectedShift === "SECOND_SHIFT"
+                    ? "bg-white text-[#0a4b32] shadow-xs font-semibold"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                2nd Shift
+              </button>
+            </div>
+
+            {/* Department Dropdown */}
+            {departments.length > 0 && (
+              <select
+                value={selectedDept}
+                onChange={(e) => setSelectedDept(e.target.value)}
+                className="text-xs font-medium bg-[#f5f8f6] border border-[#e2e8e4] rounded-lg px-3 py-2 text-gray-700 focus:outline-hidden focus:ring-1 focus:ring-[#0a4b32]"
+              >
+                <option value="ALL">All Departments</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Reset Filter Button */}
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+                className="text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-8 px-2.5"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Reset
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Active Filters Summary */}
+        <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+          <div>
+            Showing <strong className="text-gray-900">{filteredStaff.length}</strong> of{" "}
+            <strong>{initialStaff.length}</strong> staff members
+          </div>
+          {searchQuery && (
+            <div className="truncate max-w-[200px]">
+              Filtered by: &ldquo;<span className="text-[#0a4b32]">{searchQuery}</span>&rdquo;
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Directory Grid */}
     </div>
   );
 }
