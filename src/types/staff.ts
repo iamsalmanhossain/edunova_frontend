@@ -39,3 +39,68 @@ export interface StaffUser {
 }
 
 export interface InstitutionStaff {
+  id: string;
+  instituteId: string;
+  userId?: string | null;
+  departmentId?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
+  designation: string;
+  role: InstitutionStaffRole;
+  shift?: Shift | null;
+  source: StaffSource;
+  isPublished: boolean;
+  displayOrder: number;
+  deletedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  resolvedName: string;
+  resolvedEmail?: string | null;
+  resolvedPhone?: string | null;
+  resolvedAvatarUrl?: string | null;
+  institute?: StaffInstitute;
+  department?: StaffDepartment | null;
+  user?: StaffUser | null;
+}
+
+export interface CreateStaffPayload {
+  instituteId: string;
+  userId?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  avatarUrl?: string;
+  departmentId?: string;
+  designation: string;
+  role: InstitutionStaffRole;
+  shift?: Shift;
+  isPublished?: boolean;
+  displayOrder?: number;
+}
+
+export interface UpdateStaffPayload extends Partial<CreateStaffPayload> {}
+
+export interface QueryStaffParams {
+  instituteId?: string;
+  departmentId?: string;
+  shift?: Shift;
+  role?: InstitutionStaffRole;
+  search?: string;
+  isPublished?: boolean;
+  includeDeleted?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface StaffListResponse {
+  data: InstitutionStaff[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
