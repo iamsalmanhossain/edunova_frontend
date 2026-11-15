@@ -69,6 +69,75 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
     }
   };
 
+  if (featured) {
+    return (
+      <Card className="overflow-hidden border border-[#0a4b32]/30 shadow-md hover:shadow-lg transition-all bg-gradient-to-br from-white via-white to-[#f0f7f3]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 p-5 sm:p-8 items-center">
+          <div className="md:col-span-4 flex flex-col items-center text-center">
+            <div className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-52 sm:h-52 rounded-2xl overflow-hidden ring-4 ring-[#0a4b32]/10 shadow-md bg-[#e6ede8]">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={name}
+                  fill
+                  sizes="(max-width: 768px) 180px, 208px"
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#0a4b32] text-white text-3xl font-bold">
+                  {initials}
+                </div>
+              )}
+            </div>
+            <div className="mt-3">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border ${getRoleBadgeVariant()}`}>
+                {getRoleIcon()}
+                <span>{ROLE_LABELS[role] || role}</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="md:col-span-8 flex flex-col justify-center min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <Badge variant="secondary" className="text-xs">
+                {institute?.name || "Kishoreganj Polytechnic Institute"}
+              </Badge>
+              {shift && (
+                <Badge variant="outline" className="text-[11px] bg-white">
+                  {shift === "FIRST_SHIFT" ? "1st Shift" : "2nd Shift"}
+                </Badge>
+              )}
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#0f1f17] break-words">
+              {name}
+            </h3>
+            <p className="text-base sm:text-lg font-semibold text-[#0a4b32] mt-1">
+              {designation}
+            </p>
+
+            <div className="mt-6 pt-5 border-t border-[#e2e8e4] flex flex-wrap gap-4 text-xs sm:text-sm text-[#5a6b62]">
+              {email && (
+                <a
+                  href={`mailto:${email}`}
+                  className="inline-flex items-center gap-2 hover:text-[#0a4b32] transition-colors break-all"
+                >
+                  <Mail className="w-4 h-4 text-[#0a4b32] shrink-0" />
+                  <span>{email}</span>
+                </a>
+              )}
+              {phone && (
+                <a
+                  href={`tel:${phone}`}
+                  className="inline-flex items-center gap-2 hover:text-[#0a4b32] transition-colors"
+                >
+                  <Phone className="w-4 h-4 text-[#0a4b32] shrink-0" />
+                  <span>{phone}</span>
+                </a>
+              )}
+            </div>
+          </div>
   return (
     <Card className="p-4">
       <h4>{name}</h4>
