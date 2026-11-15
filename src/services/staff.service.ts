@@ -56,4 +56,30 @@ export const staffService = {
   },
 
   /**
+   * Admin-only query (includes unlisted and option for deleted staff)
+   * GET /api/v1/institution-staff/admin/all
+   */
+  async getAdminStaff(params?: QueryStaffParams): Promise<StaffListResponse> {
+    const query = new URLSearchParams();
+    if (params?.instituteId) query.set("instituteId", params.instituteId);
+    if (params?.departmentId) query.set("departmentId", params.departmentId);
+    if (params?.shift) query.set("shift", params.shift);
+    if (params?.role) query.set("role", params.role);
+    if (params?.search) query.set("search", params.search.trim());
+    if (params?.isPublished !== undefined) query.set("isPublished", String(params.isPublished));
+    if (params?.includeDeleted !== undefined) query.set("includeDeleted", String(params.includeDeleted));
+    if (params?.page) query.set("page", params.page.toString());
+    query.set("limit", (params?.limit || 30).toString());
+
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    const res = await apiClient.get<StaffListResponse>(`/institution-staff/admin/all${qs}`);
+
+    const raw = res.data ?? (res as unknown as StaffListResponse);
+    if (raw && "data" in raw && Array.isArray(raw.data)) {
+      return raw;
+    }
+    return { data: [], meta: { total: 0, page: 1, limit: 30, totalPages: 1 } };
+  },
+
+  /**
 };
