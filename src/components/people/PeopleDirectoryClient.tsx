@@ -253,6 +253,36 @@ export default function PeopleDirectoryClient({
       </div>
 
       {/* Directory Grid */}
+      {filteredStaff.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200 p-8">
+          <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-lg font-bold text-gray-800">No staff members found</h3>
+          <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
+            No institutional staff members match the selected filters or search keyword.
+          </p>
+          <Button variant="outline" size="sm" onClick={resetFilters} className="mt-4">
+            Clear all filters
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {/* Featured Principal Card if present */}
+          {principal && !searchQuery && (
+            <div className="space-y-3">
+              <StaffCard staff={principal} featured={true} />
+            </div>
+          )}
+
+          {/* Regular Grid */}
+          {regularStaff.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {regularStaff.map((staff) => (
+                <StaffCard key={staff.id} staff={staff} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
