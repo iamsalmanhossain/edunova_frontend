@@ -193,7 +193,30 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
           )}
         </div>
 
-          </div>
+        <div className="pt-2.5 border-t border-[#e2e8e4]/80 flex flex-wrap items-center justify-between gap-2 text-xs text-[#5a6b62]">
+          {email ? (
+            <a
+              href={`mailto:${email}`}
+              className="hover:text-[#0a4b32] transition-colors inline-flex items-center gap-1 text-[11px] truncate"
+              title={email}
+            >
+              <Mail className="w-3 h-3 shrink-0" />
+              <span className="truncate max-w-[140px]">{email}</span>
+            </a>
+          ) : (
+            <span className="text-[10px] text-gray-400">Institutional Staff</span>
+          )}
+
+          {phone && (
+            <a
+              href={`tel:${phone}`}
+              className="hover:text-[#0a4b32] transition-colors inline-flex items-center gap-1 text-[11px]"
+              title={phone}
+            >
+              <Phone className="w-3 h-3 shrink-0" />
+              <span>{phone}</span>
+            </a>
+          )}
         </div>
       </CardContent>
     </Card>
