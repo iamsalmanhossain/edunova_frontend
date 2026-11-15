@@ -368,5 +368,42 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   };
 
   return (
-  return <div>Admin Staff Manager</div>;
+    <div className="space-y-6">
+      {/* Header & Main Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#e2e8e4] shadow-xs">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0f1f17] flex items-center gap-2">
+            <Users className="w-6 h-6 text-[#0a4b32]" />
+            Institution Staff Management
+          </h1>
+          <p className="text-xs sm:text-sm text-[#5a6b62] mt-0.5">
+            Administer leadership, instructors, accounts, security, and departmental staff records.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSyncTeachers}
+            disabled={isSyncing}
+            className="border-[#0a4b32]/30 text-[#0a4b32] hover:bg-[#f0f7f3]"
+          >
+            <Sparkles className={`w-4 h-4 mr-1.5 ${isSyncing ? "animate-spin" : "text-amber-500"}`} />
+            {isSyncing ? "Syncing..." : "Sync Teachers"}
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleOpenCreate}
+            className="bg-[#0a4b32] hover:bg-[#073825] text-white shadow-xs"
+          >
+            <UserPlus className="w-4 h-4 mr-1.5" />
+            Add Staff Member
+          </Button>
+        </div>
+      </div>
+
+    </div>
+  );
 }
