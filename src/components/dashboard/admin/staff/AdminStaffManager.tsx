@@ -824,6 +824,89 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                 </div>
               </div>
 
+              {/* Email & Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">Official Email</label>
+                  <Input
+                    type="email"
+                    placeholder="staff@kipi.edu.bd"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-gray-700 mb-1">Contact Phone</label>
+                  <Input
+                    placeholder="017XXXXXXXX"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Avatar URL */}
+              <div>
+                <label className="block font-semibold text-gray-700 mb-1">Avatar / Photo URL</label>
+                <Input
+                  placeholder="https://example.com/photo.jpg"
+                  value={formData.avatarUrl}
+                  onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
+                />
+              </div>
+
+              {/* Display Order & Public Visibility */}
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                <div className="w-1/3">
+                  <label className="block font-semibold text-gray-700 mb-1">Display Order</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={formData.displayOrder}
+                    onChange={(e) =>
+                      setFormData({ ...formData, displayOrder: parseInt(e.target.value, 10) || 0 })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-4">
+                  <input
+                    type="checkbox"
+                    id="isPublished"
+                    checked={formData.isPublished}
+                    onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
+                    className="w-4 h-4 text-[#0a4b32] rounded-sm focus:ring-[#0a4b32]"
+                  />
+                  <label htmlFor="isPublished" className="font-semibold text-gray-700 select-none cursor-pointer">
+                    Publish in Public Directory
+                  </label>
+                </div>
+              </div>
+
+              {/* Modal Action Buttons */}
+              <div className="flex justify-end gap-2.5 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-[#0a4b32] hover:bg-[#073825] text-white"
+                >
+                  {isSubmitting ? "Saving..." : editingStaff ? "Update Staff" : "Add Staff Member"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
