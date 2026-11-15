@@ -110,4 +110,26 @@ export const staffService = {
     return res.data ?? { success: true, message: "Staff soft-deleted successfully" };
   },
 
+  /**
+   * Admin restores a soft-deleted staff member
+   * POST /api/v1/institution-staff/:id/restore
+   */
+  async restoreStaff(id: string): Promise<InstitutionStaff> {
+    const res = await apiClient.post<InstitutionStaff>(`/institution-staff/${id}/restore`);
+    return res.data ?? (res as unknown as InstitutionStaff);
+  },
+
+  /**
+   * Admin triggers automatic sync of all registered teachers
+   * POST /api/v1/institution-staff/sync-teachers
+   */
+  async syncTeachers(instituteId?: string): Promise<{ success: boolean; message: string; syncedCount: number }> {
+    const query = instituteId ? `?instituteId=${instituteId}` : "";
+    const res = await apiClient.post<{
+      success: boolean;
+      message: string;
+      syncedCount: number;
+    }>(`/institution-staff/sync-teachers${query}`);
+    return res.data ?? { success: true, message: "Teachers synchronized", syncedCount: 0 };
+  },
 };
