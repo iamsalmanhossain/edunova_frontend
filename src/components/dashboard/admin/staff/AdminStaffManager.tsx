@@ -122,5 +122,47 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   const targetInstituteId = user.instituteId || (institutes[0]?.id ?? "");
 
   // Load institutes and departments
-  return <div>Admin Staff Manager</div>;
+  useEffect(() => {
+    async function loadMeta() {
+      try {
+        const [instList, deptList] = await Promise.all([
+          instituteService.getInstitutes(),
+          departmentService.getDepartments(user.instituteId || "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b"),
+        ]);
+        setInstitutes(instList);
+        setDepartments(deptList);
+      } catch {
+        // Fallback
+      }
+    }
+    loadMeta();
+  }, [user.instituteId]);
+
+  // Fetch staff list
+  const fetchStaff = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await staffService.getAdminStaff({
+        includeDeleted: viewTab === "DELETED",
+        limit: 100,
+      });
+
+      // Filter by deleted status according to viewTab
+      const filtered = (res.data || []).filter((s) =>
+        viewTab === "DELETED" ? Boolean(s.deletedAt) : !s.deletedAt
+      );
+      setStaffList(filtered);
+    } catch {
+      toastError("Failed to fetch staff members. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [viewTab, toastError]);
+
+  useEffect(() => {
+    fetchStaff();
+  }, [fetchStaff]);
+
+  // Filtered staff in view
+  return <div>Admin Staff Manager: {staffList.length}</div>;
 }
