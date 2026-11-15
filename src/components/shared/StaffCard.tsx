@@ -138,10 +138,64 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
               )}
             </div>
           </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="p-4">
-      <h4>{name}</h4>
-      <p>{designation}</p>
+    <Card className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-md transition-all duration-200 bg-white flex flex-col min-w-0">
+      <div className="relative h-48 xs:h-56 w-full overflow-hidden bg-[#e6ede8]">
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt={name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#f0f7f3] to-[#e1ece5] text-[#0a4b32] text-2xl font-bold">
+            {initials}
+          </div>
+        )}
+
+        <div className="absolute top-2.5 right-2.5 flex flex-col gap-1 items-end">
+          {shift && (
+            <Badge variant="secondary" className="text-[10px] bg-white/95 backdrop-blur-xs font-semibold shadow-xs">
+              {shift === "FIRST_SHIFT" ? "1st Shift" : "2nd Shift"}
+            </Badge>
+          )}
+        </div>
+
+        <div className="absolute bottom-2.5 left-2.5 max-w-[85%]">
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] border shadow-xs backdrop-blur-xs ${getRoleBadgeVariant()}`}>
+            {getRoleIcon()}
+            <span className="truncate">{ROLE_LABELS[role] || role}</span>
+          </span>
+        </div>
+      </div>
+
+      <CardContent className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3 min-w-0">
+        <div>
+          <h4 className="text-base sm:text-lg font-bold text-[#0f1f17] group-hover:text-[#0a4b32] transition-colors leading-snug break-words">
+            {name}
+          </h4>
+          <p className="text-xs sm:text-sm font-semibold text-[#0a4b32] mt-0.5">
+            {designation}
+          </p>
+          {department && (
+            <p className="text-xs text-[#5a6b62] mt-1.5 flex items-center gap-1.5 truncate">
+              <Building2 className="w-3.5 h-3.5 text-[#c48b28] shrink-0" />
+              <span className="truncate">{department.name}</span>
+            </p>
+          )}
+        </div>
+
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 }
