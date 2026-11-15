@@ -46,6 +46,29 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
     }
   };
 
+  const getRoleBadgeVariant = () => {
+    switch (role) {
+      case "PRINCIPAL":
+        return "bg-amber-100 text-amber-900 border-amber-300 font-bold";
+      case "CHIEF_INSTRUCTOR":
+        return "bg-emerald-100 text-emerald-900 border-emerald-300 font-semibold";
+      case "INSTRUCTOR":
+      case "JUNIOR_INSTRUCTOR":
+        return "bg-emerald-50 text-emerald-800 border-emerald-200";
+      case "ADMINISTRATIVE_SECTION":
+      case "ACCOUNTS_SECTION":
+        return "bg-blue-50 text-blue-800 border-blue-200";
+      case "JOB_PLACEMENT_CELL":
+      case "ROVER_SCOUT_UNIT":
+      case "LIBRARY":
+        return "bg-purple-50 text-purple-800 border-purple-200";
+      case "SECURITY_SECTION":
+        return "bg-rose-50 text-rose-800 border-rose-200";
+      default:
+        return "bg-slate-100 text-slate-700 border-slate-200";
+    }
+  };
+
   return (
     <Card className="p-4">
       <h4>{name}</h4>
