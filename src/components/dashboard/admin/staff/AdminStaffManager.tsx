@@ -220,5 +220,43 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
     return { total, faculty, admin, support };
   }, [staffList]);
 
-  return <div>Admin Staff Manager: {metrics.total}</div>;
+  // Handle open create modal
+  const handleOpenCreate = () => {
+    setEditingStaff(null);
+    setFormData({
+      instituteId: targetInstituteId || "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
+      name: "",
+      email: "",
+      phone: "",
+      avatarUrl: "",
+      designation: "",
+      role: "INSTRUCTOR",
+      shift: "",
+      departmentId: "",
+      displayOrder: 10,
+      isPublished: true,
+    });
+    setIsModalOpen(true);
+  };
+
+  // Handle open edit modal
+  const handleOpenEdit = (staff: InstitutionStaff) => {
+    setEditingStaff(staff);
+    setFormData({
+      instituteId: staff.instituteId,
+      name: staff.name || staff.resolvedName || "",
+      email: staff.email || staff.resolvedEmail || "",
+      phone: staff.phone || staff.resolvedPhone || "",
+      avatarUrl: staff.avatarUrl || staff.resolvedAvatarUrl || "",
+      designation: staff.designation,
+      role: staff.role,
+      shift: staff.shift || "",
+      departmentId: staff.departmentId || "",
+      displayOrder: staff.displayOrder ?? 10,
+      isPublished: staff.isPublished,
+    });
+    setIsModalOpen(true);
+  };
+
+  return <div>Admin Staff Manager</div>;
 }
