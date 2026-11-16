@@ -149,12 +149,45 @@ export const aboutService = {
       files.galleryFiles.forEach((file) => formData.append("images", file));
     }
 
-    if (existingId) {
-      const res = await apiClient.patch<any>(`/about/${existingId}`, formData);
+    // Auto-resolve existing ID if not provided but slug already exists
+    let targetId = existingId;
+    const targetSlug = (payload.slug || "main").trim().toLowerCase();
+
+    if (!targetId) {
+      try {
+        const check = await aboutService.getAdminAll({ slug: targetSlug });
+        const existing = check.data.find(
+          (item) => item.slug?.toLowerCase() === targetSlug && item.id !== "default-kipi-about"
+        );
+        if (existing?.id) {
+          targetId = existing.id;
+        }
+      } catch {
+        // Fallback to POST
+      }
+    }
+
+    if (targetId) {
+      const res = await apiClient.patch<any>(`/about/${targetId}`, formData);
       return res?.data ?? res;
     } else {
-      const res = await apiClient.post<any>(`/about`, formData);
-      return res?.data ?? res;
+      try {
+        const res = await apiClient.post<any>(`/about`, formData);
+        return res?.data ?? res;
+      } catch (postErr: any) {
+        // If 409 Conflict (slug already exists), fetch matching entry and PATCH it
+        if (postErr?.status === 409 || postErr?.message?.includes("already exists")) {
+          const check = await aboutService.getAdminAll({ slug: targetSlug });
+          const existing = check.data.find(
+            (item) => item.slug?.toLowerCase() === targetSlug
+          );
+          if (existing?.id) {
+            const patchRes = await apiClient.patch<any>(`/about/${existing.id}`, formData);
+            return patchRes?.data ?? patchRes;
+          }
+        }
+        throw postErr;
+      }
     }
   },
 

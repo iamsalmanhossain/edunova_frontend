@@ -242,10 +242,13 @@ export default function AdminAboutManager({ user }: AdminAboutManagerProps) {
       };
 
       const result = await aboutService.saveAbout(payload, files, selectedId || undefined);
+      if (result?.id) {
+        setSelectedId(result.id);
+      }
       toastSuccess(
         selectedId
           ? "Institute About updated successfully!"
-          : "Institute About created and published successfully!"
+          : "Institute About saved and published successfully!"
       );
 
       // Refresh list
