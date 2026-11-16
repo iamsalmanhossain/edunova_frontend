@@ -23,8 +23,6 @@ import {
   Eye,
   EyeOff,
   Sparkles,
-  Phone,
-  Mail,
   X,
 } from "lucide-react";
 import {
@@ -91,8 +89,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   const [formData, setFormData] = useState<{
     instituteId: string;
     name: string;
-    email: string;
-    phone: string;
     avatarUrl: string;
     designation: string;
     role: InstitutionStaffRole;
@@ -103,8 +99,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
   }>({
     instituteId: user.instituteId || "",
     name: "",
-    email: "",
-    phone: "",
     avatarUrl: "",
     designation: "",
     role: "INSTRUCTOR",
@@ -175,15 +169,11 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
         const name = (s.resolvedName || s.name || "").toLowerCase();
         const desig = (s.designation || "").toLowerCase();
         const dept = (s.department?.name || "").toLowerCase();
-        const email = (s.resolvedEmail || s.email || "").toLowerCase();
-        const phone = (s.resolvedPhone || s.phone || "").toLowerCase();
 
         return (
           name.includes(q) ||
           desig.includes(q) ||
-          dept.includes(q) ||
-          email.includes(q) ||
-          phone.includes(q)
+          dept.includes(q)
         );
       }
 
@@ -226,8 +216,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
     setFormData({
       instituteId: targetInstituteId || "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
       name: "",
-      email: "",
-      phone: "",
       avatarUrl: "",
       designation: "",
       role: "INSTRUCTOR",
@@ -245,8 +233,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
     setFormData({
       instituteId: staff.instituteId,
       name: staff.name || staff.resolvedName || "",
-      email: staff.email || staff.resolvedEmail || "",
-      phone: staff.phone || staff.resolvedPhone || "",
       avatarUrl: staff.avatarUrl || staff.resolvedAvatarUrl || "",
       designation: staff.designation,
       role: staff.role,
@@ -271,8 +257,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
       const payload: CreateStaffPayload = {
         instituteId: formData.instituteId || targetInstituteId,
         name: formData.name.trim() || undefined,
-        email: formData.email.trim() || undefined,
-        phone: formData.phone.trim() || undefined,
         avatarUrl: formData.avatarUrl.trim() || undefined,
         designation: formData.designation.trim(),
         role: formData.role,
@@ -500,7 +484,7 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Search name, title, email..."
+              placeholder="Search by name or designation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 text-xs"
@@ -590,8 +574,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
               <tbody className="divide-y divide-[#edf2ee]">
                 {displayStaff.map((staff) => {
                   const name = staff.resolvedName || staff.name || "Unnamed";
-                  const email = staff.resolvedEmail || staff.email;
-                  const phone = staff.resolvedPhone || staff.phone;
                   const avatarUrl = staff.resolvedAvatarUrl || staff.avatarUrl;
 
                   return (
@@ -609,7 +591,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900 text-xs sm:text-sm">{name}</p>
-                            <p className="text-[11px] text-gray-500">{email || phone || "No direct contact"}</p>
                           </div>
                         </div>
                       </td>
@@ -820,28 +801,6 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                     <option value="FIRST_SHIFT">1st Shift</option>
                     <option value="SECOND_SHIFT">2nd Shift</option>
                   </select>
-                </div>
-              </div>
-
-              {/* Email & Phone */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Official Email</label>
-                  <Input
-                    type="email"
-                    placeholder="staff@kipi.edu.bd"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-gray-700 mb-1">Contact Phone</label>
-                  <Input
-                    placeholder="017XXXXXXXX"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
                 </div>
               </div>
 

@@ -44,8 +44,6 @@ export interface InstitutionStaff {
   userId?: string | null;
   departmentId?: string | null;
   name?: string | null;
-  email?: string | null;
-  phone?: string | null;
   avatarUrl?: string | null;
   designation: string;
   role: InstitutionStaffRole;
@@ -57,8 +55,6 @@ export interface InstitutionStaff {
   createdAt: string;
   updatedAt: string;
   resolvedName: string;
-  resolvedEmail?: string | null;
-  resolvedPhone?: string | null;
   resolvedAvatarUrl?: string | null;
   institute?: StaffInstitute;
   department?: StaffDepartment | null;
@@ -69,8 +65,6 @@ export interface CreateStaffPayload {
   instituteId: string;
   userId?: string;
   name?: string;
-  email?: string;
-  phone?: string;
   avatarUrl?: string;
   departmentId?: string;
   designation: string;

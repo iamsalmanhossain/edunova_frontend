@@ -80,8 +80,6 @@ export default function StaffDirectory({
     const desig = (staff.designation || "").toLowerCase();
     const deptName = (staff.department?.name || "").toLowerCase();
     const deptCode = (staff.department?.code || "").toLowerCase();
-    const email = (staff.resolvedEmail || staff.email || "").toLowerCase();
-    const phone = (staff.resolvedPhone || staff.phone || "").toLowerCase();
     const roleLabel = (ROLE_LABELS[staff.role] || staff.role).toLowerCase();
 
     return (
@@ -89,8 +87,6 @@ export default function StaffDirectory({
       desig.includes(q) ||
       deptName.includes(q) ||
       deptCode.includes(q) ||
-      email.includes(q) ||
-      phone.includes(q) ||
       roleLabel.includes(q)
     );
   };

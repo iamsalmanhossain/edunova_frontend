@@ -3,8 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import {
-  Mail,
-  Phone,
   Building2,
   Shield,
   Briefcase,
@@ -29,8 +27,6 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
   const [imageError, setImageError] = useState(false);
 
   const name = staff.resolvedName || staff.name || "Unnamed Personnel";
-  const email = staff.resolvedEmail || staff.email;
-  const phone = staff.resolvedPhone || staff.phone;
   const rawAvatarUrl = staff.resolvedAvatarUrl || staff.avatarUrl;
   const { designation, role, shift, department, institute } = staff;
 
@@ -157,27 +153,6 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
                 )}
               </p>
             )}
-
-            <div className="mt-6 pt-5 border-t border-[#e2e8e4] flex flex-wrap gap-3 text-xs sm:text-sm text-[#5a6b62]">
-              {email && (
-                <a
-                  href={`mailto:${email}`}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border border-[#e2e8e4] hover:border-[#0a4b32] hover:text-[#0a4b32] hover:bg-[#0a4b32]/5 transition-all duration-200 break-all shadow-xs"
-                >
-                  <Mail className="w-4 h-4 text-[#0a4b32] shrink-0" />
-                  <span>{email}</span>
-                </a>
-              )}
-              {phone && (
-                <a
-                  href={`tel:${phone}`}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border border-[#e2e8e4] hover:border-[#0a4b32] hover:text-[#0a4b32] hover:bg-[#0a4b32]/5 transition-all duration-200 shadow-xs"
-                >
-                  <Phone className="w-4 h-4 text-[#0a4b32] shrink-0" />
-                  <span>{phone}</span>
-                </a>
-              )}
-            </div>
           </div>
         </div>
       </Card>
@@ -267,33 +242,6 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
                 {department.name}
               </span>
             </p>
-          )}
-        </div>
-
-        {/* Contact Links */}
-        <div className="pt-3 border-t border-[#e2e8e4]/80 flex flex-wrap items-center justify-between gap-2 text-xs text-[#5a6b62]">
-          {email ? (
-            <a
-              href={`mailto:${email}`}
-              className="hover:text-[#0a4b32] hover:bg-[#0a4b32]/10 px-2 py-1 rounded-lg border border-transparent hover:border-[#0a4b32]/20 transition-all duration-200 inline-flex items-center gap-1 text-[11px] truncate max-w-[170px]"
-              title={email}
-            >
-              <Mail className="w-3 h-3 shrink-0 text-[#0a4b32]" />
-              <span className="truncate">{email}</span>
-            </a>
-          ) : (
-            <span className="text-[10px] text-gray-400">Institutional Staff</span>
-          )}
-
-          {phone && (
-            <a
-              href={`tel:${phone}`}
-              className="hover:text-[#0a4b32] hover:bg-[#0a4b32]/10 px-2 py-1 rounded-lg border border-transparent hover:border-[#0a4b32]/20 transition-all duration-200 inline-flex items-center gap-1 text-[11px] shrink-0 ml-auto"
-              title={phone}
-            >
-              <Phone className="w-3 h-3 shrink-0 text-[#0a4b32]" />
-              <span>{phone}</span>
-            </a>
           )}
         </div>
       </CardContent>
