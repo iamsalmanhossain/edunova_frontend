@@ -180,7 +180,7 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
 
   // 2. Standard Grid Profile Card
   return (
-    <Card className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-lg transition-all duration-300 bg-white flex flex-col min-w-0 rounded-xl">
+    <Card className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-lg transition-all duration-300 bg-white flex flex-col min-w-0 rounded-xl w-full">
       {/* Profile Image / Avatar container */}
       <div className="relative h-52 xs:h-56 w-full overflow-hidden bg-white">
         {hasValidImage ? (
