@@ -254,7 +254,7 @@ export default function StaffDirectory({
     selectedDept !== "CST" || selectedShift !== "SECOND_SHIFT" || searchQuery !== "";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-7">
       {/* 1. Main View Switcher Buttons */}
       <StaffViewSwitcher
         currentView={currentView}

@@ -18,12 +18,13 @@ export default async function FacultyStaffPage() {
   const staffList = staffResponse.data || [];
 
   return (
-    <div className="py-12 sm:py-16">
+    <div className="pt-6 sm:pt-8 pb-16 sm:pb-24">
       <Container size="wide">
         <SectionHeading
           badge="Faculty Directory"
           title="Instructors &amp; Laboratory Staff"
           subtitle="Dedicated instructors conducting theory lectures, laboratory experiments, and technical mentorship."
+          className="mb-5 sm:mb-6"
         />
 
         <PeopleDirectoryClient initialStaff={staffList} activeCategory="FACULTY" />

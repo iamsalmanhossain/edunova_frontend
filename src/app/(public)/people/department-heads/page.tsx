@@ -21,12 +21,13 @@ export default async function DepartmentHeadsPage() {
   const staffList = staffResponse.data || [];
 
   return (
-    <div className="py-12 sm:py-16">
+    <div className="pt-6 sm:pt-8 pb-16 sm:pb-24">
       <Container size="wide">
         <SectionHeading
           badge="Academic Steering"
           title="Department Heads &amp; Chief Instructors"
           subtitle="Experienced chief instructors leading educational planning, technical labs, and departmental examinations."
+          className="mb-5 sm:mb-6"
         />
 
         <PeopleDirectoryClient initialStaff={staffList} activeCategory="FACULTY" />
