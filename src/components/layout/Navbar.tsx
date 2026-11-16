@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn, getSafeAvatarUrl } from "@/lib/utils";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
@@ -102,7 +102,7 @@ export default function Navbar() {
                 >
                   <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-[#0a4b32]/25 overflow-hidden bg-white">
                     <AvatarImage
-                      src={currentUser.avatarUrl || "/images/default-avatar.png"}
+                      src={getSafeAvatarUrl(currentUser.avatarUrl)}
                       alt={currentUser.name}
                       className="object-cover"
                     />

@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import { getSafeAvatarUrl } from "@/lib/utils";
 import NotificationBellPopover from "./NotificationBellPopover";
 
 interface TeacherDashboardHeaderProps {
@@ -160,7 +161,7 @@ export default function TeacherDashboardHeader({
           >
             <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-amber-500/20 overflow-hidden">
               <Image
-                src={user.avatarUrl || "/images/default-avatar.png"}
+                src={getSafeAvatarUrl(user.avatarUrl)}
                 alt={user.name}
                 fill
                 sizes="32px"

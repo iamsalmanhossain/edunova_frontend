@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import { getSafeAvatarUrl } from "@/lib/utils";
 import NotificationBellPopover from "./NotificationBellPopover";
 
 interface StudentDashboardHeaderProps {
@@ -151,7 +152,7 @@ export default function StudentDashboardHeader({
           >
             <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-emerald-500/20 overflow-hidden">
               <Image
-                src={user.avatarUrl || "/images/default-avatar.png"}
+                src={getSafeAvatarUrl(user.avatarUrl)}
                 alt={user.name}
                 fill
                 sizes="32px"

@@ -4,6 +4,7 @@ import { Mail, Phone, Award, Building2 } from "lucide-react";
 import { TeacherProfile } from "@/types/teacher";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSafeAvatarUrl } from "@/lib/utils";
 
 interface ProfileCardProps {
   teacher: TeacherProfile;
@@ -31,7 +32,7 @@ export default function ProfileCard({
           <div className="md:col-span-4 flex flex-col items-center text-center">
             <div className="relative w-32 h-32 xs:w-40 xs:h-40 sm:w-52 sm:h-52 rounded-2xl overflow-hidden ring-4 ring-[#0a4b32]/10 shadow-md bg-white">
               <Image
-                src={user.avatarUrl || "/images/default-avatar.png"}
+                src={getSafeAvatarUrl(user.avatarUrl)}
                 alt={user.name}
                 fill
                 sizes="(max-width: 768px) 160px, 208px"
@@ -102,7 +103,7 @@ export default function ProfileCard({
     <Card className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-md transition-all duration-200 bg-white flex flex-col min-w-0">
       <div className="relative h-48 xs:h-60 w-full overflow-hidden bg-white">
         <Image
-          src={user.avatarUrl || "/images/default-avatar.png"}
+          src={getSafeAvatarUrl(user.avatarUrl)}
           alt={user.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

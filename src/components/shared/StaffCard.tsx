@@ -20,6 +20,7 @@ import {
 import { InstitutionStaff, ROLE_LABELS, InstitutionStaffRole } from "@/types/staff";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { isValidImageUrl } from "@/lib/utils";
 
 const DEFAULT_AVATAR = "/images/default-avatar.svg";
 
@@ -118,7 +119,7 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
     }
   };
 
-  const hasValidImage = Boolean(rawAvatarUrl) && !imageError;
+  const hasValidImage = isValidImageUrl(rawAvatarUrl) && !imageError;
 
   // --------------------------------------------------------------------------
   // 1. Featured card (Executive layout for Principal)

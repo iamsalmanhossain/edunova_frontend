@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Camera, Edit3, Briefcase, CheckCircle2, ShieldCheck, Mail, Phone, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/types/user";
+import { isValidImageUrl } from "@/lib/utils";
 
 interface TeacherProfileHeaderProps {
   profile: UserProfile;
@@ -31,7 +32,7 @@ export default function TeacherProfileHeader({
         {/* Avatar with Camera */}
         <div className="relative group shrink-0">
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#0d281a] ring-4 ring-amber-500/20 shadow-lg overflow-hidden flex items-center justify-center text-white font-extrabold text-3xl">
-            {profile.avatarUrl ? (
+            {isValidImageUrl(profile.avatarUrl) ? (
               <Image
                 src={profile.avatarUrl}
                 alt={profile.name}

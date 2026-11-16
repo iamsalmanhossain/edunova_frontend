@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSafeAvatarUrl } from "@/lib/utils";
 
 interface AdminStaffManagerProps {
   user: AuthUser;
@@ -583,10 +584,11 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                         <div className="flex items-center gap-3">
                           <div className="relative w-9 h-9 rounded-full overflow-hidden bg-white ring-1 ring-gray-200 shrink-0">
                             <Image
-                              src={avatarUrl || "/images/default-avatar.png"}
+                              src={getSafeAvatarUrl(avatarUrl)}
                               alt={name}
                               fill
                               className="object-cover"
+                              unoptimized
                             />
                           </div>
                           <div>
