@@ -18,6 +18,13 @@ import { Department } from "@/types/department";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+const DEFAULT_DEPARTMENT_IMAGES: Record<string, string> = {
+  CST: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
+  FOOD: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=1200&auto=format&fit=crop",
+  ENT: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?q=80&w=1200&auto=format&fit=crop",
+  RAC: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop",
+};
+
 interface DepartmentCardProps {
   dept: Department;
   index?: number;
@@ -28,6 +35,17 @@ export default function DepartmentCard({ dept, index = 0 }: DepartmentCardProps)
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 150, y: 150 });
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
+
+  const code = (dept.code || "CST").toUpperCase();
+  const fallbackImg = DEFAULT_DEPARTMENT_IMAGES[code] || DEFAULT_DEPARTMENT_IMAGES["CST"];
+  const [imgSrc, setImgSrc] = useState<string>(dept.imageUrl || fallbackImg);
+
+  // Sync state if dept.imageUrl prop changes
+  React.useEffect(() => {
+    if (dept.imageUrl) {
+      setImgSrc(dept.imageUrl);
+    }
+  }, [dept.imageUrl]);
 
   const slug = (dept.slug || dept.code).toLowerCase();
 
@@ -118,18 +136,21 @@ export default function DepartmentCard({ dept, index = 0 }: DepartmentCardProps)
         <div>
           {/* Department Image & Gradient Overlay */}
           <div className="relative h-52 w-full overflow-hidden bg-[#e6ede8]">
-            {dept.imageUrl && (
-              <Image
-                src={dept.imageUrl}
-                alt={`Department of ${dept.name}`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                loading="lazy"
-              />
-            )}
+            <Image
+              src={imgSrc}
+              alt={`Department of ${dept.name}`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+              loading="lazy"
+              onError={() => {
+                if (imgSrc !== fallbackImg) {
+                  setImgSrc(fallbackImg);
+                }
+              }}
+            />
             {/* Cinematic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a2318] via-black/35 to-black/10 group-hover:via-black/25 transition-colors duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a2318] via-black/40 to-black/15 group-hover:via-black/30 transition-colors duration-500" />
 
             {/* Dept Code Badge with Pulse Glow */}
             <div className="absolute top-3.5 right-3.5 z-10">

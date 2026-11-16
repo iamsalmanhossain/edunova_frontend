@@ -115,18 +115,21 @@ export const departmentService = {
       if (items.length > 0) {
         const validCodes = ["CST", "FOOD", "ENT", "RAC"];
         const filtered = items.filter((d) => validCodes.includes(d.code?.toUpperCase()));
-        if (filtered.length >= 4) {
-          return filtered;
-        }
-        // Merge with verified departments so all 4 exist
+
+        // Always merge with verified departments so that imageUrl, descriptions, and highlights are never null
         const map = new Map<string, Department>();
         VERIFIED_DEPARTMENTS.forEach((vd) => map.set(vd.code.toUpperCase(), vd));
         filtered.forEach((fd) => {
           const code = fd.code?.toUpperCase();
           if (map.has(code)) {
-            map.set(code, { ...map.get(code)!, ...fd });
-          } else {
-            map.set(code, fd);
+            const base = map.get(code)!;
+            map.set(code, {
+              ...base,
+              ...fd,
+              imageUrl: fd.imageUrl || base.imageUrl,
+              description: fd.description || base.description,
+              highlights: (fd.highlights && fd.highlights.length > 0) ? fd.highlights : base.highlights,
+            });
           }
         });
         return Array.from(map.values()).filter((d) => validCodes.includes(d.code?.toUpperCase()));

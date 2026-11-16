@@ -201,24 +201,49 @@ export default async function LeadershipSection() {
 
   // 2. Identify the 4 Department Heads / Chief Instructors for CST, FOOD, ENT, RAC
   const TARGET_CODES = ["CST", "FOOD", "ENT", "RAC"];
+  const usedStaffIds = new Set<string>();
+  if (principal?.id) usedStaffIds.add(principal.id);
+
   const chiefInstructors: InstitutionStaff[] = TARGET_CODES.map((code) => {
-    // Look for matching department chief instructor in live API data
+    // 1. Look for distinct matching department chief instructor in live API data
     const matched = allStaff.find(
       (s) =>
+        !usedStaffIds.has(s.id) &&
         s.role === "CHIEF_INSTRUCTOR" &&
         (s.department?.code?.toUpperCase() === code ||
           s.department?.name?.toLowerCase().includes(code.toLowerCase()) ||
           s.designation?.toLowerCase().includes(code.toLowerCase()))
     );
 
-    if (matched) return matched;
+    if (matched) {
+      usedStaffIds.add(matched.id);
+      return matched;
+    }
 
-    // Fallback to static department chief instructor
-    return (
-      FALLBACK_STAFF.find(
-        (fs) => fs.department?.code?.toUpperCase() === code
-      ) || FALLBACK_STAFF[1]
+    // 2. If not found as chief instructor, look for any instructor in this department
+    const deptInstructor = allStaff.find(
+      (s) =>
+        !usedStaffIds.has(s.id) &&
+        (s.role === "INSTRUCTOR" || s.role === "CHIEF_INSTRUCTOR") &&
+        (s.department?.code?.toUpperCase() === code ||
+          s.department?.name?.toLowerCase().includes(code.toLowerCase()))
     );
+
+    if (deptInstructor) {
+      usedStaffIds.add(deptInstructor.id);
+      return deptInstructor;
+    }
+
+    // 3. Fallback to static department chief instructor for this specific code
+    const fallback =
+      FALLBACK_STAFF.find(
+        (fs) => fs.department?.code?.toUpperCase() === code && !usedStaffIds.has(fs.id)
+      ) ||
+      FALLBACK_STAFF.find((fs) => !usedStaffIds.has(fs.id)) ||
+      FALLBACK_STAFF[1];
+
+    usedStaffIds.add(fallback.id);
+    return fallback;
   });
 
   return (
@@ -271,8 +296,11 @@ export default async function LeadershipSection() {
 
           {/* 4-Column Responsive Grid with 3D Tilt Animations */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 items-stretch">
-            {chiefInstructors.map((staff) => (
-              <StaffCard key={staff.id} staff={staff} />
+            {chiefInstructors.map((staff, index) => (
+              <StaffCard
+                key={`${staff.id}-${TARGET_CODES[index] || index}`}
+                staff={staff}
+              />
             ))}
           </div>
 

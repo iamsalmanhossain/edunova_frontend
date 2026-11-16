@@ -21,9 +21,9 @@ export default async function FacilitiesSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {facilities.map((facility) => (
+          {facilities.map((facility, index) => (
             <Card
-              key={facility.id}
+              key={`${facility.id || "facility"}-${index}`}
               className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between bg-white rounded-xl"
             >
               <div>

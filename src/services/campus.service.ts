@@ -149,7 +149,13 @@ export const campusService = {
       }>(url);
 
       if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
-        return response.data.data;
+        const seen = new Set<string>();
+        const unique = response.data.data.filter((f) => {
+          if (!f.id || seen.has(f.id)) return false;
+          seen.add(f.id);
+          return true;
+        });
+        return unique.length > 0 ? unique : response.data.data;
       }
       return VERIFIED_CAMPUS_IMAGES;
     } catch {
@@ -168,7 +174,13 @@ export const campusService = {
         data: CampusFacility[];
       }>("/campus/facilities");
       if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
-        return response.data.data;
+        const seen = new Set<string>();
+        const unique = response.data.data.filter((f) => {
+          if (!f.id || seen.has(f.id)) return false;
+          seen.add(f.id);
+          return true;
+        });
+        return unique.length > 0 ? unique : response.data.data;
       }
       return VERIFIED_CAMPUS_FACILITIES;
     } catch {
