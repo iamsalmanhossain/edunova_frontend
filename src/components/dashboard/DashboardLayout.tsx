@@ -24,6 +24,7 @@ import {
   HelpCircle,
   Database,
   UserCheck,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -108,6 +109,7 @@ export default function DashboardLayout({
   const adminNav: NavItem[] = [
     { label: "Admin Console", href: "/dashboard/admin", icon: LayoutDashboard },
     { label: "Institutes", href: "/dashboard/admin/institutes", icon: Building2 },
+    { label: "About Institute", href: "/dashboard/admin/about", icon: Info },
     { label: "Teacher Management", href: "/dashboard/admin/teachers", icon: CheckCircle2 },
     { label: "Student Management", href: "/dashboard/admin/students", icon: Users },
     { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
