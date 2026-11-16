@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getSafeAvatarUrl } from "@/lib/utils";
+import Pagination from "@/components/ui/pagination";
 
 interface AdminStaffManagerProps {
   user: AuthUser;
@@ -181,6 +182,31 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
       return true;
     });
   }, [staffList, filterRole, filterShift, filterDept, searchQuery]);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  // Reset pagination on filter or view changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterRole, filterShift, filterDept, viewTab]);
+
+  const totalItems = displayStaff.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  // Ensure current page is valid when dataset changes
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  // Sliced paginated staff list
+  const paginatedStaff = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return displayStaff.slice(start, start + pageSize);
+  }, [displayStaff, currentPage, pageSize]);
 
   // Metrics
   const metrics = useMemo(() => {
@@ -559,7 +585,8 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#f8faf8] border-b border-[#e2e8e4] text-[#47554f] uppercase tracking-wider font-semibold">
                 <tr>
@@ -573,7 +600,7 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#edf2ee]">
-                {displayStaff.map((staff) => {
+                {paginatedStaff.map((staff) => {
                   const name = staff.resolvedName || staff.name || "Unnamed";
                   const avatarUrl = staff.resolvedAvatarUrl || staff.avatarUrl;
 
@@ -703,6 +730,25 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Toolbar */}
+          {displayStaff.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={(page) => setCurrentPage(page)}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setCurrentPage(1);
+              }}
+              pageSizeOptions={[10, 20, 50, 100]}
+              itemLabel="staff records"
+              showSummary={true}
+            />
+          )}
+          </>
         )}
       </div>
 
