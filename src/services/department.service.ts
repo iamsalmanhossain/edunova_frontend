@@ -6,9 +6,9 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     id: "e03dfd3c-1d76-448c-b793-c087a5d53b42",
     name: "Computer Science & Technology",
     code: "CST",
-    slug: "computer-science-and-technology",
+    slug: "cst",
     description:
-      "Modern curriculum covering software engineering, computer networking, database management systems, artificial intelligence, and cybersecurity.",
+      "Modern curriculum covering software engineering, computer networking, database systems, artificial intelligence, web development, and cybersecurity.",
     highlights: [
       "Modern Computing & AI Laboratory",
       "Industry-standard Software Development",
@@ -19,71 +19,71 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
       "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
     _count: {
       subjects: 11,
-      studentProfiles: 320,
+      studentProfiles: 340,
       teacherProfiles: 12,
     },
   },
   {
-    id: "f14efd3c-2e87-459d-c804-d198b6e64c53",
-    name: "Electrical Technology",
-    code: "ET",
-    slug: "electrical-technology",
+    id: "f04dfd3c-2e87-459d-c804-d198b6e64c53",
+    name: "Food Technology",
+    code: "FOOD",
+    slug: "food",
     description:
-      "Comprehensive training in electrical machines, power systems, industrial automation, transmission, and smart grid infrastructures.",
+      "Specialized education in food chemistry, industrial processing, quality assurance, preservation science, food packaging, and hygiene compliance.",
     highlights: [
-      "High-Voltage Power Labs",
-      "Electrical Machines Testing",
-      "Industrial Automation & PLC",
-      "Switchgear & Power Protection",
+      "Advanced Food Quality & Safety Testing",
+      "Food Microbiology & Chemical Analysis",
+      "Modern Preservation & Pilot Plants",
+      "Agro-processing & Beverage Industry Internships",
     ],
     imageUrl:
-      "https://images.unsplash.com/photo-1498084393753-b411b2d26b34?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 11,
+      subjects: 10,
       studentProfiles: 280,
-      teacherProfiles: 10,
+      teacherProfiles: 8,
     },
   },
   {
-    id: "a25ffd3c-3f98-460e-d915-e209c7f75d64",
-    name: "Civil Technology",
-    code: "CT",
-    slug: "civil-technology",
+    id: "e15ffd3c-3f98-460e-d915-e209c7f75d64",
+    name: "Electronics Technology",
+    code: "ENT",
+    slug: "ent",
     description:
-      "Focusing on structural analysis, surveying, foundation engineering, sustainable construction materials, and environmental infrastructure.",
+      "Practical mastery in analog & digital electronics, microprocessor systems, telecommunications, embedded devices, robotics, and industrial instrumentation.",
     highlights: [
-      "Total Station Advanced Surveying",
-      "Concrete & Soil Mechanics Lab",
-      "CAD & Structural Modeling",
-      "Highway & Bridge Engineering",
+      "Microcontroller & Embedded Systems Lab",
+      "Robotics, IoT & Prototyping Workshop",
+      "Digital Signal Processing & Telecom Labs",
+      "PCB Design & Industrial Automation",
     ],
     imageUrl:
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 7,
+      subjects: 10,
       studentProfiles: 290,
-      teacherProfiles: 11,
+      teacherProfiles: 9,
     },
   },
   {
-    id: "b36ffd3c-4a09-471f-ea26-f310d8a86e75",
-    name: "Mechanical Technology",
-    code: "MT",
-    slug: "mechanical-technology",
+    id: "r26ffd3c-4a09-471f-ea26-f310d8a86e75",
+    name: "Refrigeration & Air Conditioning Technology",
+    code: "RAC",
+    slug: "rac",
     description:
-      "Advanced engineering in thermodynamics, fluid mechanics, CNC manufacturing, robotics, and precision mechanical fabrication.",
+      "Hands-on expertise in thermodynamics, central air conditioning plants, industrial cold storage, commercial ventilation, and eco-friendly cooling systems.",
     highlights: [
-      "CNC Machine & Tool Workshop",
-      "Thermal & Fluid Engineering Lab",
-      "Advanced Fabrication & Welding",
-      "Mechatronics & CAD/CAM Systems",
+      "Commercial HVAC & Central AC Lab",
+      "Cold Storage & Industrial Chillers Plant",
+      "Thermodynamics & Heat Transfer Workshop",
+      "Eco-Friendly Refrigerants & Energy Auditing",
     ],
     imageUrl:
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 7,
+      subjects: 9,
       studentProfiles: 260,
-      teacherProfiles: 9,
+      teacherProfiles: 8,
     },
   },
 ];
@@ -91,15 +91,13 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
 export const departmentService = {
   /**
    * Fetch public departments from backend GET /departments.
-   * If instituteId is passed, returns ONLY the departments offered by that institute!
+   * Defaults to Kishoreganj Polytechnic Institute (KIPI) and ensures the 4 core departments are returned.
    */
   async getDepartments(instituteId?: string): Promise<Department[]> {
-    if (!instituteId) {
-      return [];
-    }
+    const targetInstId = instituteId || "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b";
 
     try {
-      const url = `/departments?instituteId=${encodeURIComponent(instituteId)}&limit=100`;
+      const url = `/departments?instituteId=${encodeURIComponent(targetInstId)}&limit=100`;
       const response = await apiClient.get<unknown>(url, { skipAuth: true });
 
       const raw = response.data as Record<string, unknown> | unknown[];
@@ -114,9 +112,29 @@ export const departmentService = {
         }
       }
 
-      return items;
+      if (items.length > 0) {
+        const validCodes = ["CST", "FOOD", "ENT", "RAC"];
+        const filtered = items.filter((d) => validCodes.includes(d.code?.toUpperCase()));
+        if (filtered.length >= 4) {
+          return filtered;
+        }
+        // Merge with verified departments so all 4 exist
+        const map = new Map<string, Department>();
+        VERIFIED_DEPARTMENTS.forEach((vd) => map.set(vd.code.toUpperCase(), vd));
+        filtered.forEach((fd) => {
+          const code = fd.code?.toUpperCase();
+          if (map.has(code)) {
+            map.set(code, { ...map.get(code)!, ...fd });
+          } else {
+            map.set(code, fd);
+          }
+        });
+        return Array.from(map.values()).filter((d) => validCodes.includes(d.code?.toUpperCase()));
+      }
+
+      return VERIFIED_DEPARTMENTS;
     } catch {
-      return [];
+      return VERIFIED_DEPARTMENTS;
     }
   },
 
@@ -124,11 +142,13 @@ export const departmentService = {
    * Fetch single department by code or ID
    */
   async getDepartmentByCodeOrId(identifier: string): Promise<Department | null> {
+    const lower = identifier.toLowerCase().trim();
     const directMatch = VERIFIED_DEPARTMENTS.find(
       (d) =>
         d.id === identifier ||
-        d.code.toLowerCase() === identifier.toLowerCase() ||
-        d.slug === identifier.toLowerCase()
+        d.code.toLowerCase() === lower ||
+        (d.slug && d.slug.toLowerCase() === lower) ||
+        d.name.toLowerCase().includes(lower)
     );
 
     try {
