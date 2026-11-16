@@ -7,9 +7,10 @@ import SectionHeading from "@/components/shared/SectionHeading";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { campusService } from "@/services/campus.service";
+import { CampusFacility } from "@/types/campus";
 
 export default async function FacilitiesSection() {
-  const facilities = await campusService.getCampusFacilities();
+  const facilities: CampusFacility[] = await campusService.getCampusFacilities();
 
   return (
     <section className="py-16 sm:py-24 bg-[#fcfdfc] border-b border-[#e2e8e4]/70">
@@ -21,7 +22,7 @@ export default async function FacilitiesSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {facilities.map((facility, index) => (
+          {facilities.map((facility: CampusFacility, index: number) => (
             <Card
               key={`${facility.id || "facility"}-${index}`}
               className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between bg-white rounded-xl"
@@ -29,7 +30,7 @@ export default async function FacilitiesSection() {
               <div>
                 <div className="relative h-48 w-full overflow-hidden bg-[#e6ede8]">
                   <Image
-                    src={facility.imageUrl}
+                    src={facility.imageUrl || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop"}
                     alt={facility.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
@@ -52,8 +53,8 @@ export default async function FacilitiesSection() {
                   </p>
 
                   <ul className="pt-2 space-y-1.5 border-t border-[#e2e8e4]">
-                    {facility.features.map((feature, i) => (
-                      <li key={i} className="text-xs text-[#47554f] flex items-center gap-1.5">
+                    {(facility.features || []).map((feature: string, i: number) => (
+                      <li key={`${facility.id || index}-feat-${i}`} className="text-xs text-[#47554f] flex items-center gap-1.5">
                         <Check className="w-3.5 h-3.5 text-[#0a4b32] shrink-0" />
                         <span>{feature}</span>
                       </li>
