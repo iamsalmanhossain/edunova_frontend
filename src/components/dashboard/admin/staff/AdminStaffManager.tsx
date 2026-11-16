@@ -599,14 +599,13 @@ export default function AdminStaffManager({ user }: AdminStaffManagerProps) {
                       {/* Name & Photo */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-100 ring-1 ring-gray-200 shrink-0">
-                            {avatarUrl ? (
-                              <Image src={avatarUrl} alt={name} fill className="object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-[#0a4b32]/10 text-[#0a4b32] font-bold text-xs">
-                                {name[0]}
-                              </div>
-                            )}
+                          <div className="relative w-9 h-9 rounded-full overflow-hidden bg-white ring-1 ring-gray-200 shrink-0">
+                            <Image
+                              src={avatarUrl || "/images/default-avatar.png"}
+                              alt={name}
+                              fill
+                              className="object-cover"
+                            />
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900 text-xs sm:text-sm">{name}</p>

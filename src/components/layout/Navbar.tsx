@@ -100,10 +100,12 @@ export default function Navbar() {
                   className="flex items-center gap-2 p-1 pl-1 sm:pl-1.5 pr-2 rounded-full border border-[#dce3df] hover:border-[#0a4b32] bg-[#f7faf8] transition-all cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-[#0a4b32]/20 shadow-2xs"
                   aria-label="User Account Menu"
                 >
-                  <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-[#0a4b32]/25">
-                    {currentUser.avatarUrl ? (
-                      <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
-                    ) : null}
+                  <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-[#0a4b32]/25 overflow-hidden bg-white">
+                    <AvatarImage
+                      src={currentUser.avatarUrl || "/images/default-avatar.png"}
+                      alt={currentUser.name}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="bg-[#0a4b32] text-white font-bold text-xs">
                       {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : <UserIcon className="w-3.5 h-3.5" />}
                     </AvatarFallback>

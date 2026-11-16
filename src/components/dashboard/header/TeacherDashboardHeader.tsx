@@ -158,19 +158,15 @@ export default function TeacherDashboardHeader({
             className="flex items-center gap-2 pl-2 border-l border-[#e2e8e4] text-left hover:opacity-85 transition-opacity cursor-pointer group"
             title="User Profile Menu"
           >
-            <div className="relative w-8 h-8 rounded-full bg-amber-700 text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-amber-500/20 overflow-hidden">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  fill
-                  sizes="32px"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                user.name.charAt(0).toUpperCase()
-              )}
+            <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-amber-500/20 overflow-hidden">
+              <Image
+                src={user.avatarUrl || "/images/default-avatar.png"}
+                alt={user.name}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
             </div>
             <div className="hidden md:block text-left">
               <p className="text-xs font-bold text-[#0f1f17] leading-tight truncate max-w-[130px] group-hover:text-amber-800">
