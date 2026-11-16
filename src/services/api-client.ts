@@ -8,9 +8,9 @@
  * - Provides clear, human-readable errors when backend server is offline
  */
 
-const CONFIGURED_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 const RENDER_FALLBACK_URL = "https://edunova-backend-tu1r.onrender.com/api/v1";
+const CONFIGURED_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || RENDER_FALLBACK_URL;
 
 // Memory cache for the working API base URL so we don't retry failed localhost ports on every request
 let activeBaseUrl: string = CONFIGURED_API_URL;
