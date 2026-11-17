@@ -12,7 +12,7 @@ export interface NavItem {
 
 export const TOP_BAR_CONFIG = {
   phone: "+880 1711-100001",
-  email: "info@edunova.ac.bd",
+  email: "info@kigpi.gov.bd",
   location: "Karimganj, Kishoreganj, Bangladesh",
   officeHours: "Sun - Thu: 9:00 AM - 5:00 PM",
 };
@@ -36,19 +36,19 @@ export const NAVIGATION_ITEMS: NavItem[] = [
         description: "Software engineering, networking, AI, and systems",
       },
       {
-        name: "Electrical Technology",
-        href: "/departments/et",
-        description: "Power grids, electrical machines, and industrial automation",
+        name: "Food Technology",
+        href: "/departments/food",
+        description: "Food processing, quality testing, and food chemistry",
       },
       {
-        name: "Civil Technology",
-        href: "/departments/ct",
-        description: "Structural engineering, surveying, and materials",
+        name: "Electronics Technology",
+        href: "/departments/ent",
+        description: "Microprocessors, robotics, IoT, and embedded circuits",
       },
       {
-        name: "Mechanical Technology",
-        href: "/departments/mt",
-        description: "Thermodynamics, CNC manufacturing, and mechatronics",
+        name: "Refrigeration & Air Conditioning",
+        href: "/departments/rac",
+        description: "HVAC systems, cold storage plants, and thermodynamics",
       },
     ],
   },
@@ -123,7 +123,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
 
 export const FOOTER_CONFIG = {
   about:
-    "EduNova is an enterprise digital campus platform purpose-built for polytechnic institutes, providing integrated academic governance, student management, and digital learning workflows.",
+    "bdEduNova is an enterprise digital campus platform purpose-built for Kishoreganj Government Polytechnic Institute (KIGPI), providing integrated academic governance, student management, and digital learning workflows.",
   quickLinks: [
     { name: "Home", href: "/" },
     { name: "Claim Student Account", href: "/claim-account" },

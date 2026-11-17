@@ -4,6 +4,7 @@ import { Mail, Phone, Award, Building2 } from "lucide-react";
 import { TeacherProfile } from "@/types/teacher";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSafeAvatarUrl } from "@/lib/utils";
 
 interface ProfileCardProps {
   teacher: TeacherProfile;
@@ -29,21 +30,15 @@ export default function ProfileCard({
       <Card className="overflow-hidden border border-[#0a4b32]/20 shadow-md hover:shadow-lg transition-all bg-gradient-to-br from-white via-white to-[#f0f7f3]">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 p-4 sm:p-8 items-center">
           <div className="md:col-span-4 flex flex-col items-center text-center">
-            <div className="relative w-32 h-32 xs:w-40 xs:h-40 sm:w-52 sm:h-52 rounded-2xl overflow-hidden ring-4 ring-[#0a4b32]/10 shadow-md bg-[#e6ede8]">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  fill
-                  sizes="(max-width: 768px) 160px, 208px"
-                  className="object-cover transition-transform duration-300 hover:scale-105"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#0a4b32] text-white text-2xl sm:text-3xl font-bold">
-                  {initials}
-                </div>
-              )}
+            <div className="relative w-32 h-32 xs:w-40 xs:h-40 sm:w-52 sm:h-52 rounded-2xl overflow-hidden ring-4 ring-[#0a4b32]/10 shadow-md bg-white">
+              <Image
+                src={getSafeAvatarUrl(user.avatarUrl)}
+                alt={user.name}
+                fill
+                sizes="(max-width: 768px) 160px, 208px"
+                className="object-cover transition-transform duration-300 hover:scale-105"
+                priority
+              />
             </div>
             <div className="mt-2.5 sm:mt-3">
               <Badge variant="gold" className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold">
@@ -55,7 +50,7 @@ export default function ProfileCard({
           <div className="md:col-span-8 flex flex-col justify-center min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1.5 sm:mb-2">
               <Badge variant="secondary" className="text-[11px] sm:text-xs truncate max-w-full">
-                {teacher.institute?.name || "Kishoreganj Polytechnic Institute"}
+                {teacher.institute?.name || "Kishoreganj Government Polytechnic Institute"}
               </Badge>
             </div>
 
@@ -106,21 +101,15 @@ export default function ProfileCard({
 
   return (
     <Card className="group overflow-hidden border border-[#e2e8e4] hover:border-[#0a4b32]/40 hover:shadow-md transition-all duration-200 bg-white flex flex-col min-w-0">
-      <div className="relative h-48 xs:h-60 w-full overflow-hidden bg-[#e6ede8]">
-        {user.avatarUrl ? (
-          <Image
-            src={user.avatarUrl}
-            alt={user.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#f0f7f3] text-[#0a4b32] text-2xl font-bold">
-            {initials}
-          </div>
-        )}
+      <div className="relative h-48 xs:h-60 w-full overflow-hidden bg-white">
+        <Image
+          src={getSafeAvatarUrl(user.avatarUrl)}
+          alt={user.name}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
 
         <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
           {shift && (

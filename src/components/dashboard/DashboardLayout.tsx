@@ -23,6 +23,10 @@ import {
   Settings,
   HelpCircle,
   Database,
+  UserCheck,
+  Info,
+  Landmark,
+  Code2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -107,9 +111,13 @@ export default function DashboardLayout({
   const adminNav: NavItem[] = [
     { label: "Admin Console", href: "/dashboard/admin", icon: LayoutDashboard },
     { label: "Institutes", href: "/dashboard/admin/institutes", icon: Building2 },
+    { label: "About Institute", href: "/dashboard/admin/about", icon: Info },
+    { label: "Campus & Facilities", href: "/dashboard/admin/campus", icon: Landmark },
+    { label: "Developer Profile", href: "/dashboard/admin/developer", icon: Code2 },
     { label: "Teacher Management", href: "/dashboard/admin/teachers", icon: CheckCircle2 },
     { label: "Student Management", href: "/dashboard/admin/students", icon: Users },
     { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
+    { label: "Institution Staff", href: "/dashboard/admin/staff", icon: UserCheck },
     { label: "System Audit Logs", href: "/dashboard/admin/audit-logs", icon: ShieldCheck },
     ...(user.role === "SUPER_ADMIN"
       ? [{ label: "Database Backups", href: "/dashboard/admin/backups", icon: Database }]
@@ -169,7 +177,7 @@ export default function DashboardLayout({
               <div className="min-w-0 transition-opacity duration-200">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-base tracking-tight text-white">
-                    EduNova
+                    <span className="text-[#c48b28]">bd</span>EduNova
                   </span>
                   <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#c48b28] text-white tracking-widest uppercase">
                     IMS
@@ -300,7 +308,9 @@ export default function DashboardLayout({
                     <GraduationCap className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-sm block leading-tight">EduNova IMS</span>
+                    <span className="font-bold text-sm block leading-tight">
+                      <span className="text-[#c48b28]">bd</span>EduNova IMS
+                    </span>
                     <span className="text-[10px] text-[#c48b28] font-semibold">{currentRoleConfig.badge}</span>
                   </div>
                 </div>

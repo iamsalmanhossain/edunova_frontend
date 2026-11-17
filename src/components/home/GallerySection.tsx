@@ -7,9 +7,10 @@ import SectionHeading from "@/components/shared/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { campusService, VERIFIED_CAMPUS_IMAGES } from "@/services/campus.service";
+import { CampusImage } from "@/types/campus";
 
 export default async function GallerySection() {
-  let images = VERIFIED_CAMPUS_IMAGES;
+  let images: CampusImage[] = VERIFIED_CAMPUS_IMAGES;
 
   try {
     const fetched = await campusService.getPublicCampusImages();
@@ -30,16 +31,16 @@ export default async function GallerySection() {
         <SectionHeading
           badge="Campus Life & Visuals"
           title="Campus Life & Photographic Gallery"
-          subtitle="Explore the lively atmosphere, academic activities, hands-on workshops, and institutional milestones of EduNova at Kishoreganj Polytechnic Institute."
+          subtitle="Explore the lively atmosphere, academic activities, hands-on workshops, and institutional milestones of bdEduNova at Kishoreganj Government Polytechnic Institute (KIGPI)."
         />
 
         {/* Asymmetric / Dynamic Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayImages.map((img, idx) => {
+          {displayImages.map((img: CampusImage, idx: number) => {
             const isFeatured = idx === 0 || idx === 3;
             return (
               <div
-                key={img.id}
+                key={`${img.id}-${idx}`}
                 className={`group relative overflow-hidden rounded-2xl border border-[#e2e8e4] bg-[#e6ede8] shadow-sm hover:shadow-xl transition-all duration-300 ${
                   isFeatured ? "sm:col-span-2 lg:col-span-2 h-72 sm:h-96" : "h-72 sm:h-96"
                 }`}

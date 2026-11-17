@@ -6,7 +6,7 @@ import GallerySection from "@/components/home/GallerySection";
 export const metadata: Metadata = {
   title: "Campus Environment & Facilities",
   description:
-    "Explore the campus grounds, laboratories, library, and facilities at Kishoreganj Polytechnic Institute.",
+    "Explore the campus grounds, laboratories, library, and facilities at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function CampusPage() {

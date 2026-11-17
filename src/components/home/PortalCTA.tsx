@@ -26,7 +26,7 @@ export default function PortalCTA() {
         >
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#ecdcb9]">
             <Sparkles className="w-3.5 h-3.5 text-[#ecdcb9] shrink-0" />
-            <span className="truncate">EduNova Digital Portal</span>
+            <span className="truncate">bdEduNova Digital Portal</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight break-words">
@@ -34,7 +34,7 @@ export default function PortalCTA() {
           </h2>
 
           <p className="text-xs sm:text-base lg:text-lg text-white/85 max-w-2xl mx-auto leading-relaxed break-words">
-            Manage academic activities, access important information, submit student assessments, and stay connected through the official EduNova institute platform.
+            Manage academic activities, access important information, submit student assessments, and stay connected through the official bdEduNova institute platform.
           </p>
 
           <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">

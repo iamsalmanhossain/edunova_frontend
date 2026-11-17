@@ -138,13 +138,13 @@ export default function AuthCrossSlideContainer({
             </button>
           </div>
 
-          {/* Compact EduNova Logo for Mobile */}
+          {/* Compact bdEduNova Logo for Mobile */}
           <Link href="/" className="lg:hidden flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#0a4b32] text-white flex items-center justify-center shadow-xs">
               <GraduationCap className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-base tracking-tight text-[#0a4b32]">
-              EduNova
+              <span className="text-[#c48b28]">bd</span>EduNova
             </span>
           </Link>
         </div>
@@ -197,7 +197,7 @@ export default function AuthCrossSlideContainer({
         {/* Bottom Disclaimer */}
         <div className="shrink-0 pt-2 sm:pt-3 text-center text-[11px] text-[#5a6b62]/80 border-t border-[#e2e8e4]/70">
           <p>
-            Authorized access only for verified students, faculty &amp; administrators of Kishoreganj Polytechnic Institute.
+            Authorized access only for verified students, faculty &amp; administrators of Kishoreganj Government Polytechnic Institute (KIGPI).
           </p>
         </div>
       </motion.div>

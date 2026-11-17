@@ -82,7 +82,7 @@ export default function StudentWelcomeBanner({
 
           {/* Subtext description */}
           <p className="text-xs sm:text-sm text-emerald-100/80 max-w-2xl leading-relaxed line-clamp-2 sm:line-clamp-none">
-            Kishoreganj Polytechnic Institute student portal is active. Review today&apos;s shift timetable, attendance percentages, and upcoming semester assessments.
+            Kishoreganj Government Polytechnic Institute student portal is active. Review today&apos;s shift timetable, attendance percentages, and upcoming semester assessments.
           </p>
         </div>
 

@@ -10,9 +10,9 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 
-const CONFIGURED_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 const RENDER_FALLBACK_URL = "https://edunova-backend-tu1r.onrender.com/api/v1";
+const CONFIGURED_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || RENDER_FALLBACK_URL;
 
 /**
  * Strips raw database UUIDs and cleans filenames to guarantee human-friendly names

@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import { getSafeAvatarUrl } from "@/lib/utils";
 import NotificationBellPopover from "./NotificationBellPopover";
 
 interface TeacherDashboardHeaderProps {
@@ -42,7 +43,7 @@ export default function TeacherDashboardHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const teacher = user.teacherProfile;
-  const instituteName = teacher?.institute?.name || "Kishoreganj Polytechnic Institute";
+  const instituteName = teacher?.institute?.name || "Kishoreganj Government Polytechnic Institute";
   const deptName = teacher?.department?.name || "Computer Science & Technology";
   const deptCode = teacher?.department?.code || "CST";
   const designation = teacher?.designation || "Faculty Instructor";
@@ -158,19 +159,15 @@ export default function TeacherDashboardHeader({
             className="flex items-center gap-2 pl-2 border-l border-[#e2e8e4] text-left hover:opacity-85 transition-opacity cursor-pointer group"
             title="User Profile Menu"
           >
-            <div className="relative w-8 h-8 rounded-full bg-amber-700 text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-amber-500/20 overflow-hidden">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  fill
-                  sizes="32px"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                user.name.charAt(0).toUpperCase()
-              )}
+            <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-amber-500/20 overflow-hidden">
+              <Image
+                src={getSafeAvatarUrl(user.avatarUrl)}
+                alt={user.name}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
             </div>
             <div className="hidden md:block text-left">
               <p className="text-xs font-bold text-[#0f1f17] leading-tight truncate max-w-[130px] group-hover:text-amber-800">

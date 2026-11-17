@@ -5,7 +5,7 @@ import AuthCrossSlideContainer from "@/components/auth/AuthCrossSlideContainer";
 export const metadata: Metadata = {
   title: "Portal Sign In",
   description:
-    "Secure authentication portal for EduNova digital campus at Kishoreganj Polytechnic Institute.",
+    "Secure authentication portal for bdEduNova digital campus at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function LoginPage() {

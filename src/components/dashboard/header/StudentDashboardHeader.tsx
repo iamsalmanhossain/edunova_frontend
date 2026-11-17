@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import { getSafeAvatarUrl } from "@/lib/utils";
 import NotificationBellPopover from "./NotificationBellPopover";
 
 interface StudentDashboardHeaderProps {
@@ -42,7 +43,7 @@ export default function StudentDashboardHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const student = user.studentProfile;
-  const instituteName = student?.institute?.name || "Kishoreganj Polytechnic Institute";
+  const instituteName = student?.institute?.name || "Kishoreganj Government Polytechnic Institute";
   const shiftName = student?.shift === "SECOND_SHIFT" ? "Shift 2 (Day)" : "Shift 1 (Morning)";
   const semName = student?.semester ? `${student.semester}th Sem` : "Diploma Engineering";
   const deptName = student?.department?.name || "Computer Technology";
@@ -108,7 +109,7 @@ export default function StudentDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              <span className="sm:hidden font-medium">{student?.institute?.code || "KIPI"} • {shiftName}</span>
+              <span className="sm:hidden font-medium">{student?.institute?.code || "KIGPI"} • {shiftName}</span>
               <span className="hidden sm:inline">{instituteName} • {shiftName}</span>
             </p>
           </div>
@@ -149,19 +150,15 @@ export default function StudentDashboardHeader({
             className="flex items-center gap-2 pl-2 border-l border-[#e2e8e4] text-left hover:opacity-85 transition-opacity cursor-pointer group"
             title="User Profile Menu"
           >
-            <div className="relative w-8 h-8 rounded-full bg-[#0a4b32] text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-emerald-500/20 overflow-hidden">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  fill
-                  sizes="32px"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                user.name.charAt(0).toUpperCase()
-              )}
+            <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-emerald-500/20 overflow-hidden">
+              <Image
+                src={getSafeAvatarUrl(user.avatarUrl)}
+                alt={user.name}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
             </div>
             <div className="hidden md:block text-left">
               <p className="text-xs font-bold text-[#0f1f17] leading-tight truncate max-w-[130px] group-hover:text-[#0a4b32]">

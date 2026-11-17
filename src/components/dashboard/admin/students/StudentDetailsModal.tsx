@@ -250,9 +250,9 @@ export default function StudentDetailsModal({
                   <Building2 className="w-3 h-3" /> Institute &amp; Department:
                 </span>
                 <p className="font-bold text-[#0f1f17] flex items-center gap-2">
-                  <span>{profile?.institute?.name || "Kishoreganj Polytechnic Institute"}</span>
+                  <span>{profile?.institute?.name || "Kishoreganj Government Polytechnic Institute"}</span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#0a4b32]/10 text-[#0a4b32] border border-[#0a4b32]/25">
-                    {profile?.institute?.code || "KIPI"}
+                    {profile?.institute?.code || "KIGPI"}
                   </span>
                 </p>
                 <p className="text-xs text-[#5a6b62]">

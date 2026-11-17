@@ -82,7 +82,7 @@ export default function AdminLoginForm() {
           Administrator Sign In
         </h2>
         <p className="text-xs text-[#5a6b62] max-w-xs mx-auto">
-          High-security governance portal for Kishoreganj Polytechnic Institute administrators.
+          High-security governance portal for Kishoreganj Government Polytechnic Institute administrators.
         </p>
       </div>
 
@@ -116,7 +116,7 @@ export default function AdminLoginForm() {
             <Input
               id="admin-email"
               type="email"
-              placeholder="e.g. admin@edunova.com"
+              placeholder="e.g. admin@kigpi.gov.bd"
               disabled={isSubmitting}
               autoComplete="username"
               {...register("email", {

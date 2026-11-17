@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn, getSafeAvatarUrl } from "@/lib/utils";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import ProfilePhotoModal from "@/components/shared/ProfilePhotoModal";
@@ -67,7 +67,7 @@ export default function Navbar() {
         <Link
           href="/"
           className="flex items-center gap-2 sm:gap-3 shrink-0 group py-1"
-          aria-label="EduNova Digital Campus Home"
+          aria-label="bdEduNova Digital Campus Home"
         >
           <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#0a4b32] flex items-center justify-center shadow-md shadow-[#0a4b32]/20 group-hover:scale-105 transition-all">
             <GraduationCap className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
@@ -75,7 +75,7 @@ export default function Navbar() {
           <div className="min-w-0">
             <div className="flex items-center gap-1 sm:gap-1.5">
               <span className="text-base sm:text-2xl font-extrabold tracking-tight text-[#0a4b32]">
-                EduNova
+                <span className="text-[#c48b28]">bd</span>EduNova
               </span>
               <span className="hidden xs:inline-block px-1.5 py-0.2 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-[#fdf8ee] text-[#c48b28] border border-[#c48b28]/30">
                 IMS
@@ -100,10 +100,12 @@ export default function Navbar() {
                   className="flex items-center gap-2 p-1 pl-1 sm:pl-1.5 pr-2 rounded-full border border-[#dce3df] hover:border-[#0a4b32] bg-[#f7faf8] transition-all cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-[#0a4b32]/20 shadow-2xs"
                   aria-label="User Account Menu"
                 >
-                  <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-[#0a4b32]/25">
-                    {currentUser.avatarUrl ? (
-                      <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
-                    ) : null}
+                  <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-[#0a4b32]/25 overflow-hidden bg-white">
+                    <AvatarImage
+                      src={getSafeAvatarUrl(currentUser.avatarUrl)}
+                      alt={currentUser.name}
+                      className="object-cover"
+                    />
                     <AvatarFallback className="bg-[#0a4b32] text-white font-bold text-xs">
                       {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : <UserIcon className="w-3.5 h-3.5" />}
                     </AvatarFallback>

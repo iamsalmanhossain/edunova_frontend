@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,80 +14,190 @@ import {
   ChevronRight,
   Maximize2,
   X,
-  Camera,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 
-// 5 Kishoreganj Polytechnic Institute (KIPI) Campus Images
-// Order strictly maintained:
-// 1. kipi.jpg (Main Campus Academic Building)
-// 2. kipi-gate.jpg (Main Entrance Gate)
-// 3. kipi-aerial.jpg (Campus Landscape & Aerial Grounds)
-// 4. kipi-ground.jpg (Campus Grounds & Walkways)
-// 5. kipi-academic.jpg (Academic & Lab Infrastructure)
+// 5 Kishoreganj Government Polytechnic Institute (KIGPI) Campus Slides with Tailored Dynamic Content
 const HERO_SLIDES = [
   {
     url: "/images/hero/kipi.jpg",
-    title: "KIPI Central Academic Building",
-    caption: "Main administrative & academic campus building",
-    badge: "Main Campus Building",
+    badge: "Institutional Campus • KIGPI",
+    headlinePrefix: "Fostering ",
+    headlineHighlight: "Technical Excellence",
+    headlineSuffix: " & Modern Engineering",
+    subtitle:
+      "Welcome to bdEduNova at Kishoreganj Government Polytechnic Institute (KIGPI). Empowering 2,800+ future diploma engineers through structured technical curriculum, world-class academic governance, and digital automation.",
+    caption: "KIGPI Central Academic Building & Administrative Complex",
   },
   {
     url: "/images/hero/kipi-gate.jpg",
-    title: "KIPI Main Campus Gate",
-    caption: "Official entrance gateway of Kishoreganj Polytechnic Institute",
-    badge: "Campus Entrance",
+    badge: "Official Campus Gateway • Estd. 2008",
+    headlinePrefix: "Gateway to ",
+    headlineHighlight: "Engineering Leadership",
+    headlineSuffix: " & Innovation",
+    subtitle:
+      "Kishoreganj Government Polytechnic Institute stands as a premier government technical institution, nurturing 2,800 skilled diploma engineers across 4 BTEB accredited disciplines since 2008.",
+    caption: "KIGPI Main Campus Entrance Gateway",
   },
   {
     url: "/images/hero/kipi-aerial.jpg",
-    title: "Vibrant Campus Landscape",
-    caption: "Panoramic aerial view of grounds & academic complex",
-    badge: "Aerial Landscape",
+    badge: "Scenic Grounds & Aerial Complex",
+    headlinePrefix: "A Vibrant Eco-Campus for ",
+    headlineHighlight: "Holistic Learning",
+    headlineSuffix: " & Growth",
+    subtitle:
+      "Sprawling across Karimganj, our scenic green campus blends advanced technical education with an open, inspiring environment designed for tomorrow's technological pioneers.",
+    caption: "Vibrant Campus Landscape & Aerial Grounds",
   },
   {
     url: "/images/hero/kipi-ground.jpg",
-    title: "Campus Ground & Garden",
-    caption: "Open green grounds, scenic gardens & walkways",
-    badge: "Green Grounds",
+    badge: "Student Grounds & Community",
+    headlinePrefix: "Inspiring Athletic Grounds & ",
+    headlineHighlight: "Vibrant Campus Life",
+    headlineSuffix: "",
+    subtitle:
+      "Beyond classrooms, KIGPI fosters teamwork, physical health, and community leadership through expansive athletic grounds, active technical clubs, and student events.",
+    caption: "Campus Ground, Scenic Gardens & Walkways",
   },
   {
     url: "/images/hero/kipi-academic.jpg",
-    title: "Technical Labs & Academic Wing",
-    caption: "Modern engineering classrooms & laboratory facilities",
-    badge: "Academic Wing",
+    badge: "16+ High-Tech Laboratories & Workshops",
+    headlinePrefix: "Hands-On Mastery in ",
+    headlineHighlight: "Modern Engineering Labs",
+    headlineSuffix: "",
+    subtitle:
+      "Practical excellence in Computer Science, Electronics, Food, and RAC technologies with industry-grade equipment, specialized workshops, and project-based laboratory training.",
+    caption: "Technical Labs & Engineering Academic Wing",
   },
 ];
 
+const SLIDE_DURATION = 5500; // 5.5 seconds per slide
+
+// Staggered motion variants for smooth choreographed text reveal
+const textContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.05,
+      staggerDirection: -1,
+    },
+  },
+};
+
+const pillVariants: Variants = {
+  hidden: { opacity: 0, y: -16, scale: 0.9, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    scale: 0.95,
+    filter: "blur(4px)",
+    transition: { duration: 0.25 },
+  },
+};
+
+const headlineVariants: Variants = {
+  hidden: { opacity: 0, y: 26, filter: "blur(8px)", scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -18,
+    filter: "blur(6px)",
+    transition: { duration: 0.3 },
+  },
+};
+
+const subtitleVariants: Variants = {
+  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    filter: "blur(4px)",
+    transition: { duration: 0.25 },
+  },
+};
+
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+  // Touch swipe support for mobile
+  const touchStartXRef = useRef<number | null>(null);
+
+  const goToSlide = useCallback((index: number) => {
+    setDirection(index > currentSlide ? 1 : -1);
+    setCurrentSlide(index);
+    setProgress(0);
+  }, [currentSlide]);
+
   const nextSlide = useCallback(() => {
+    setDirection(1);
     setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    setProgress(0);
   }, []);
 
   const prevSlide = useCallback(() => {
+    setDirection(-1);
     setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    setProgress(0);
   }, []);
 
-  // Auto-advance slides every 5.5 seconds unless paused or modal is open
+  // Smooth story progress bar & auto-advance timer
   useEffect(() => {
     if (isPaused || isLightboxOpen) return;
+
+    const intervalTime = 50; // update progress every 50ms
+    const step = (intervalTime / SLIDE_DURATION) * 100;
+
     const timer = setInterval(() => {
-      nextSlide();
-    }, 5500);
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setDirection(1);
+          setCurrentSlide((curr) => (curr + 1) % HERO_SLIDES.length);
+          return 0;
+        }
+        return prev + step;
+      });
+    }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [isPaused, isLightboxOpen, nextSlide]);
+  }, [isPaused, isLightboxOpen]);
 
-  // Handle keyboard events for lightbox
+  // Handle keyboard events for lightbox & navigation
   useEffect(() => {
-    if (!isLightboxOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsLightboxOpen(false);
+      if (e.key === "Escape" && isLightboxOpen) setIsLightboxOpen(false);
       if (e.key === "ArrowRight") nextSlide();
       if (e.key === "ArrowLeft") prevSlide();
     };
@@ -95,256 +205,391 @@ export default function HeroSection() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen, nextSlide, prevSlide]);
 
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+
+    if (Math.abs(diff) > 45) {
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    touchStartXRef.current = null;
+  };
+
   const activeSlide = HERO_SLIDES[currentSlide];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#041f15] via-[#073825] to-[#031810] text-white">
-      {/* Ambient background lighting */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#0a5237]/30 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#c48b28]/15 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
+    <section
+      className="relative overflow-hidden bg-[#021810] text-white flex flex-col justify-between items-center select-none min-h-[calc(100vh-105px)] lg:min-h-[calc(100vh-112px)] min-h-[calc(100dvh-105px)] pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-10"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* =========================================================================
+          1. CINEMATIC KEN-BURNS BACKGROUND SLIDER (WITH DEPTH LENS BLUR TRANSITION)
+         ========================================================================= */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={activeSlide.url}
+            initial={{
+              opacity: 0,
+              scale: 1.14,
+              filter: "blur(10px) brightness(0.75)",
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1.02,
+              filter: "blur(0px) brightness(1)",
+              transition: {
+                duration: 1.3,
+                ease: [0.16, 1, 0.3, 1] as const,
+              },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.98,
+              filter: "blur(8px) brightness(0.7)",
+              transition: {
+                duration: 0.9,
+                ease: "easeInOut",
+              },
+            }}
+            className="absolute inset-0"
+          >
+            {/* Subtle camera drift while viewing image */}
+            <motion.div
+              animate={{
+                scale: [1.02, 1.06],
+                x: [0, -8],
+              }}
+              transition={{
+                duration: SLIDE_DURATION / 1000,
+                ease: "linear",
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+              className="relative w-full h-full"
+            >
+              <Image
+                src={activeSlide.url}
+                alt={activeSlide.caption}
+                fill
+                priority={currentSlide === 0}
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Cinematic Golden Lens Flare Sweep on Image Transition */}
+        <AnimatePresence>
+          <motion.div
+            key={`flare-${currentSlide}`}
+            initial={{ opacity: 0.5, scale: 0.9 }}
+            animate={{ opacity: 0, scale: 1.3 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#c48b28]/15 to-transparent pointer-events-none z-10"
+          />
+        </AnimatePresence>
+
+        {/* Multi-layered Gradients for Contrast & Legibility */}
+        <div className="absolute inset-0 bg-radial from-[#02160e]/95 via-[#02160e]/85 to-[#02160e]/75 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#02160e] via-transparent to-[#02160e]/85 z-10" />
+
+        {/* Animated Aurora Orbs in Background */}
+        <motion.div
+          animate={{
+            x: [0, 40, -25, 0],
+            y: [0, -30, 20, 0],
+            scale: [1, 1.25, 0.95, 1],
+            opacity: [0.35, 0.55, 0.4, 0.35],
+          }}
+          transition={{
+            duration: 13,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-24 left-1/4 w-[460px] h-[460px] rounded-full bg-gradient-to-br from-[#0a5237]/60 via-emerald-600/35 to-transparent blur-3xl z-10 pointer-events-none"
+        />
+
+        <motion.div
+          animate={{
+            x: [0, -40, 30, 0],
+            y: [0, 30, -25, 0],
+            scale: [1, 1.3, 0.9, 1],
+            opacity: [0.25, 0.45, 0.3, 0.25],
+          }}
+          transition={{
+            duration: 11,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+          className="absolute -bottom-28 right-1/4 w-[480px] h-[480px] rounded-full bg-gradient-to-tl from-[#c48b28]/45 via-amber-500/25 to-transparent blur-3xl z-10 pointer-events-none"
+        />
+
+        {/* Floating Micro-Stardust Particles */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          {[...Array(14)].map((_, i) => (
+            <motion.span
+              key={i}
+              className="absolute rounded-full bg-gradient-to-tr from-[#ecdcb9] to-emerald-300"
+              style={{
+                width: `${(i % 3) + 2}px`,
+                height: `${(i % 3) + 2}px`,
+                left: `${((i * 17) % 94) + 3}%`,
+                top: `${((i * 23) % 86) + 7}%`,
+              }}
+              animate={{
+                y: [0, -35, 0],
+                opacity: [0.15, 0.75, 0.15],
+                scale: [0.8, 1.5, 0.8],
+              }}
+              transition={{
+                duration: 4.5 + (i % 5) * 1.2,
+                repeat: Infinity,
+                delay: i * 0.35,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      <Container size="wide" className="relative z-10 py-8 sm:py-12 lg:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
-          {/* Left Column: Institutional Info & CTAs */}
-          <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-center min-w-0">
-            {/* Institutional Accreditation Pill */}
+      {/* =========================================================================
+          2. CENTERED HERO CONTENT (FULLSCREEN VIEWPORT BALANCED)
+         ========================================================================= */}
+      <Container size="default" className="relative z-20 flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full my-auto">
+        {/* Dynamic Text Container: Fixed min-height ensures 0 screen jitter ("coto boro hoi na") */}
+        <div className="relative w-full min-h-[210px] xs:min-h-[220px] sm:min-h-[235px] md:min-h-[245px] flex items-center justify-center">
+          <AnimatePresence mode="popLayout" custom={direction}>
             <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 rounded-full bg-[#0a4b32]/90 border border-[#c48b28]/40 backdrop-blur-md text-white text-[11px] sm:text-xs font-medium mb-3 shadow-sm w-fit max-w-full"
+              key={currentSlide}
+              custom={direction}
+              variants={textContainerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full flex flex-col items-center justify-center text-center"
             >
-              <span className="w-2 h-2 rounded-full bg-[#c48b28] animate-pulse shrink-0" />
-              <span className="text-[#fef8ec] font-semibold truncate">Institutional Campus</span>
-              <span className="text-white/40 hidden xs:inline">•</span>
-              <span className="text-white/90 hidden xs:inline truncate">Kishoreganj Polytechnic Institute</span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-2xl xs:text-3xl sm:text-4xl md:text-[42px] lg:text-[40px] xl:text-[46px] font-extrabold text-white tracking-tight leading-[1.15] break-words"
-            >
-              Fostering <span className="text-[#ecdcb9]">Technical Excellence</span> &amp; Modern Engineering
-            </motion.h1>
-
-            {/* Subtitle / Intro */}
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-3 text-xs sm:text-sm md:text-base text-white/85 leading-relaxed font-normal max-w-2xl break-words"
-            >
-              Welcome to EduNova at Kishoreganj Polytechnic Institute. Empowering future diploma engineers through structured technical curriculum, state-of-the-art laboratories, and unified digital academic governance.
-            </motion.p>
-
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
-            >
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 h-10 sm:h-11 text-xs sm:text-sm shadow-lg shadow-black/25"
+              {/* Dynamic Institutional Badge Pill with Pop & Scale Animation */}
+              <motion.div
+                variants={pillVariants}
+                className="group relative inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-[#032014]/90 border border-[#c48b28]/50 backdrop-blur-xl text-white text-[11px] sm:text-xs font-medium mb-3 sm:mb-4 shadow-xl overflow-hidden"
               >
-                <Link href="/login" className="flex items-center justify-center gap-2">
-                  <LogIn className="w-4 h-4 shrink-0" />
-                  <span>Access Digital Campus</span>
-                </Link>
-              </Button>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
 
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 h-10 sm:h-11 text-xs sm:text-sm backdrop-blur-xs"
+                <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-400" />
+                </span>
+
+                <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
+                <span className="text-white/40">•</span>
+                <span className="text-white/80 font-mono text-[10px] sm:text-xs">EIIN: 66035</span>
+              </motion.div>
+
+              {/* Dynamic Main Headline with Staggered Rise & Blur Focus */}
+              <motion.h1
+                variants={headlineVariants}
+                className="text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-[50px] font-black text-white tracking-tight leading-[1.14] drop-shadow-lg max-w-3xl"
               >
-                <Link href="/campus" className="flex items-center justify-center gap-2">
-                  <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                  <span>Explore Campus</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Link>
-              </Button>
-            </motion.div>
+                {activeSlide.headlinePrefix}
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-[#ecdcb9] via-[#ffffff] via-amber-200 to-[#ecdcb9] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x">
+                    {activeSlide.headlineHighlight}
+                  </span>
+                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#ecdcb9]/0 via-[#c48b28] to-[#ecdcb9]/0" />
+                </span>
+                {activeSlide.headlineSuffix}
+              </motion.h1>
 
-            {/* Feature Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="mt-6 pt-4 border-t border-white/15 grid grid-cols-1 xs:grid-cols-3 gap-3 text-white/85 text-xs lg:text-xs xl:text-sm"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <ShieldCheck className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">BTEB Approved Curriculum</span>
-              </div>
-              <div className="flex items-center gap-2 min-w-0">
-                <Building className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">4 Engineering Disciplines</span>
-              </div>
-              <div className="flex items-center gap-2 min-w-0">
-                <Sparkles className="w-4 h-4 text-[#ecdcb9] shrink-0" />
-                <span className="truncate">Shift 1 &amp; Shift 2 Programs</span>
-              </div>
+              {/* Dynamic Subtitle with Smooth Follow-Through Animation */}
+              <motion.p
+                variants={subtitleVariants}
+                className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-white/90 leading-relaxed font-normal max-w-2xl drop-shadow-md"
+              >
+                {activeSlide.subtitle}
+              </motion.p>
             </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          {/* Primary CTA: Clean Solid Gold Button */}
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            className="rounded-xl w-full sm:w-auto"
+          >
+            <Button
+              asChild
+              size="lg"
+              className="bg-[#c48b28] hover:bg-[#b07b22] text-white font-bold px-6 sm:px-7 h-11 text-xs sm:text-sm shadow-xl shadow-black/40 overflow-hidden w-full sm:w-auto cursor-pointer"
+            >
+              <Link href="/login" className="flex items-center justify-center gap-2">
+                <LogIn className="w-4 h-4 shrink-0 transition-transform group-hover:rotate-6" />
+                <span>Access Digital Campus</span>
+              </Link>
+            </Button>
+          </motion.div>
+
+          {/* Secondary CTA: Infinite Rotating Glowing Border Beam Animation */}
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            className="relative p-[1.5px] overflow-hidden rounded-xl group w-full sm:w-auto cursor-pointer shadow-xl shadow-black/40"
+          >
+            {/* Rotating Conic Light Beam running continuously around border */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 3.5,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="absolute -top-[100%] -left-[100%] w-[300%] h-[300%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_270deg,#ecdcb9_315deg,#c48b28_360deg)] pointer-events-none"
+            />
+
+            {/* Inner Button Content */}
+            <Link
+              href="/campus"
+              className="relative z-10 flex items-center justify-center gap-2 px-6 sm:px-7 h-11 text-xs sm:text-sm font-semibold text-white bg-[#031d13]/90 hover:bg-[#05281a] backdrop-blur-xl rounded-[10px] transition-colors w-full sm:w-auto"
+            >
+              <Compass className="w-4 h-4 text-[#ecdcb9] shrink-0 transition-transform group-hover:rotate-45" />
+              <span>Explore Campus</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Minimal Centered Story Progress Indicators & Chevrons */}
+        <div className="mt-7 sm:mt-9 flex items-center justify-center gap-2.5 sm:gap-3">
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            type="button"
+            onClick={prevSlide}
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md"
+            aria-label="Previous slide"
+            title="Previous slide"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </motion.button>
+
+          {/* 5 Sleek Capsule Story Progress Indicators */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {HERO_SLIDES.map((slide, idx) => {
+              const isPast = idx < currentSlide;
+              const isCurrent = idx === currentSlide;
+              return (
+                <button
+                  key={slide.url}
+                  type="button"
+                  onClick={() => goToSlide(idx)}
+                  className="relative h-1.5 w-7 sm:w-10 rounded-full bg-white/25 overflow-hidden transition-all duration-200 cursor-pointer hover:h-2"
+                  aria-label={`Slide ${idx + 1}`}
+                  title={slide.caption}
+                >
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      isPast
+                        ? "w-full bg-[#ecdcb9]"
+                        : isCurrent
+                        ? "bg-gradient-to-r from-[#ecdcb9] via-emerald-300 to-[#c48b28] shadow-[0_0_8px_#ecdcb9]"
+                        : "w-0"
+                    }`}
+                    style={
+                      isCurrent
+                        ? {
+                            width: `${progress}%`,
+                            transition: isPaused ? "none" : "width 50ms linear",
+                          }
+                        : undefined
+                    }
+                  />
+                </button>
+              );
+            })}
           </div>
 
-          {/* Right Column: Dedicated Full-Visibility Image Showcase Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-6 xl:col-span-5 w-full flex flex-col items-center"
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            type="button"
+            onClick={nextSlide}
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md"
+            aria-label="Next slide"
+            title="Next slide"
           >
-            <div
-              className="relative w-full rounded-2xl sm:rounded-3xl p-2.5 sm:p-3 bg-gradient-to-b from-white/15 via-white/10 to-white/5 border border-white/20 backdrop-blur-xl shadow-2xl shadow-black/50"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {/* Native 4:3 Aspect Ratio Frame: Image is completely visible without severe cropping */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#03170e]">
-                {/* Soft ambient background blur */}
-                <div className="absolute inset-0 z-0">
-                  <Image
-                    src={activeSlide.url}
-                    alt={activeSlide.title}
-                    fill
-                    className="object-cover blur-2xl opacity-40 scale-125"
-                    sizes="500px"
-                  />
-                </div>
+            <ChevronRight className="w-4 h-4" />
+          </motion.button>
 
-                {/* Main Active Foreground Image */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeSlide.url}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                    className="absolute inset-0 z-10 cursor-pointer group"
-                    onClick={() => setIsLightboxOpen(true)}
-                  >
-                    <Image
-                      src={activeSlide.url}
-                      alt={activeSlide.title}
-                      fill
-                      priority={currentSlide === 0}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                      className="object-contain sm:object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
-                    />
-                    {/* Bottom subtle contrast gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Top Overlay Bar */}
-                <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 z-20 flex items-center justify-between pointer-events-none">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                    <span className="text-[#fef8ec] font-semibold">{activeSlide.badge}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 pointer-events-auto">
-                    <span className="px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-mono shadow-sm">
-                      {String(currentSlide + 1).padStart(2, "0")} / {String(HERO_SLIDES.length).padStart(2, "0")}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setIsLightboxOpen(true)}
-                      className="w-7 h-7 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white/90 hover:text-white hover:bg-black/90 hover:border-white/40 flex items-center justify-center transition-all cursor-pointer shadow-sm"
-                      title="View Fullscreen"
-                      aria-label="View Fullscreen"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Bottom Caption & Navigation Controls */}
-                <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 z-20 flex items-end justify-between gap-2.5 pointer-events-none">
-                  <div className="min-w-0 pr-2">
-                    <h3 className="text-white font-bold text-sm sm:text-base leading-tight drop-shadow-md truncate">
-                      {activeSlide.title}
-                    </h3>
-                    <p className="text-white/80 text-[11px] sm:text-xs drop-shadow-sm truncate mt-0.5">
-                      {activeSlide.caption}
-                    </p>
-                  </div>
-
-                  {/* Previous & Next Control Buttons */}
-                  <div className="flex items-center gap-1.5 shrink-0 pointer-events-auto">
-                    <button
-                      type="button"
-                      onClick={prevSlide}
-                      className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/25 text-white hover:bg-[#c48b28] hover:border-[#c48b28] flex items-center justify-center transition-all cursor-pointer shadow-md"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={nextSlide}
-                      className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/25 text-white hover:bg-[#c48b28] hover:border-[#c48b28] flex items-center justify-center transition-all cursor-pointer shadow-md"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 5 Clickable Mini Thumbnails Row directly underneath the image */}
-              <div className="grid grid-cols-5 gap-1.5 sm:gap-2 mt-2 sm:mt-2.5">
-                {HERO_SLIDES.map((slide, idx) => {
-                  const isActive = idx === currentSlide;
-                  return (
-                    <button
-                      key={slide.url}
-                      type="button"
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? "ring-2 ring-[#c48b28] shadow-md shadow-[#c48b28]/40 scale-[1.03] opacity-100"
-                          : "opacity-60 hover:opacity-100 hover:scale-[1.02] border border-white/15"
-                      }`}
-                      aria-label={`View ${slide.title}`}
-                    >
-                      <Image
-                        src={slide.url}
-                        alt={slide.title}
-                        fill
-                        sizes="120px"
-                        className="object-cover object-center"
-                      />
-                      {isActive && (
-                        <div className="absolute inset-0 bg-[#c48b28]/15" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+          {/* Fullscreen Button */}
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            type="button"
+            onClick={() => setIsLightboxOpen(true)}
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#c48b28] border border-white/20 hover:border-[#c48b28] text-white flex items-center justify-center transition-all cursor-pointer shadow-md ml-1"
+            aria-label="View Fullscreen"
+            title="View Fullscreen"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </motion.button>
         </div>
       </Container>
 
-      {/* Fullscreen High-Resolution Lightbox Modal */}
+      {/* =========================================================================
+          3. FEATURE BADGES AT HERO BOTTOM FOLD
+         ========================================================================= */}
+      <Container size="default" className="relative z-20 w-full max-w-4xl mx-auto">
+        <div className="pt-4 border-t border-white/15 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-white/90 text-[11px] sm:text-xs md:text-sm font-medium">
+          <div className="flex items-center gap-2 group cursor-default">
+            <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
+            </div>
+            <span className="group-hover:text-white transition-colors">BTEB Approved Curriculum</span>
+          </div>
+          <div className="flex items-center gap-2 group cursor-default">
+            <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
+              <Building className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
+            </div>
+            <span className="group-hover:text-white transition-colors">4 Engineering Disciplines</span>
+          </div>
+          <div className="flex items-center gap-2 group cursor-default">
+            <div className="p-1 rounded-md bg-white/10 group-hover:bg-[#c48b28]/30 transition-colors">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ecdcb9] shrink-0" />
+            </div>
+            <span className="group-hover:text-white transition-colors">Shift 1 &amp; Shift 2 Programs</span>
+          </div>
+        </div>
+      </Container>
+
+      {/* =========================================================================
+          FULLSCREEN HIGH-RESOLUTION LIGHTBOX MODAL
+         ========================================================================= */}
       <AnimatePresence>
         {isLightboxOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/94 backdrop-blur-md p-4 sm:p-6"
             onClick={() => setIsLightboxOpen(false)}
           >
             <div
@@ -354,8 +599,13 @@ export default function HeroSection() {
               {/* Lightbox Header Bar */}
               <div className="w-full flex items-center justify-between text-white pb-3 px-1">
                 <div className="min-w-0 pr-4">
-                  <h4 className="font-bold text-base sm:text-lg truncate">{activeSlide.title}</h4>
-                  <p className="text-white/75 text-xs sm:text-sm truncate">{activeSlide.caption}</p>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c48b28]/35 text-[#f5ebd6] border border-[#c48b28]/55">
+                      {activeSlide.badge}
+                    </span>
+                    <span className="text-white/60 text-xs hidden xs:inline">• Kishoreganj Government Polytechnic Institute</span>
+                  </div>
+                  <h4 className="font-bold text-base sm:text-lg truncate">{activeSlide.caption}</h4>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="font-mono text-xs sm:text-sm text-white/80">
@@ -364,7 +614,7 @@ export default function HeroSection() {
                   <button
                     type="button"
                     onClick={() => setIsLightboxOpen(false)}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer"
                     aria-label="Close fullscreen view"
                   >
                     <X className="w-5 h-5" />
@@ -376,7 +626,7 @@ export default function HeroSection() {
               <div className="relative w-full aspect-[4/3] max-h-[76vh] rounded-2xl overflow-hidden border border-white/20 bg-black shadow-2xl">
                 <Image
                   src={activeSlide.url}
-                  alt={activeSlide.title}
+                  alt={activeSlide.caption}
                   fill
                   className="object-contain"
                   sizes="100vw"

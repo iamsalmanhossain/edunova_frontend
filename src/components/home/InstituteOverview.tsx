@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, ArrowRight, Award } from "lucide-react";
@@ -8,8 +8,36 @@ import { motion } from "framer-motion";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 import CountUp from "@/components/shared/CountUp";
+import { aboutService } from "@/services/about.service";
+import { InstituteAbout } from "@/types/about";
+
+const DEFAULT_CAMPUS_IMAGE =
+  "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop";
 
 export default function InstituteOverview() {
+  const [about, setAbout] = useState<InstituteAbout | null>(null);
+  const [imageSrc, setImageSrc] = useState<string>(DEFAULT_CAMPUS_IMAGE);
+
+  // Dynamically fetch live about data so admin updates to banner & profile reflect here immediately
+  useEffect(() => {
+    let isMounted = true;
+    aboutService
+      .getPublicAbout()
+      .then((data) => {
+        if (isMounted && data) {
+          setAbout(data);
+          if (data.bannerUrl) {
+            setImageSrc(data.bannerUrl);
+          }
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <section className="py-12 sm:py-20 lg:py-24 bg-[#fcfdfc] border-b border-[#e2e8e4]/70 overflow-hidden">
       <Container size="wide">
@@ -28,12 +56,16 @@ export default function InstituteOverview() {
 
               <div className="relative h-64 sm:h-[400px] lg:h-[460px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-[#e2e8e4] bg-[#e6ede8] group">
                 <Image
-                  src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop"
-                  alt="Kishoreganj Polytechnic Institute Academic Campus and Grounds"
+                  src={imageSrc}
+                  alt={about?.title || "Kishoreganj Government Polytechnic Institute Academic Campus and Grounds"}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   loading="lazy"
+                  unoptimized
+                  onError={() => {
+                    setImageSrc(DEFAULT_CAMPUS_IMAGE);
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
@@ -54,7 +86,7 @@ export default function InstituteOverview() {
                         Technical Excellence
                       </p>
                       <p className="text-[10px] sm:text-xs text-[#5a6b62] truncate">
-                        Karimganj, Kishoreganj, Bangladesh
+                        {about?.institute?.address || "Karimganj, Kishoreganj, Bangladesh"}
                       </p>
                     </div>
                   </div>
@@ -74,15 +106,18 @@ export default function InstituteOverview() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase bg-[#f0f7f3] text-[#0a4b32] border border-[#0a4b32]/20 mb-3 max-w-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c48b28] shrink-0" />
-                <span className="truncate">Welcome to Kishoreganj Polytechnic Institute</span>
+                <span className="truncate">
+                  {about?.title ? `Welcome to ${about.title}` : "Welcome to Kishoreganj Government Polytechnic Institute (KIGPI)"}
+                </span>
               </div>
               <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0f1f17] leading-tight break-words">
-                A Premier Polytechnic Institute Dedicated to Practical Engineering
+                {about?.tagline || "A Premier Polytechnic Institute Dedicated to Practical Engineering"}
               </h2>
             </div>
 
             <p className="text-xs sm:text-base text-[#5a6b62] leading-relaxed break-words">
-              Established under the Directorate of Technical Education and Bangladesh Technical Education Board (BTEB), Kishoreganj Polytechnic Institute offers high-caliber 4-year Diploma in Engineering curricula. Our mandate is to cultivate skilled engineering technicians proficient in real-world problem-solving, modern machinery, and digital innovation.
+              {about?.mission ||
+                "Established under the Directorate of Technical Education and Bangladesh Technical Education Board (BTEB), Kishoreganj Government Polytechnic Institute offers high-caliber 4-year Diploma in Engineering curricula. Our mandate is to cultivate skilled engineering technicians proficient in real-world problem-solving, modern machinery, and digital innovation."}
             </p>
 
             {/* Institutional Key Points */}
@@ -91,7 +126,7 @@ export default function InstituteOverview() {
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#0a4b32] shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <h4 className="text-xs sm:text-sm font-semibold text-[#0f1f17]">
-                    Standardized 7-Semester Diploma Curricula
+                    Standardized 8-Semester Diploma Curricula
                   </h4>
                   <p className="text-[11px] sm:text-xs text-[#5a6b62] mt-0.5 leading-snug">
                     Rigorous theoretical foundations combined with extensive laboratory practicums and industrial attachment.
@@ -105,7 +140,7 @@ export default function InstituteOverview() {
                     Comprehensive Shift-Based Scheduling
                   </h4>
                   <p className="text-[11px] sm:text-xs text-[#5a6b62] mt-0.5 leading-snug">
-                    Operating two distinct academic shifts (First Shift &amp; Second Shift) to maximize student enrollment and laboratory utilization.
+                    Operating two distinct academic shifts (First Shift &amp; Second Shift) to maximize student enrollment and laboratory utilization across 4 core departments.
                   </p>
                 </div>
               </div>

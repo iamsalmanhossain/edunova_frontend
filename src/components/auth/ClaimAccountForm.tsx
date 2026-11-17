@@ -616,7 +616,7 @@ export default function ClaimAccountForm() {
                 required
               />
               <p className="text-[10px] text-[#5a6b62]">
-                Your permanent login email to access the EduNova portal
+                Your permanent login email to access the bdEduNova portal
               </p>
             </div>
 
@@ -728,7 +728,7 @@ export default function ClaimAccountForm() {
                 <div>
                   <span className="text-[#5a6b62] block">Institute:</span>
                   <span className="font-semibold text-[#0f1f17] truncate block">
-                    {selectedInstitute?.code || "KIPI"}
+                    {selectedInstitute?.code || "KIGPI"}
                   </span>
                 </div>
               </div>

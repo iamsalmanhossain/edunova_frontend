@@ -27,7 +27,7 @@ export default function AuthVisualPanel({
   // Mode-specific content fallbacks
   const defaultHeadlines = {
     login: "Connecting Students, Teachers & Administration in One Unified Digital Ecosystem",
-    register: "Join the Digital Technical Education Revolution at EduNova",
+    register: "Join the Digital Technical Education Revolution at bdEduNova",
     "forgot-password": "Secure Institutional Account Recovery & Credential Management",
     "reset-password": "Set Your New Encrypted Institutional Password",
     "verify-email": "Official Institutional Email & Identity Verification",
@@ -35,10 +35,10 @@ export default function AuthVisualPanel({
 
   const defaultSubheadlines = {
     login: "Access official academic routines, real-time attendance logs, examination records, and institutional communications with high security.",
-    register: "Select whether you are enrolling as a student or registering as a faculty member at Kishoreganj Polytechnic Institute.",
+    register: "Select whether you are enrolling as a student or registering as a faculty member at Kishoreganj Government Polytechnic Institute.",
     "forgot-password": "Enter your verified institutional email address to receive immediate password restoration credentials.",
     "reset-password": "Create a robust password meeting institutional cybersecurity standards to protect your academic records.",
-    "verify-email": "Confirming your identity to safeguard Kishoreganj Polytechnic Institute student & faculty portals.",
+    "verify-email": "Confirming your identity to safeguard Kishoreganj Government Polytechnic Institute student & faculty portals.",
   };
 
   const activeHeadline = headline || defaultHeadlines[mode] || defaultHeadlines.login;
@@ -50,7 +50,7 @@ export default function AuthVisualPanel({
       <div className="absolute inset-0 z-0">
         <Image
           src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1400&auto=format&fit=crop"
-          alt="EduNova Digital Campus Administration"
+          alt="bdEduNova Digital Campus Administration"
           fill
           priority
           sizes="50vw"
@@ -69,7 +69,7 @@ export default function AuthVisualPanel({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xl font-extrabold tracking-tight text-white">
-                EduNova
+                <span className="text-[#c48b28]">bd</span>EduNova
               </span>
               <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#c48b28] text-white shadow-xs">
                 IMS
@@ -112,7 +112,7 @@ export default function AuthVisualPanel({
         <div className="space-y-2 pt-1 text-xs text-white/90">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#c48b28] shrink-0" />
-            <span>Kishoreganj Polytechnic Institute official portal (KIPI)</span>
+            <span>Kishoreganj Government Polytechnic Institute official portal (KIGPI)</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#c48b28] shrink-0" />
@@ -131,7 +131,7 @@ export default function AuthVisualPanel({
               <Users className="w-3.5 h-3.5" />
               <span className="text-[11px] font-semibold">Active Enrollment</span>
             </div>
-            <p className="text-base font-bold text-white">1,250+ Students</p>
+            <p className="text-base font-bold text-white">2,800+ Students</p>
             <p className="text-[10px] text-white/60">4 Engineering Disciplines</p>
           </div>
 
@@ -140,7 +140,7 @@ export default function AuthVisualPanel({
               <Award className="w-3.5 h-3.5" />
               <span className="text-[11px] font-semibold">Faculty Staff</span>
             </div>
-            <p className="text-base font-bold text-white">48+ Instructors</p>
+            <p className="text-base font-bold text-white">52+ Instructors</p>
             <p className="text-[10px] text-white/60">Shift 1 &amp; Shift 2 Coverage</p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function AuthVisualPanel({
 
       {/* Bottom Footer Note */}
       <div className="relative z-10 pt-3 border-t border-white/15 flex items-center justify-between text-[11px] text-white/60 shrink-0">
-        <span>&copy; {new Date().getFullYear()} EduNova Digital Campus</span>
+        <span>&copy; {new Date().getFullYear()} bdEduNova Digital Campus</span>
         <div className="flex items-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5 text-[#c48b28]" />
           <span>Encrypted Session</span>

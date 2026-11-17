@@ -43,13 +43,13 @@ export default function AuthLayout({
             <span>Back to Homepage</span>
           </Link>
 
-          {/* Compact EduNova Logo for Mobile */}
+          {/* Compact bdEduNova Logo for Mobile */}
           <Link href="/" className="lg:hidden flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#0a4b32] text-white flex items-center justify-center shadow-xs">
               <GraduationCap className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-base tracking-tight text-[#0a4b32]">
-              EduNova
+              <span className="text-[#c48b28]">bd</span>EduNova
             </span>
           </Link>
         </div>

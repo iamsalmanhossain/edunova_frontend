@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 export const metadata: Metadata = {
   title: "Contact & Institutional Office",
   description:
-    "Get in touch with Kishoreganj Polytechnic Institute administrative office and academic inquiries.",
+    "Get in touch with Kishoreganj Government Polytechnic Institute (KIGPI) administrative office and academic inquiries.",
 };
 
 export default function ContactPage() {
@@ -31,7 +31,7 @@ export default function ContactPage() {
           <div className="lg:col-span-5 space-y-6">
             <Card className="border border-[#e2e8e4] p-6 space-y-6">
               <h3 className="text-xl font-bold text-[#0f1f17]">
-                Kishoreganj Polytechnic Institute
+                Kishoreganj Government Polytechnic Institute (KIGPI)
               </h3>
 
               <div className="space-y-4 text-sm text-[#5a6b62]">

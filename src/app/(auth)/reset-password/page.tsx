@@ -6,7 +6,7 @@ import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 export const metadata: Metadata = {
   title: "Set New Password",
   description:
-    "Set a new password for your EduNova digital campus account at Kishoreganj Polytechnic Institute.",
+    "Set a new password for your bdEduNova digital campus account at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function ResetPasswordPage() {

@@ -30,7 +30,7 @@ export default function TeacherProfessionalInfoCard({
   const items = [
     {
       label: "Institutional Affiliation",
-      value: teacherProfile?.institute?.name || "Kishoreganj Polytechnic Institute",
+      value: teacherProfile?.institute?.name || "Kishoreganj Government Polytechnic Institute",
       sub: teacherProfile?.institute?.code ? `Code: ${teacherProfile.institute.code}` : undefined,
       icon: School,
     },

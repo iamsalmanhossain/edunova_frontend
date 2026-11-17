@@ -20,7 +20,7 @@ export default function AdminDepartmentList({ departments }: AdminDepartmentList
     <Card className="border-[#e2e8e4] shadow-xs">
       <CardHeader className="pb-3 border-b border-[#e2e8e4]/80">
         <CardTitle className="text-base font-bold text-[#0f1f17]">
-          Kishoreganj Polytechnic Departments
+          Kishoreganj Government Polytechnic Departments (4 Core Disciplines)
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-5 divide-y divide-[#e2e8e4]">

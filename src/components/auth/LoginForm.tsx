@@ -147,7 +147,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             <Input
               id="login-email"
               type="email"
-              placeholder="e.g. user@edunova.ac.bd"
+              placeholder="e.g. user@kigpi.gov.bd"
               disabled={isSubmitting}
               autoComplete="username"
               {...register("email", {

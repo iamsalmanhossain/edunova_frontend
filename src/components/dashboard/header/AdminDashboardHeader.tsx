@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { authService } from "@/services/auth.service";
+import { getSafeAvatarUrl } from "@/lib/utils";
 
 interface AdminDashboardHeaderProps {
   user: AuthUser;
@@ -99,8 +100,8 @@ export default function AdminDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              <span className="sm:hidden font-medium">KIPI • Governance</span>
-              <span className="hidden sm:inline">Kishoreganj Polytechnic Institute • Institutional Administration</span>
+              <span className="sm:hidden font-medium">KIGPI • Governance</span>
+              <span className="hidden sm:inline">Kishoreganj Government Polytechnic Institute • Institutional Administration</span>
             </p>
           </div>
         </div>
@@ -135,19 +136,15 @@ export default function AdminDashboardHeader({
             className="flex items-center gap-2 pl-2 border-l border-[#e2e8e4] text-left hover:opacity-85 transition-opacity cursor-pointer group"
             title="User Profile Menu"
           >
-            <div className="relative w-8 h-8 rounded-full bg-[#0a4b32] text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-purple-500/20 overflow-hidden">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  fill
-                  sizes="32px"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                user.name.charAt(0).toUpperCase()
-              )}
+            <div className="relative w-8 h-8 rounded-full bg-white text-white font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0 ring-2 ring-purple-500/20 overflow-hidden">
+              <Image
+                src={getSafeAvatarUrl(user.avatarUrl)}
+                alt={user.name}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
             </div>
             <div className="hidden md:block text-left">
               <p className="text-xs font-bold text-[#0f1f17] leading-tight truncate max-w-[130px] group-hover:text-purple-800">

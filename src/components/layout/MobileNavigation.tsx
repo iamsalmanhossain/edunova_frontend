@@ -65,7 +65,7 @@ export default function MobileNavigation({ items }: MobileNavigationProps) {
                   </div>
                   <div>
                     <span className="text-lg font-bold tracking-tight text-[#0a4b32]">
-                      EduNova
+                      <span className="text-[#c48b28]">bd</span>EduNova
                     </span>
                     <span className="block text-[10px] tracking-wider uppercase text-[#5a6b62] font-semibold -mt-1">
                       Digital Campus

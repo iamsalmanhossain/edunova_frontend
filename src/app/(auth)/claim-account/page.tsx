@@ -35,13 +35,13 @@ export default function ClaimAccountPage() {
             <span>Back to Homepage</span>
           </Link>
 
-          {/* Compact EduNova Logo */}
+          {/* Compact bdEduNova Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#0a4b32] text-white flex items-center justify-center shadow-xs">
               <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
             <span className="font-extrabold text-sm sm:text-base tracking-tight text-[#0a4b32]">
-              EduNova
+              <span className="text-[#c48b28]">bd</span>EduNova
             </span>
           </Link>
         </div>
@@ -63,7 +63,7 @@ export default function ClaimAccountPage() {
         {/* Bottom Disclaimer */}
         <div className="shrink-0 pt-2 text-center text-[10.5px] text-[#5a6b62]/80 border-t border-[#e2e8e4]/70">
           <p>
-            Institutional student verification &bull; Kishoreganj Polytechnic Institute
+            Institutional student verification &bull; Kishoreganj Government Polytechnic Institute (KIGPI)
           </p>
         </div>
       </div>

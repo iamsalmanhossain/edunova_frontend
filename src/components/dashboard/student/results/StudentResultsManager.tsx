@@ -142,7 +142,7 @@ export default function StudentResultsManager({ user }: StudentResultsManagerPro
 
             {/* Subtext */}
             <p className="text-[11px] sm:text-xs text-emerald-100/80 max-w-xl leading-relaxed">
-              Official evaluation records, cumulative GPA, letter grades, and printable PDF marksheets authorized by Kishoreganj Polytechnic Institute faculty.
+              Official evaluation records, cumulative GPA, letter grades, and printable PDF marksheets authorized by Kishoreganj Government Polytechnic Institute faculty.
             </p>
           </div>
 

@@ -1,54 +1,34 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import Container from "@/components/shared/Container";
 import SectionHeading from "@/components/shared/SectionHeading";
-import ProfileCard from "@/components/shared/ProfileCard";
-import { teacherService, VERIFIED_TEACHERS } from "@/services/teacher.service";
-import { Button } from "@/components/ui/button";
+import PeopleDirectoryClient from "@/components/people/PeopleDirectoryClient";
+import { staffService } from "@/services/staff.service";
 
 export const metadata: Metadata = {
-  title: "People & Faculty Directory",
+  title: "People & Staff Directory | Kishoreganj Government Polytechnic Institute",
   description:
-    "Institutional faculty directory, principal leadership, and instructors at Kishoreganj Polytechnic Institute.",
+    "Complete directory of leadership, academic faculty, administrative officers, and technical personnel at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
+export const revalidate = 60; // Revalidate public directory every 60 seconds
+
 export default async function PeoplePage() {
-  const teachers = await teacherService.getPublicTeachers();
-  const displayTeachers = teachers.length > 0 ? teachers : VERIFIED_TEACHERS;
+  const staffResponse = await staffService.getPublicStaff({ limit: 100 });
+  const staffList = staffResponse.data || [];
 
   return (
-    <div className="py-12 sm:py-16">
+    <div className="pt-6 sm:pt-8 pb-16 sm:pb-24">
       <Container size="wide">
         <SectionHeading
-          badge="Faculty & Leadership"
-          title="Institutional Directory"
-          subtitle="Meet the principal, chief instructors, and dedicated technical educators leading Kishoreganj Polytechnic Institute."
+          badge="Institutional Personnel"
+          title="Campus Directory &amp; Staff"
+          subtitle="Explore the leadership, academic faculty, administrative departments, and technical staff supporting education at Kishoreganj Government Polytechnic Institute (KIGPI)."
+          className="mb-5 sm:mb-6"
         />
 
-        {/* Filter Navigation */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-          <Button asChild size="sm" variant="default">
-            <Link href="/people">All Faculty ({displayTeachers.length})</Link>
-          </Button>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people/leadership">Leadership &amp; Admin</Link>
-          </Button>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people/department-heads">Department Heads</Link>
-          </Button>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people/faculty-staff">Instructors &amp; Staff</Link>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {displayTeachers.map((t) => (
-            <ProfileCard key={t.id} teacher={t} />
-          ))}
-        </div>
+        <PeopleDirectoryClient initialStaff={staffList} activeCategory="ALL" />
       </Container>
     </div>
   );
 }
-

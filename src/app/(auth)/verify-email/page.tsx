@@ -6,7 +6,7 @@ import VerifyEmailForm from "@/components/auth/VerifyEmailForm";
 export const metadata: Metadata = {
   title: "Verify Email",
   description:
-    "Verify your institutional email address to activate your EduNova account at Kishoreganj Polytechnic Institute.",
+    "Verify your institutional email address to activate your bdEduNova account at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function VerifyEmailPage() {

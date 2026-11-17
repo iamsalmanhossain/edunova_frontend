@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 export const metadata: Metadata = {
   title: "Academic Calendar",
   description:
-    "Official academic year calendar, semester terms, and examination dates at Kishoreganj Polytechnic Institute.",
+    "Official academic year calendar, semester terms, and examination dates at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 const TERMS = [

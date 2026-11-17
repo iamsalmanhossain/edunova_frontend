@@ -1,56 +1,34 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import Container from "@/components/shared/Container";
 import SectionHeading from "@/components/shared/SectionHeading";
-import ProfileCard from "@/components/shared/ProfileCard";
-import { teacherService, VERIFIED_TEACHERS } from "@/services/teacher.service";
-import { Button } from "@/components/ui/button";
+import PeopleDirectoryClient from "@/components/people/PeopleDirectoryClient";
+import { staffService } from "@/services/staff.service";
 
 export const metadata: Metadata = {
-  title: "Faculty & Technical Staff",
+  title: "Instructors & Technical Staff",
   description:
-    "Instructors, lab demonstrators, and academic mentors at Kishoreganj Polytechnic Institute.",
+    "Instructors, lab demonstrators, and technical mentors at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
+export const revalidate = 60;
+
 export default async function FacultyStaffPage() {
-  const teachers = await teacherService.getPublicTeachers();
-  const staff = teachers.filter(
-    (t) => !t.designation?.toLowerCase().includes("principal")
-  );
-  const display = staff.length > 0 ? staff : VERIFIED_TEACHERS.slice(1);
+  const staffResponse = await staffService.getPublicStaff({ limit: 100 });
+  const staffList = staffResponse.data || [];
 
   return (
-    <div className="py-12 sm:py-16">
+    <div className="pt-6 sm:pt-8 pb-16 sm:pb-24">
       <Container size="wide">
         <SectionHeading
           badge="Faculty Directory"
           title="Instructors &amp; Laboratory Staff"
           subtitle="Dedicated instructors conducting theory lectures, laboratory experiments, and technical mentorship."
+          className="mb-5 sm:mb-6"
         />
 
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people">All Faculty</Link>
-          </Button>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people/leadership">Leadership &amp; Admin</Link>
-          </Button>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/people/department-heads">Department Heads</Link>
-          </Button>
-          <Button asChild size="sm" variant="default">
-            <Link href="/people/faculty-staff">Instructors &amp; Staff</Link>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {display.map((t) => (
-            <ProfileCard key={t.id} teacher={t} />
-          ))}
-        </div>
+        <PeopleDirectoryClient initialStaff={staffList} activeCategory="FACULTY" />
       </Container>
     </div>
   );
 }
-

@@ -10,7 +10,7 @@ interface AdminWelcomeBannerProps {
 
 export default function AdminWelcomeBanner({
   adminName,
-  instituteName = "Kishoreganj Polytechnic Institute",
+  instituteName = "Kishoreganj Government Polytechnic Institute",
   apiStatusText = "API v1 Connected",
 }: AdminWelcomeBannerProps) {
   return (

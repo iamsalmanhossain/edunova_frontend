@@ -9,6 +9,8 @@ export interface PaginationProps {
   onPageChange: (page: number) => void;
   totalItems?: number;
   pageSize?: number;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
   className?: string;
   showSummary?: boolean;
   itemLabel?: string;
@@ -20,11 +22,13 @@ export default function Pagination({
   onPageChange,
   totalItems,
   pageSize = 10,
+  onPageSizeChange,
+  pageSizeOptions = [10, 20, 50, 100],
   className = "",
   showSummary = true,
   itemLabel = "students",
 }: PaginationProps) {
-  if (totalPages <= 1 && (!totalItems || totalItems <= pageSize)) {
+  if (totalPages <= 1 && (!totalItems || totalItems <= pageSize) && !onPageSizeChange) {
     return null;
   }
 
@@ -109,19 +113,39 @@ export default function Pagination({
     <div
       className={`p-3.5 sm:p-5 border-t border-[#eef2ef] bg-[#fafbf9] flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 transition-all duration-300 ${className}`}
     >
-      {/* Summary Info */}
+      {/* Summary Info & Page Size */}
       {showSummary && totalItems !== undefined && (
-        <div className="text-[11px] sm:text-xs text-[#5a6b62] font-semibold order-2 sm:order-1 text-center sm:text-left">
-          Showing <span className="font-extrabold text-[#0f1f17]">{startItem}–{endItem}</span> of{" "}
-          <span className="font-extrabold text-[#0a4b32]">{totalItems}</span> {itemLabel}
+        <div className="flex flex-wrap items-center gap-3 text-[11px] sm:text-xs text-[#5a6b62] font-semibold order-2 sm:order-1 text-center sm:text-left">
+          <div>
+            Showing <span className="font-extrabold text-[#0f1f17]">{startItem}–{endItem}</span> of{" "}
+            <span className="font-extrabold text-[#0a4b32]">{totalItems}</span> {itemLabel}
+          </div>
+
+          {onPageSizeChange && (
+            <div className="flex items-center gap-1.5 pl-3 border-l border-[#e2e8e4]">
+              <span className="text-[11px] text-gray-500 font-medium">Rows:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="h-7 px-1.5 rounded-lg border border-[#d7e2da] bg-white text-xs font-bold text-[#0f1f17] focus:outline-none focus:ring-1 focus:ring-[#0a4b32] cursor-pointer"
+              >
+                {pageSizeOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       )}
 
       {/* Pagination Controls - Never wraps on mobile */}
-      <nav
-        aria-label="Pagination"
-        className="flex items-center gap-1 sm:gap-2 order-1 sm:order-2 flex-nowrap justify-center max-w-full overflow-x-auto no-scrollbar py-0.5"
-      >
+      {totalPages > 1 && (
+        <nav
+          aria-label="Pagination"
+          className="flex items-center gap-1 sm:gap-2 order-1 sm:order-2 flex-nowrap justify-center max-w-full overflow-x-auto no-scrollbar py-0.5"
+        >
         {/* Previous Button */}
         <button
           type="button"
@@ -188,6 +212,7 @@ export default function Pagination({
           <ChevronRight className="w-4 h-4" />
         </button>
       </nav>
+      )}
     </div>
   );
 }

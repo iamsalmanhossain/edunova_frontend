@@ -28,7 +28,7 @@ export default function TeacherWelcomeBanner({
   designation = "Senior Instructor",
   departmentName = "Computer Science & Technology",
   shift = "First Shift (Morning)",
-  instituteName = "Kishoreganj Polytechnic Institute",
+  instituteName = "Kishoreganj Government Polytechnic Institute",
   onOpenMasterOverview,
 }: TeacherWelcomeBannerProps) {
   const [greeting, setGreeting] = useState("Welcome");
