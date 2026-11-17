@@ -11,15 +11,16 @@ import {
   Download,
   Calendar,
   Trash2,
-  Maximize2,
 } from "lucide-react";
-import { CampusGallery, GalleryImageItem } from "@/types/campus";
+import { CampusGallery, FlatGalleryPhoto } from "@/types/campus";
 import { appConfirm } from "@/store/useConfirmStore";
 import { useToastStore } from "@/store/useToastStore";
 import { campusService } from "@/services/campus.service";
 
 interface GalleryLightboxModalProps {
-  album: CampusGallery | null;
+  album?: CampusGallery | null;
+  photos?: FlatGalleryPhoto[];
+  initialIndex?: number;
   isOpen: boolean;
   onClose: () => void;
   isAdmin?: boolean;
@@ -28,48 +29,80 @@ interface GalleryLightboxModalProps {
 
 export default function GalleryLightboxModal({
   album,
+  photos,
+  initialIndex = 0,
   isOpen,
   onClose,
   isAdmin,
   onImageDeleted,
 }: GalleryLightboxModalProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomLevel, setZoomLevel] = useState(1);
   const toast = useToastStore();
 
-  // Combine cover image and album images into a single viewable list
-  const allImages: Array<{ id: string; url: string; caption?: string; isCover?: boolean }> = React.useMemo(() => {
+  // Combine either photos array or album into a unified list
+  const allImages: Array<{
+    id: string;
+    url: string;
+    caption?: string;
+    title?: string;
+    date?: string | null;
+    isCover?: boolean;
+  }> = React.useMemo(() => {
+    if (photos && photos.length > 0) {
+      return photos.map((p) => ({
+        id: p.id,
+        url: p.url,
+        caption: p.caption || p.title || p.albumTitle,
+        title: p.title || p.albumTitle,
+        date: p.eventDate,
+        isCover: false,
+      }));
+    }
+
     if (!album) return [];
-    const list: Array<{ id: string; url: string; caption?: string; isCover?: boolean }> = [];
+    const list: Array<{
+      id: string;
+      url: string;
+      caption?: string;
+      title?: string;
+      date?: string | null;
+      isCover?: boolean;
+    }> = [];
     if (album.coverImage) {
       list.push({
         id: "cover-img",
         url: album.coverImage,
         caption: album.title + " (Cover)",
+        title: album.title,
+        date: album.eventDate,
         isCover: true,
       });
     }
     if (album.images && album.images.length > 0) {
       album.images.forEach((img) => {
-        // avoid duplicate cover if url matches
         if (img.url !== album.coverImage) {
           list.push({
             id: img.id,
             url: img.url,
             caption: img.caption,
+            title: album.title,
+            date: album.eventDate,
             isCover: false,
           });
         }
       });
     }
     return list;
-  }, [album]);
+  }, [photos, album]);
 
-  // Reset index and zoom when album changes
+  // Synchronize index when initialIndex changes or modal opens
   useEffect(() => {
-    setCurrentIndex(0);
-    setZoomLevel(1);
-  }, [album]);
+    if (isOpen) {
+      setCurrentIndex(initialIndex);
+      setZoomLevel(1);
+    }
+  }, [isOpen, initialIndex, album, photos]);
 
   const handleNext = useCallback(() => {
     if (allImages.length <= 1) return;
@@ -101,7 +134,7 @@ export default function GalleryLightboxModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleNext, handlePrev, onClose]);
 
-  // Prevent background scrolling when open
+  // Prevent background scrolling
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -113,9 +146,9 @@ export default function GalleryLightboxModal({
     };
   }, [isOpen]);
 
-  if (!isOpen || !album || allImages.length === 0) return null;
+  if (!isOpen || allImages.length === 0) return null;
 
-  const currentItem = allImages[currentIndex];
+  const currentItem = allImages[currentIndex] || allImages[0];
 
   const handleZoomIn = () => {
     setZoomLevel((prev) => Math.min(prev + 0.3, 2.5));
@@ -135,6 +168,7 @@ export default function GalleryLightboxModal({
       toast.warning("Cover photo cannot be deleted individually. Update the album cover instead.");
       return;
     }
+    if (!album) return;
 
     const confirmed = await appConfirm({
       title: "Delete Photo",
@@ -157,8 +191,8 @@ export default function GalleryLightboxModal({
     }
   };
 
-  const formattedDate = album.eventDate
-    ? new Date(album.eventDate).toLocaleDateString("en-US", {
+  const formattedDate = currentItem.date
+    ? new Date(currentItem.date).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
@@ -175,7 +209,7 @@ export default function GalleryLightboxModal({
       <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0 bg-black/40">
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 overflow-hidden pr-3">
           <h2 className="text-sm sm:text-base font-bold text-white truncate max-w-md">
-            {album.title}
+            {currentItem.title || album?.title || "Institutional Photo Archive"}
           </h2>
           {formattedDate && (
             <div className="hidden sm:flex items-center gap-1.5 text-xs text-white/70">
@@ -188,7 +222,7 @@ export default function GalleryLightboxModal({
         {/* Counter & Close */}
         <div className="flex items-center gap-3 shrink-0">
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-emerald-300">
-            Image {currentIndex + 1} of {allImages.length}
+            Photo {currentIndex + 1} of {allImages.length}
           </span>
           <button
             onClick={onClose}
@@ -231,7 +265,7 @@ export default function GalleryLightboxModal({
         >
           <Image
             src={currentItem.url}
-            alt={currentItem.caption || album.title}
+            alt={currentItem.caption || currentItem.title || "Campus photo"}
             width={1600}
             height={1000}
             priority
@@ -245,7 +279,7 @@ export default function GalleryLightboxModal({
         {/* Caption & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <p className="text-xs sm:text-sm text-white/80 line-clamp-2 max-w-2xl font-light">
-            {currentItem.caption || album.description || "Campus Life at Kishoreganj Polytechnic Institute"}
+            {currentItem.caption || "Campus Life at Kishoreganj Polytechnic Institute"}
           </p>
 
           <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
@@ -282,7 +316,7 @@ export default function GalleryLightboxModal({
             </button>
 
             {/* Admin Delete Photo Button */}
-            {isAdmin && !currentItem.isCover && (
+            {isAdmin && album && !currentItem.isCover && (
               <button
                 onClick={() => handleDeleteImage(currentItem)}
                 aria-label="Delete active photo"
@@ -321,20 +355,6 @@ export default function GalleryLightboxModal({
                       className="object-cover"
                     />
                   </button>
-
-                  {/* Admin inline trash button on thumbnail */}
-                  {isAdmin && !img.isCover && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteImage(img);
-                      }}
-                      className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition shadow-md hover:bg-rose-700"
-                      title="Delete photo"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
                 </div>
               );
             })}

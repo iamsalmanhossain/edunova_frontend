@@ -6,6 +6,18 @@ export interface GalleryImageItem {
   uploadedAt: string;
 }
 
+export interface FlatGalleryPhoto {
+  id: string;
+  url: string;
+  title: string;
+  caption?: string;
+  category: string;
+  albumId: string;
+  albumTitle: string;
+  eventDate?: string | null;
+  uploadedAt?: string;
+}
+
 export interface CampusGallery {
   id: string;
   instituteId?: string;
