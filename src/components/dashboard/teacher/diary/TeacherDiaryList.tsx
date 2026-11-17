@@ -8,6 +8,7 @@ import { ClassDiaryEntry } from "@/types/academic-features";
 import { TeacherSubject } from "@/types/teacher";
 import { Button } from "@/components/ui/button";
 import CreateDiaryModal from "./CreateDiaryModal";
+import EditDiaryModal from "./EditDiaryModal";
 import {
   BookOpen,
   Plus,
@@ -23,6 +24,7 @@ import {
   RotateCcw,
   Layers,
   FileText,
+  Pencil,
 } from "lucide-react";
 import Pagination from "@/components/ui/pagination";
 
@@ -40,6 +42,8 @@ export default function TeacherDiaryList({
   const [selectedSemester, setSelectedSemester] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<ClassDiaryEntry | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
 
   // Pagination state (10 entries per page)
@@ -105,6 +109,11 @@ export default function TeacherDiaryList({
   useEffect(() => {
     fetchEntries();
   }, [selectedSubject, selectedSemester, currentShift]);
+
+  const handleOpenEdit = (entry: ClassDiaryEntry) => {
+    setEditingEntry(entry);
+    setIsEditOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     const confirmed = await appConfirm({
@@ -340,6 +349,15 @@ export default function TeacherDiaryList({
 
                   <button
                     type="button"
+                    onClick={() => handleOpenEdit(entry)}
+                    title="Edit entry"
+                    className="p-1.5 text-gray-400 hover:text-[#0a4b32] hover:bg-[#f0f7f3] rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => handleDelete(entry.id)}
                     disabled={deleteLoadingId === entry.id}
                     title="Delete entry"
@@ -420,10 +438,23 @@ export default function TeacherDiaryList({
         </div>
       )}
 
-      {/* Modal */}
+      {/* Create Modal */}
       <CreateDiaryModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
+        subjects={subjects}
+        currentShift={currentShift}
+        onSuccess={fetchEntries}
+      />
+
+      {/* Edit Modal */}
+      <EditDiaryModal
+        isOpen={isEditOpen}
+        onClose={() => {
+          setIsEditOpen(false);
+          setEditingEntry(null);
+        }}
+        entry={editingEntry}
         subjects={subjects}
         currentShift={currentShift}
         onSuccess={fetchEntries}

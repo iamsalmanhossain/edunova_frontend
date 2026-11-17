@@ -75,6 +75,27 @@ export interface CreateDiaryPayload {
   examSyllabus?: string;
 }
 
+export interface UpdateDiaryPayload {
+  subjectId?: string;
+  semester?: number;
+  date?: string;
+  entryDate?: string;
+  chapter?: string;
+  topicsTaught?: string;
+  topicsCovered?: string;
+  nextClassPlan?: string;
+  classNoteUrl?: string;
+  notesUrl?: string;
+  classNoteTitle?: string;
+  hasExam?: boolean;
+  hasExamAnnouncement?: boolean;
+  examTitle?: string;
+  examDate?: string;
+  examType?: string;
+  examSyllabus?: string;
+  syllabus?: string;
+}
+
 export interface ClassDiaryEntry {
   id: string;
   subjectId: string;

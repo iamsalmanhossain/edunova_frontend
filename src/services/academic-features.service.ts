@@ -4,6 +4,7 @@ import { downloadSecureFile } from "@/utils/fileDownload";
 import {
   SubjectMasterOverviewData,
   CreateDiaryPayload,
+  UpdateDiaryPayload,
   ClassDiaryEntry,
   ExamReminderItem,
   PageGuideData,
@@ -113,6 +114,8 @@ export const academicFeaturesService = {
     const list = Array.isArray(raw?.entries) ? raw.entries : Array.isArray(raw) ? raw : [];
     return list.map((item: any) => ({
       ...item,
+      id: item.logId || item.id,
+      logId: item.logId || item.id,
       entryDate: item.entryDate || item.date,
       topicsCovered: item.topicsCovered || item.topicsTaught,
       notesUrl: item.notesUrl || item.classNoteUrl,
@@ -124,6 +127,41 @@ export const academicFeaturesService = {
         code: item.subjectCode || "SUB",
       },
     }));
+  },
+
+  async updateDiaryEntry(
+    id: string,
+    payload: UpdateDiaryPayload
+  ): Promise<ClassDiaryEntry> {
+    const res = await apiClient.patch<any>(`/dashboard/teacher/diary/${id}`, payload);
+    return res.data ?? res;
+  },
+
+  async updateClassDiary(
+    id: string,
+    payload: any
+  ): Promise<ClassDiaryEntry> {
+    const formatted: UpdateDiaryPayload = {
+      subjectId: payload.subjectId,
+      semester: payload.semester ? Number(payload.semester) : undefined,
+      date: payload.entryDate || payload.date,
+      entryDate: payload.entryDate || payload.date,
+      chapter: payload.chapter,
+      topicsTaught: payload.topicsCovered || payload.topicsTaught,
+      topicsCovered: payload.topicsCovered || payload.topicsTaught,
+      nextClassPlan: payload.nextClassPlan,
+      classNoteUrl: payload.notesUrl || payload.classNoteUrl,
+      notesUrl: payload.notesUrl || payload.classNoteUrl,
+      classNoteTitle: payload.chapter,
+      hasExam: payload.hasExamAnnouncement ?? payload.hasExam,
+      hasExamAnnouncement: payload.hasExamAnnouncement ?? payload.hasExam,
+      examTitle: payload.examTitle,
+      examDate: payload.examDate,
+      examType: payload.examType,
+      examSyllabus: payload.syllabus || payload.examSyllabus,
+      syllabus: payload.syllabus || payload.examSyllabus,
+    };
+    return this.updateDiaryEntry(id, formatted);
   },
 
   async deleteDiaryEntry(id: string): Promise<boolean> {
