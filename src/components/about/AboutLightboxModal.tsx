@@ -41,7 +41,7 @@ export default function AboutLightboxModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between p-3 sm:p-3.5 bg-black/50 border-b border-white/10 text-white text-xs">
           <span className="font-semibold text-emerald-300 truncate">
-            {instituteTitle || "Kishoreganj Polytechnic Institute"} • Campus Facility View
+            {instituteTitle || "Kishoreganj Government Polytechnic Institute"} • Campus Facility View
           </span>
           <button
             type="button"

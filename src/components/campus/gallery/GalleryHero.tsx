@@ -40,7 +40,7 @@ export default function GalleryHero({
 
             <p className="text-sm sm:text-base text-[#5a6b62] leading-relaxed">
               Explore vibrant academic moments, cutting-edge engineering laboratories,
-              technological exhibitions, and campus festivities across Kishoreganj Polytechnic Institute.
+              technological exhibitions, and campus festivities across Kishoreganj Government Polytechnic Institute (KIGPI).
             </p>
 
             {/* Quick Stats Pill Strip */}

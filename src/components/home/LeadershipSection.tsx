@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { staffService } from "@/services/staff.service";
 import { InstitutionStaff } from "@/types/staff";
 
-// Verified institutional fallback data for KIPI
+// Verified institutional fallback data for KIGPI
 const FALLBACK_STAFF: InstitutionStaff[] = [
   {
     id: "staff-principal-01",
@@ -27,13 +27,13 @@ const FALLBACK_STAFF: InstitutionStaff[] = [
     updatedAt: "2024-01-01T00:00:00.000Z",
     institute: {
       id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-      name: "Kishoreganj Polytechnic Institute",
-      code: "KIPI",
+      name: "Kishoreganj Government Polytechnic Institute",
+      code: "KIGPI",
     },
     user: {
       id: "u-principal-01",
       name: "Engr. Md. Abdul Hannan",
-      email: "principal@kipi.edu.bd",
+      email: "principal@kigpi.gov.bd",
       phone: "01711000001",
       status: "ACTIVE",
       avatarUrl: "/images/default-avatar.svg",
@@ -61,13 +61,13 @@ const FALLBACK_STAFF: InstitutionStaff[] = [
     updatedAt: "2024-01-01T00:00:00.000Z",
     institute: {
       id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-      name: "Kishoreganj Polytechnic Institute",
-      code: "KIPI",
+      name: "Kishoreganj Government Polytechnic Institute",
+      code: "KIGPI",
     },
     user: {
       id: "u-ci-cst-01",
       name: "Engr. Mohammad Rafiqul Islam",
-      email: "ci.cst@kipi.edu.bd",
+      email: "ci.cst@kigpi.gov.bd",
       phone: "01711000002",
       status: "ACTIVE",
       avatarUrl: "/images/default-avatar.svg",
@@ -95,13 +95,13 @@ const FALLBACK_STAFF: InstitutionStaff[] = [
     updatedAt: "2024-01-01T00:00:00.000Z",
     institute: {
       id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-      name: "Kishoreganj Polytechnic Institute",
-      code: "KIPI",
+      name: "Kishoreganj Government Polytechnic Institute",
+      code: "KIGPI",
     },
     user: {
       id: "u-ci-food-01",
       name: "Engr. Tariqul Anam",
-      email: "teacher5@gmail.com",
+      email: "ci.food@kigpi.gov.bd",
       phone: "+8801711100005",
       status: "ACTIVE",
       avatarUrl: "/images/default-avatar.svg",
@@ -129,13 +129,13 @@ const FALLBACK_STAFF: InstitutionStaff[] = [
     updatedAt: "2024-01-01T00:00:00.000Z",
     institute: {
       id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-      name: "Kishoreganj Polytechnic Institute",
-      code: "KIPI",
+      name: "Kishoreganj Government Polytechnic Institute",
+      code: "KIGPI",
     },
     user: {
       id: "u-ci-ent-01",
       name: "Engr. Rafiqul Islam",
-      email: "teacher5@gmail.com",
+      email: "ci.ent@kigpi.gov.bd",
       phone: "+8801711100005",
       status: "ACTIVE",
       avatarUrl: "/images/default-avatar.svg",
@@ -163,13 +163,13 @@ const FALLBACK_STAFF: InstitutionStaff[] = [
     updatedAt: "2024-01-01T00:00:00.000Z",
     institute: {
       id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-      name: "Kishoreganj Polytechnic Institute",
-      code: "KIPI",
+      name: "Kishoreganj Government Polytechnic Institute",
+      code: "KIGPI",
     },
     user: {
       id: "u-ci-rac-01",
       name: "Engr. Jahangir Alam",
-      email: "teacher7@gmail.com",
+      email: "ci.rac@kigpi.gov.bd",
       phone: "+8801711100007",
       status: "ACTIVE",
       avatarUrl: "/images/default-avatar.svg",
@@ -255,7 +255,7 @@ export default async function LeadershipSection() {
         <SectionHeading
           badge="Institutional Governance & Faculty"
           title="Leadership & Academic Department Heads"
-          subtitle="Guided by seasoned institutional leadership and specialized Chief Instructors steering technical curriculum across Kishoreganj Polytechnic Institute's 4 core departments."
+          subtitle="Guided by seasoned institutional leadership and specialized Chief Instructors steering technical curriculum across Kishoreganj Government Polytechnic Institute's 4 core departments."
           className="mb-10 sm:mb-12"
         />
 

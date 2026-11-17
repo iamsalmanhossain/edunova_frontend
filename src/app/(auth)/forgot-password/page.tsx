@@ -6,7 +6,7 @@ import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 export const metadata: Metadata = {
   title: "Forgot Password",
   description:
-    "Reset your EduNova digital campus account password at Kishoreganj Polytechnic Institute.",
+    "Reset your bdEduNova digital campus account password at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function ForgotPasswordPage() {
@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
       title="Reset Account Password"
       subtitle="Enter your verified institutional email address and we'll dispatch instant password recovery instructions."
       visualHeadline="Protecting Your Digital Identity & Academic Records"
-      visualSubheadline="EduNova enforces institutional-grade cryptographic security to keep student examination records and teacher portals safe."
+      visualSubheadline="bdEduNova enforces institutional-grade cryptographic security to keep student examination records and teacher portals safe."
     >
       <ForgotPasswordForm />
     </AuthLayout>

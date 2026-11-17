@@ -8,7 +8,7 @@ import { staffService } from "@/services/staff.service";
 export const metadata: Metadata = {
   title: "Department Heads & Chief Instructors",
   description:
-    "Chief instructors and departmental heads steering academic curriculum at Kishoreganj Polytechnic Institute.",
+    "Chief instructors and departmental heads steering academic curriculum at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export const revalidate = 60;

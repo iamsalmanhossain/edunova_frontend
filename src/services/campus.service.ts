@@ -22,7 +22,7 @@ export const VERIFIED_CAMPUS_IMAGES: CampusImage[] = [
     category: "campus",
     imageUrl:
       "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop",
-    altText: "EduNova Main Academic Campus Building Exterior View",
+    altText: "bdEduNova Main Academic Campus Building Exterior View",
     featured: true,
     order: 1,
   },
@@ -33,7 +33,7 @@ export const VERIFIED_CAMPUS_IMAGES: CampusImage[] = [
     category: "laboratory",
     imageUrl:
       "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
-    altText: "Students working in EduNova Computer Science and Software Laboratory",
+    altText: "Students working in bdEduNova Computer Science and Software Laboratory",
     featured: true,
     order: 2,
   },
@@ -44,7 +44,7 @@ export const VERIFIED_CAMPUS_IMAGES: CampusImage[] = [
     category: "library",
     imageUrl:
       "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop",
-    altText: "EduNova Central Academic Library with quiet study halls",
+    altText: "bdEduNova Central Academic Library with quiet study halls",
     featured: false,
     order: 3,
   },
@@ -223,7 +223,7 @@ export const VERIFIED_CAMPUS_GALLERIES: CampusGallery[] = [
     title: "Campus Architecture, Grounds & Green Quadrangles",
     slug: "campus-architecture-grounds",
     description:
-      "A scenic visual tour around the Kishoreganj Polytechnic Institute academic buildings, tree-lined walkways, and student dormitories.",
+      "A scenic visual tour around the Kishoreganj Government Polytechnic Institute academic buildings, tree-lined walkways, and student dormitories.",
     category: "CAMPUS",
     coverImage:
       "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop",
@@ -290,7 +290,7 @@ export const VERIFIED_CAMPUS_GALLERIES: CampusGallery[] = [
 export const VERIFIED_CAMPUS_LIVES: CampusLife[] = [
   {
     id: "life-01",
-    title: "KIPI Polytechnic Robotics & Artificial Intelligence Club",
+    title: "KIGPI Polytechnic Robotics & Artificial Intelligence Club",
     category: "CLUBS",
     description:
       "A hands-on student club dedicated to autonomous rover design, Arduino & Raspberry Pi hardware programming, IoT sensing, and national robotics olympiads.",
@@ -302,7 +302,7 @@ export const VERIFIED_CAMPUS_LIVES: CampusLife[] = [
       "Industrial IoT Automation Hackathons",
       "Mentorship from Senior Electronics Instructors",
     ],
-    contactEmail: "robotics.club@kipi.edu.bd",
+    contactEmail: "robotics.club@kigpi.gov.bd",
     order: 1,
     isPublished: true,
   },
@@ -320,7 +320,7 @@ export const VERIFIED_CAMPUS_LIVES: CampusLife[] = [
       "Cybersecurity & CTF Training Sessions",
       "Guest Technical Lectures by Software Engineers",
     ],
-    contactEmail: "csps@kipi.edu.bd",
+    contactEmail: "csps@kigpi.gov.bd",
     order: 2,
     isPublished: true,
   },
@@ -338,7 +338,7 @@ export const VERIFIED_CAMPUS_LIVES: CampusLife[] = [
       "Annual National Scout Jamboree Delegations",
       "Blood Donor Registry & Free Health Camps",
     ],
-    contactEmail: "roverscout@kipi.edu.bd",
+    contactEmail: "roverscout@kigpi.gov.bd",
     order: 3,
     isPublished: true,
   },
@@ -356,7 +356,7 @@ export const VERIFIED_CAMPUS_LIVES: CampusLife[] = [
       "Indoor Games: Table Tennis & Carrom",
       "Annual Athletic Meet & Marathon",
     ],
-    contactEmail: "sports@kipi.edu.bd",
+    contactEmail: "sports@kigpi.gov.bd",
     order: 4,
     isPublished: true,
   },

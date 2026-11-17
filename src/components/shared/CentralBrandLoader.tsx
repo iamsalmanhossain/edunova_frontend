@@ -10,7 +10,7 @@ interface CentralBrandLoaderProps {
 }
 
 export default function CentralBrandLoader({
-  message = "Loading EduNova IMS...",
+  message = "Loading bdEduNova IMS...",
   subMessage = "Preparing digital campus platform and academic data",
   fullScreen = true,
 }: CentralBrandLoaderProps) {
@@ -40,7 +40,7 @@ export default function CentralBrandLoader({
         {/* Brand Title with IMS Badge */}
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl font-black tracking-tight text-[#0f1f17]">
-            EduNova
+            <span className="text-[#c48b28]">bd</span>EduNova
           </span>
           <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#c48b28] text-white tracking-widest uppercase shadow-2xs">
             IMS

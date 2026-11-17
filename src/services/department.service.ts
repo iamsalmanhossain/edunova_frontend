@@ -18,9 +18,9 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 11,
-      studentProfiles: 340,
-      teacherProfiles: 12,
+      subjects: 12,
+      studentProfiles: 800,
+      teacherProfiles: 15,
     },
   },
   {
@@ -40,8 +40,8 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
       "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=1200&auto=format&fit=crop",
     _count: {
       subjects: 10,
-      studentProfiles: 280,
-      teacherProfiles: 8,
+      studentProfiles: 650,
+      teacherProfiles: 12,
     },
   },
   {
@@ -60,9 +60,9 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 10,
-      studentProfiles: 290,
-      teacherProfiles: 9,
+      subjects: 11,
+      studentProfiles: 700,
+      teacherProfiles: 13,
     },
   },
   {
@@ -81,9 +81,9 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop",
     _count: {
-      subjects: 9,
-      studentProfiles: 260,
-      teacherProfiles: 8,
+      subjects: 10,
+      studentProfiles: 650,
+      teacherProfiles: 12,
     },
   },
 ];
@@ -91,7 +91,7 @@ export const VERIFIED_DEPARTMENTS: Department[] = [
 export const departmentService = {
   /**
    * Fetch public departments from backend GET /departments.
-   * Defaults to Kishoreganj Polytechnic Institute (KIPI) and ensures the 4 core departments are returned.
+   * Defaults to Kishoreganj Government Polytechnic Institute (KIGPI) and ensures the 4 core departments are returned.
    */
   async getDepartments(instituteId?: string): Promise<Department[]> {
     const targetInstId = instituteId || "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b";

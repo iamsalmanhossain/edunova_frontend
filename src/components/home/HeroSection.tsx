@@ -19,17 +19,17 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 
-// 5 Kishoreganj Polytechnic Institute (KIPI) Campus Slides with Tailored Dynamic Content
+// 5 Kishoreganj Government Polytechnic Institute (KIGPI) Campus Slides with Tailored Dynamic Content
 const HERO_SLIDES = [
   {
     url: "/images/hero/kipi.jpg",
-    badge: "Institutional Campus • KIPI",
+    badge: "Institutional Campus • KIGPI",
     headlinePrefix: "Fostering ",
     headlineHighlight: "Technical Excellence",
     headlineSuffix: " & Modern Engineering",
     subtitle:
-      "Welcome to EduNova at Kishoreganj Polytechnic Institute. Empowering future diploma engineers through structured technical curriculum, world-class academic governance, and digital automation.",
-    caption: "KIPI Central Academic Building & Administrative Complex",
+      "Welcome to bdEduNova at Kishoreganj Government Polytechnic Institute (KIGPI). Empowering 2,800+ future diploma engineers through structured technical curriculum, world-class academic governance, and digital automation.",
+    caption: "KIGPI Central Academic Building & Administrative Complex",
   },
   {
     url: "/images/hero/kipi-gate.jpg",
@@ -38,8 +38,8 @@ const HERO_SLIDES = [
     headlineHighlight: "Engineering Leadership",
     headlineSuffix: " & Innovation",
     subtitle:
-      "Kishoreganj Polytechnic Institute stands as a premier government technical institution, nurturing skilled diploma engineers across BTEB accredited disciplines since 2008.",
-    caption: "KIPI Main Campus Entrance Gateway",
+      "Kishoreganj Government Polytechnic Institute stands as a premier government technical institution, nurturing 2,800 skilled diploma engineers across 4 BTEB accredited disciplines since 2008.",
+    caption: "KIGPI Main Campus Entrance Gateway",
   },
   {
     url: "/images/hero/kipi-aerial.jpg",
@@ -58,7 +58,7 @@ const HERO_SLIDES = [
     headlineHighlight: "Vibrant Campus Life",
     headlineSuffix: "",
     subtitle:
-      "Beyond classrooms, KIPI fosters teamwork, physical health, and community leadership through expansive athletic grounds, active technical clubs, and student events.",
+      "Beyond classrooms, KIGPI fosters teamwork, physical health, and community leadership through expansive athletic grounds, active technical clubs, and student events.",
     caption: "Campus Ground, Scenic Gardens & Walkways",
   },
   {
@@ -68,7 +68,7 @@ const HERO_SLIDES = [
     headlineHighlight: "Modern Engineering Labs",
     headlineSuffix: "",
     subtitle:
-      "Practical excellence in Computer, Electronics, Food, and RAC technologies with industry-grade equipment, specialized workshops, and project-based laboratory training.",
+      "Practical excellence in Computer Science, Electronics, Food, and RAC technologies with industry-grade equipment, specialized workshops, and project-based laboratory training.",
     caption: "Technical Labs & Engineering Academic Wing",
   },
 ];
@@ -603,7 +603,7 @@ export default function HeroSection() {
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c48b28]/35 text-[#f5ebd6] border border-[#c48b28]/55">
                       {activeSlide.badge}
                     </span>
-                    <span className="text-white/60 text-xs hidden xs:inline">• Kishoreganj Polytechnic Institute</span>
+                    <span className="text-white/60 text-xs hidden xs:inline">• Kishoreganj Government Polytechnic Institute</span>
                   </div>
                   <h4 className="font-bold text-base sm:text-lg truncate">{activeSlide.caption}</h4>
                 </div>

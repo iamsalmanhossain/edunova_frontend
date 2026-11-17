@@ -10,7 +10,7 @@ interface TeacherApprovalAlertProps {
 
 export default function TeacherApprovalAlert({
   status = "APPROVED",
-  instituteName = "Kishoreganj Polytechnic Institute",
+  instituteName = "Kishoreganj Government Polytechnic Institute",
 }: TeacherApprovalAlertProps) {
   if (status !== "PENDING") return null;
 

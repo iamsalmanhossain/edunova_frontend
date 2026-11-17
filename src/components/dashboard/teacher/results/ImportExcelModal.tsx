@@ -74,7 +74,7 @@ export default function ImportExcelModal({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Edunova_Marks_Import_Template.csv`;
+    a.download = `bdEduNova_Marks_Import_Template.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

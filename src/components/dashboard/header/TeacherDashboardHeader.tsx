@@ -43,7 +43,7 @@ export default function TeacherDashboardHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const teacher = user.teacherProfile;
-  const instituteName = teacher?.institute?.name || "Kishoreganj Polytechnic Institute";
+  const instituteName = teacher?.institute?.name || "Kishoreganj Government Polytechnic Institute";
   const deptName = teacher?.department?.name || "Computer Science & Technology";
   const deptCode = teacher?.department?.code || "CST";
   const designation = teacher?.designation || "Faculty Instructor";

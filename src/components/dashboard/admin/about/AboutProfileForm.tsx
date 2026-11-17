@@ -53,7 +53,7 @@ export default function AboutProfileForm({
             id="about-title"
             value={title}
             onChange={(e) => onChangeTitle(e.target.value)}
-            placeholder="e.g. Kishoreganj Polytechnic Institute (KIPI)"
+            placeholder="e.g. Kishoreganj Government Polytechnic Institute (KIGPI)"
             className="mt-1 h-8 text-xs"
           />
         </div>

@@ -27,7 +27,7 @@ export default async function DepartmentsSection() {
         <SectionHeading
           badge="Academic Engineering Disciplines"
           title="Our 4 Core Engineering Departments"
-          subtitle="Kishoreganj Polytechnic Institute offers 4 specialized 4-year Diploma in Engineering departments equipped with state-of-the-art laboratories, modern workshops, and dual-shift instruction."
+          subtitle="Kishoreganj Government Polytechnic Institute (KIGPI) offers 4 specialized 4-year Diploma in Engineering departments equipped with state-of-the-art laboratories, modern workshops, and dual-shift instruction."
           className="mb-10 sm:mb-14"
         />
 

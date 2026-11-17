@@ -279,7 +279,7 @@ export default function GalleryLightboxModal({
         {/* Caption & Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <p className="text-xs sm:text-sm text-white/80 line-clamp-2 max-w-2xl font-light">
-            {currentItem.caption || "Campus Life at Kishoreganj Polytechnic Institute"}
+            {currentItem.caption || "Campus Life at Kishoreganj Government Polytechnic Institute"}
           </p>
 
           <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">

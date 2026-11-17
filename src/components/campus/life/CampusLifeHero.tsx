@@ -38,7 +38,7 @@ export default function CampusLifeHero({
 
             <p className="text-sm sm:text-base text-[#5a6b62] leading-relaxed">
               Beyond the classroom: expand your skills through competitive programming, robotics design,
-              rover scouting, athletic championships, and student governance at Kishoreganj Polytechnic Institute.
+              rover scouting, athletic championships, and student governance at Kishoreganj Government Polytechnic Institute (KIGPI).
             </p>
 
             {/* Quick Stats Pill Strip */}

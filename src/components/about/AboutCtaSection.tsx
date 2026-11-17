@@ -10,7 +10,7 @@ export default function AboutCtaSection() {
     <section className="relative overflow-hidden bg-gradient-to-r from-[#0a4b32] to-[#073222] rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 text-white shadow-xl">
       <div className="max-w-2xl space-y-3 sm:space-y-4">
         <h3 className="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-          Begin Your Engineering Journey at KIPI
+          Begin Your Engineering Journey at KIGPI
         </h3>
         <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
           Explore our 4 accredited 4-year Diploma in Engineering departments, state-of-the-art laboratory workshops, and centralized digital campus portal.

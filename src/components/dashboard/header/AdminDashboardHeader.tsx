@@ -100,8 +100,8 @@ export default function AdminDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              <span className="sm:hidden font-medium">KIPI • Governance</span>
-              <span className="hidden sm:inline">Kishoreganj Polytechnic Institute • Institutional Administration</span>
+              <span className="sm:hidden font-medium">KIGPI • Governance</span>
+              <span className="hidden sm:inline">Kishoreganj Government Polytechnic Institute • Institutional Administration</span>
             </p>
           </div>
         </div>

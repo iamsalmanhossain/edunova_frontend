@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Academic Resources & Downloads",
   description:
-    "Curriculum documents, official course syllabi, and lab manuals at Kishoreganj Polytechnic Institute.",
+    "Curriculum documents, official course syllabi, and lab manuals at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 const RESOURCES = [
@@ -21,18 +21,32 @@ const RESOURCES = [
     description: "Complete course structures for 1st through 8th semester diploma engineering.",
   },
   {
-    title: "Computer Science (CST) Lab Manuals",
+    title: "Computer Science & Technology (CST) Lab Manuals",
     category: "Laboratory Guides",
     format: "PDF",
     size: "8.5 MB",
-    description: "Programming in Python, Data Structures, and DBMS practical assignment manuals.",
+    description: "Programming in Python, Data Structures, Web Development, and DBMS practical manuals.",
   },
   {
-    title: "Electrical Technology Lab Standards",
+    title: "Electronics Technology (ENT) Embedded Systems Guide",
     category: "Laboratory Guides",
     format: "PDF",
     size: "6.1 MB",
-    description: "Circuit wiring, machine connections, and safety protocols for power workshops.",
+    description: "Microcontroller circuits, robotics breadboarding, and digital signal processing test standards.",
+  },
+  {
+    title: "Food Technology (FOOD) Analysis & QC Manual",
+    category: "Laboratory Guides",
+    format: "PDF",
+    size: "5.4 MB",
+    description: "Food microbiology, titration analysis, industrial preservation, and quality testing protocols.",
+  },
+  {
+    title: "Refrigeration & Air Conditioning (RAC) Workshop Standards",
+    category: "Laboratory Guides",
+    format: "PDF",
+    size: "7.2 MB",
+    description: "Industrial chiller plants, HVAC piping thermodynamics, and eco-friendly refrigerants.",
   },
   {
     title: "Academic Routine & Class Format",

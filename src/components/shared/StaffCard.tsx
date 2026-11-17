@@ -221,7 +221,7 @@ export default function StaffCard({ staff, featured = false }: StaffCardProps) {
                   className="text-xs bg-[#eef4f0] text-[#0a4b32] font-semibold border border-[#d2e2d6] shadow-2xs"
                 >
                   <Sparkles className="w-3 h-3 mr-1 text-[#c48b28]" />
-                  {institute?.name || "Kishoreganj Polytechnic Institute"}
+                  {institute?.name || "Kishoreganj Government Polytechnic Institute"}
                 </Badge>
                 {shift && (
                   <Badge

@@ -31,7 +31,7 @@ export default async function GallerySection() {
         <SectionHeading
           badge="Campus Life & Visuals"
           title="Campus Life & Photographic Gallery"
-          subtitle="Explore the lively atmosphere, academic activities, hands-on workshops, and institutional milestones of EduNova at Kishoreganj Polytechnic Institute."
+          subtitle="Explore the lively atmosphere, academic activities, hands-on workshops, and institutional milestones of bdEduNova at Kishoreganj Government Polytechnic Institute (KIGPI)."
         />
 
         {/* Asymmetric / Dynamic Grid */}

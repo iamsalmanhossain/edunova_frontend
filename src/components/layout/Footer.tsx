@@ -27,7 +27,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <span className="text-2xl font-bold tracking-tight text-white">
-                    EduNova
+                    <span className="text-[#c48b28]">bd</span>EduNova
                   </span>
                   <span className="block text-[10px] tracking-wider uppercase text-[#c48b28] font-semibold -mt-1">
                     Digital Campus Platform
@@ -157,7 +157,7 @@ export default function Footer() {
           className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60"
         >
           <p>
-            &copy; {currentYear} EduNova Digital Campus Platform. All rights reserved.
+            &copy; {currentYear} bdEduNova Digital Campus Platform. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
             <Link

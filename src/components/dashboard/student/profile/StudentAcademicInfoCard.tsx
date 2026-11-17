@@ -17,7 +17,7 @@ export default function StudentAcademicInfoCard({
   const items = [
     {
       label: "Academic Institute",
-      value: studentProfile?.institute?.name || "Kishoreganj Polytechnic Institute",
+      value: studentProfile?.institute?.name || "Kishoreganj Government Polytechnic Institute",
       sub: studentProfile?.institute?.code ? `Code: ${studentProfile.institute.code}` : undefined,
       icon: School,
     },

@@ -191,7 +191,7 @@ export default function CampusLifeFormModal({
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                placeholder="e.g. robotics@kipi.gov.bd"
+                placeholder="e.g. robotics@kigpi.gov.bd"
                 className="h-10 text-sm"
               />
             </div>

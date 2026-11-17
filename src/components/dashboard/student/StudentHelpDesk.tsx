@@ -10,9 +10,9 @@ interface StudentHelpDeskProps {
 }
 
 export default function StudentHelpDesk({
-  hodName = "Engr. Md. Anisur Rahman",
-  officeLocation = "Academic Building A, Level 3",
-  contactEmail = "cst@edunova.ac.bd",
+  hodName = "Engr. Mohammad Rafiqul Islam",
+  officeLocation = "Academic Building, Level 2",
+  contactEmail = "cst@kigpi.gov.bd",
 }: StudentHelpDeskProps) {
   return (
     <Card className="border-[#e2e8e4] shadow-xs">

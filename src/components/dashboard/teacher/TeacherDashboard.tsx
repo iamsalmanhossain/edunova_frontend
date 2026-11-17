@@ -96,7 +96,7 @@ export default function TeacherDashboard({ user }: TeacherDashboardProps) {
   const instituteName =
     overview?.scope?.instituteName ||
     user.teacherProfile?.institute?.name ||
-    "Kishoreganj Polytechnic Institute";
+    "Kishoreganj Government Polytechnic Institute";
 
   const totalStudents =
     overview?.overview?.totalStudents ?? 0;

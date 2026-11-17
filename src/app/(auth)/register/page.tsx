@@ -5,7 +5,7 @@ import AuthCrossSlideContainer from "@/components/auth/AuthCrossSlideContainer";
 export const metadata: Metadata = {
   title: "Create Account",
   description:
-    "Register for an EduNova institutional account for students and faculty at Kishoreganj Polytechnic Institute.",
+    "Register for a bdEduNova institutional account for students and faculty at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export default function RegisterPage() {

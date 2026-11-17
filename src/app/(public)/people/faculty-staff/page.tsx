@@ -8,7 +8,7 @@ import { staffService } from "@/services/staff.service";
 export const metadata: Metadata = {
   title: "Instructors & Technical Staff",
   description:
-    "Instructors, lab demonstrators, and technical mentors at Kishoreganj Polytechnic Institute.",
+    "Instructors, lab demonstrators, and technical mentors at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export const revalidate = 60;

@@ -2,14 +2,14 @@ import { apiClient } from "./api-client";
 import { InstituteAbout, CreateAboutPayload, QueryAboutParams } from "@/types/about";
 
 export const DEFAULT_ABOUT_DATA: InstituteAbout = {
-  id: "default-kipi-about",
-  instituteId: "kipi-default-id",
+  id: "default-kigpi-about",
+  instituteId: "kigpi-default-id",
   slug: "main",
-  title: "Kishoreganj Polytechnic Institute (KIPI)",
+  title: "Kishoreganj Government Polytechnic Institute (KIGPI)",
   tagline: "Empowering Next-Generation Engineers with Technical Pedagogical Excellence",
-  content: `# Welcome to Kishoreganj Polytechnic Institute (KIPI)
+  content: `# Welcome to Kishoreganj Government Polytechnic Institute (KIGPI)
 
-Kishoreganj Polytechnic Institute stands as a premier government technical education institution affiliated with the **Bangladesh Technical Education Board (BTEB)** and managed under the **Directorate of Technical Education (DTE)**.
+Kishoreganj Government Polytechnic Institute stands as a premier government technical education institution affiliated with the **Bangladesh Technical Education Board (BTEB)** and managed under the **Directorate of Technical Education (DTE)**.
 
 ## Core Engineering Disciplines
 Our institute offers state-of-the-art 4-year Diploma in Engineering qualifications across 4 specialized departments:
@@ -19,7 +19,7 @@ Our institute offers state-of-the-art 4-year Diploma in Engineering qualificatio
 - **Refrigeration & Air Conditioning Technology (RAC)**: Thermal systems, industrial HVAC plants, and cryogenic design.
 
 ## Academic Infrastructure
-- **Dual Shifts**: 1st Shift (Morning) & 2nd Shift (Day) catering to thousands of diploma engineers.
+- **Dual Shifts**: 1st Shift (Morning) & 2nd Shift (Day) catering to 2,800 diploma engineers.
 - **Hands-On Laboratories**: Fully equipped computer networks, circuit testing facilities, food analysis labs, and thermodynamic workshops.
 - **Industry Attachment**: 8th-semester mandatory industrial training in leading technology and manufacturing firms across Bangladesh.`,
   bannerUrl: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
@@ -30,20 +30,20 @@ Our institute offers state-of-the-art 4-year Diploma in Engineering qualificatio
   ],
   mission: "To deliver accessible, high-quality polytechnic and vocational education that equips students with real-world engineering skills, scientific inquiry, and ethical leadership required for industrial growth.",
   vision: "To be recognized as a leading technical institute in Bangladesh producing globally competent diploma engineers driving digital and industrial transformation.",
-  history: "Established to meet the growing need for mid-level technical professionals in Bangladesh, Kishoreganj Polytechnic Institute has consistently produced skilled engineers serving in public infrastructure, industrial plants, and global tech organizations.",
+  history: "Established to meet the growing need for mid-level technical professionals in Bangladesh, Kishoreganj Government Polytechnic Institute has consistently produced skilled engineers serving in public infrastructure, industrial plants, and global tech organizations.",
   markdownFile: null,
   isPublished: true,
   deletedAt: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   institute: {
-    id: "kipi-default-id",
-    name: "Kishoreganj Polytechnic Institute",
-    code: "KIPI-54049",
+    id: "kigpi-default-id",
+    name: "Kishoreganj Government Polytechnic Institute",
+    code: "KIGPI-54049",
     division: "Dhaka",
     district: "Kishoreganj",
     address: "Karimganj, Kishoreganj, Dhaka, Bangladesh",
-    website: "https://kipi.gov.bd",
+    website: "https://kigpi.gov.bd",
   },
 };
 
@@ -157,7 +157,7 @@ export const aboutService = {
       try {
         const check = await aboutService.getAdminAll({ slug: targetSlug });
         const existing = check.data.find(
-          (item) => item.slug?.toLowerCase() === targetSlug && item.id !== "default-kipi-about"
+          (item) => item.slug?.toLowerCase() === targetSlug && item.id !== "default-kigpi-about" && item.id !== "default-kipi-about"
         );
         if (existing?.id) {
           targetId = existing.id;

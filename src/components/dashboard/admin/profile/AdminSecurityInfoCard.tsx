@@ -28,7 +28,7 @@ export default function AdminSecurityInfoCard({
     },
     {
       label: "Institutional Perimeter",
-      value: "Kishoreganj Polytechnic Institute",
+      value: "Kishoreganj Government Polytechnic Institute",
       sub: "BTEB campus governance node",
       icon: Server,
     },

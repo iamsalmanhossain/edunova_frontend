@@ -50,7 +50,7 @@ export default function ProfileCard({
           <div className="md:col-span-8 flex flex-col justify-center min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1.5 sm:mb-2">
               <Badge variant="secondary" className="text-[11px] sm:text-xs truncate max-w-full">
-                {teacher.institute?.name || "Kishoreganj Polytechnic Institute"}
+                {teacher.institute?.name || "Kishoreganj Government Polytechnic Institute"}
               </Badge>
             </div>
 

@@ -668,7 +668,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}
                 <Input
                   id="reg-email"
                   type="email"
-                  placeholder="e.g. name@edunova.ac.bd"
+                  placeholder="e.g. name@kigpi.gov.bd"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}

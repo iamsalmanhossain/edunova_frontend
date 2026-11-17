@@ -57,7 +57,7 @@ export default function InstituteOverview() {
               <div className="relative h-64 sm:h-[400px] lg:h-[460px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-[#e2e8e4] bg-[#e6ede8] group">
                 <Image
                   src={imageSrc}
-                  alt={about?.title || "Kishoreganj Polytechnic Institute Academic Campus and Grounds"}
+                  alt={about?.title || "Kishoreganj Government Polytechnic Institute Academic Campus and Grounds"}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
@@ -107,7 +107,7 @@ export default function InstituteOverview() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase bg-[#f0f7f3] text-[#0a4b32] border border-[#0a4b32]/20 mb-3 max-w-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c48b28] shrink-0" />
                 <span className="truncate">
-                  {about?.title ? `Welcome to ${about.title}` : "Welcome to Kishoreganj Polytechnic Institute"}
+                  {about?.title ? `Welcome to ${about.title}` : "Welcome to Kishoreganj Government Polytechnic Institute (KIGPI)"}
                 </span>
               </div>
               <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0f1f17] leading-tight break-words">
@@ -117,7 +117,7 @@ export default function InstituteOverview() {
 
             <p className="text-xs sm:text-base text-[#5a6b62] leading-relaxed break-words">
               {about?.mission ||
-                "Established under the Directorate of Technical Education and Bangladesh Technical Education Board (BTEB), Kishoreganj Polytechnic Institute offers high-caliber 4-year Diploma in Engineering curricula. Our mandate is to cultivate skilled engineering technicians proficient in real-world problem-solving, modern machinery, and digital innovation."}
+                "Established under the Directorate of Technical Education and Bangladesh Technical Education Board (BTEB), Kishoreganj Government Polytechnic Institute offers high-caliber 4-year Diploma in Engineering curricula. Our mandate is to cultivate skilled engineering technicians proficient in real-world problem-solving, modern machinery, and digital innovation."}
             </p>
 
             {/* Institutional Key Points */}

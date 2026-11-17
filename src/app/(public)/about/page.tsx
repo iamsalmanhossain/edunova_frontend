@@ -4,9 +4,9 @@ import { aboutService, DEFAULT_ABOUT_DATA } from "@/services/about.service";
 import PublicAboutView from "@/components/about/PublicAboutView";
 
 export const metadata: Metadata = {
-  title: "About Kishoreganj Polytechnic Institute (KIPI) | EduNova",
+  title: "About Kishoreganj Government Polytechnic Institute (KIGPI) | bdEduNova",
   description:
-    "Explore Kishoreganj Polytechnic Institute (KIPI) — our 4 core engineering departments, BTEB accreditation, foundational mission, vision, and campus facilities.",
+    "Explore Kishoreganj Government Polytechnic Institute (KIGPI) — our 4 core engineering departments, BTEB accreditation, foundational mission, vision, and campus facilities.",
 };
 
 export const revalidate = 60;

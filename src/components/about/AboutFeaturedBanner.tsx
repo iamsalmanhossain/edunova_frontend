@@ -43,7 +43,7 @@ export default function AboutFeaturedBanner({
                 Academic Campus &amp; Labs
               </p>
               <p className="text-[10px] sm:text-xs text-[#5a6b62] truncate">
-                {instituteName || "Kishoreganj Polytechnic Institute"}
+                {instituteName || "Kishoreganj Government Polytechnic Institute"}
               </p>
             </div>
           </div>

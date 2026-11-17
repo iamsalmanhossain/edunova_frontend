@@ -244,7 +244,7 @@ export default function PublicDeveloperClient({
               <div className="mt-8 pt-8 border-t border-[#e2e8e4] space-y-4">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0a4b32]">
                   <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <span>The Vision Behind EduNova</span>
+                  <span>The Vision Behind bdEduNova</span>
                 </div>
                 <div className="text-sm sm:text-base text-[#47574e] leading-relaxed space-y-3 font-normal whitespace-pre-line">
                   {profile.bio}

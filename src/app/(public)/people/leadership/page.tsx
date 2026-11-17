@@ -8,7 +8,7 @@ import { staffService } from "@/services/staff.service";
 export const metadata: Metadata = {
   title: "Leadership & Administration",
   description:
-    "Principal, executive administration, and institutional governance at Kishoreganj Polytechnic Institute.",
+    "Principal, executive administration, and institutional governance at Kishoreganj Government Polytechnic Institute (KIGPI).",
 };
 
 export const revalidate = 60;

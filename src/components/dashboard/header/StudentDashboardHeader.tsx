@@ -43,7 +43,7 @@ export default function StudentDashboardHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const student = user.studentProfile;
-  const instituteName = student?.institute?.name || "Kishoreganj Polytechnic Institute";
+  const instituteName = student?.institute?.name || "Kishoreganj Government Polytechnic Institute";
   const shiftName = student?.shift === "SECOND_SHIFT" ? "Shift 2 (Day)" : "Shift 1 (Morning)";
   const semName = student?.semester ? `${student.semester}th Sem` : "Diploma Engineering";
   const deptName = student?.department?.name || "Computer Technology";
@@ -109,7 +109,7 @@ export default function StudentDashboardHeader({
               </span>
             </div>
             <p className="text-[10px] text-[#5a6b62] truncate">
-              <span className="sm:hidden font-medium">{student?.institute?.code || "KIPI"} • {shiftName}</span>
+              <span className="sm:hidden font-medium">{student?.institute?.code || "KIGPI"} • {shiftName}</span>
               <span className="hidden sm:inline">{instituteName} • {shiftName}</span>
             </p>
           </div>

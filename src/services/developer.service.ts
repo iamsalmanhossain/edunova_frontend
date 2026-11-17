@@ -6,11 +6,11 @@ export const VERIFIED_DEVELOPER_PROFILE: DeveloperProfile = {
   name: "Md Salman Hossain",
   title: "Full Stack Developer & Systems Architect",
   tagline: "Next.js 16 Architect • NestJS Specialist • Enterprise Full Stack Engineer",
-  bio: `EduNova was conceptualized, designed, and architected by Md Salman Hossain to modernize the Bangladesh polytechnic academic ecosystem.
+  bio: `bdEduNova was conceptualized, designed, and architected by Md Salman Hossain to modernize the Bangladesh polytechnic academic ecosystem.
 
-Recognizing that polytechnic institutes navigate complex operations—including dual-shift scheduling (1st & 2nd Shifts), 8 progressive semesters, multi-department practical marks, and strict BTEB/DTE accreditation—Salman built EduNova from scratch as an enterprise-grade digital campus platform.
+Recognizing that polytechnic institutes navigate complex operations—including dual-shift scheduling (1st & 2nd Shifts), 8 progressive semesters, multi-department practical marks, and strict BTEB/DTE accreditation—Salman built bdEduNova from scratch as an enterprise-grade digital campus platform.
 
-By uniting students, faculty members, heads of departments, and institutional leadership under a resilient, high-speed architecture, EduNova eliminates administrative friction and empowers 2,800+ students with automated grade calculation, attendance analytics, and dynamic campus exploration.`,
+By uniting students, faculty members, heads of departments, and institutional leadership under a resilient, high-speed architecture, bdEduNova eliminates administrative friction and empowers 2,800+ students with automated grade calculation, attendance analytics, and dynamic campus exploration.`,
   avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop",
   skills: [
     "Next.js 16 (App Router)",

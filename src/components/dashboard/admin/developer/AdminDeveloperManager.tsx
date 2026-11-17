@@ -284,7 +284,7 @@ export default function AdminDeveloperManager({ user }: AdminDeveloperManagerPro
               onChange={(e) => setBio(e.target.value)}
               rows={6}
               required
-              placeholder="Why EduNova was built, systemic problems solved, academic vision..."
+              placeholder="Why bdEduNova was built, systemic problems solved, academic vision..."
               className="text-sm leading-relaxed resize-none"
             />
           </div>

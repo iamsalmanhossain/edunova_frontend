@@ -56,7 +56,7 @@ export default function AdminAboutManager({ user }: AdminAboutManagerProps) {
 
   // Populate form with existing data
   const populateForm = (about: InstituteAbout) => {
-    setSelectedId(about.id === "default-kipi-about" ? null : about.id);
+    setSelectedId(about.id === "default-kigpi-about" || about.id === "default-kipi-about" ? null : about.id);
     setTitle(about.title || "");
     setTagline(about.tagline || "");
     setSlug(about.slug || "main");

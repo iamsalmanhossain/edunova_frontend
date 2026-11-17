@@ -10,15 +10,15 @@ import {
 export const VERIFIED_INSTITUTES: Institute[] = [
   {
     id: "a26f5d5c-08d5-4dcd-9d2b-41944d52a14b",
-    name: "Kishoreganj Polytechnic Institute",
-    code: "KIPI",
+    name: "Kishoreganj Government Polytechnic Institute",
+    code: "KIGPI",
     division: "Dhaka",
     district: "Kishoreganj",
-    address: "Korimganj, Kishoreganj, Bangladesh",
-    website: "https://kishoreganj.polytech.gov.bd",
+    address: "Karimganj, Kishoreganj, Bangladesh",
+    website: "https://kigpi.gov.bd",
     isActive: true,
-    studentCount: 1250,
-    teacherCount: 48,
+    studentCount: 2800,
+    teacherCount: 52,
   },
   {
     id: "b45e7f1a-92c1-4ef3-8a3b-28394019284a",

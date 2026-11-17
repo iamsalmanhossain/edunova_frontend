@@ -4,9 +4,9 @@ import CampusFacilitiesClient from "@/components/campus/facilities/CampusFacilit
 import { campusService } from "@/services/campus.service";
 
 export const metadata: Metadata = {
-  title: "Campus Facilities & Workshops | Kishoreganj Polytechnic Institute",
+  title: "Campus Facilities & Workshops | Kishoreganj Government Polytechnic Institute",
   description:
-    "Comprehensive engineering workshops, computer software laboratories, digital library, and technical training infrastructure.",
+    "Comprehensive engineering workshops, computer software laboratories, digital library, and technical training infrastructure at KIGPI.",
 };
 
 export const revalidate = 60;
