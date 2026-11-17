@@ -26,6 +26,7 @@ import {
   UserCheck,
   Info,
   Landmark,
+  Code2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/auth.service";
@@ -112,6 +113,7 @@ export default function DashboardLayout({
     { label: "Institutes", href: "/dashboard/admin/institutes", icon: Building2 },
     { label: "About Institute", href: "/dashboard/admin/about", icon: Info },
     { label: "Campus & Facilities", href: "/dashboard/admin/campus", icon: Landmark },
+    { label: "Developer Profile", href: "/dashboard/admin/developer", icon: Code2 },
     { label: "Teacher Management", href: "/dashboard/admin/teachers", icon: CheckCircle2 },
     { label: "Student Management", href: "/dashboard/admin/students", icon: Users },
     { label: "Departments & Subjects", href: "/dashboard/admin/departments", icon: Layers },
