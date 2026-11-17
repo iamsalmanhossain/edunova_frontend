@@ -6,14 +6,10 @@ import GalleryHero from "./GalleryHero";
 import GalleryFilterBar from "./GalleryFilterBar";
 import GalleryAlbumCard from "./GalleryAlbumCard";
 import GalleryLightboxModal from "./GalleryLightboxModal";
-import GalleryUploadModal from "./GalleryUploadModal";
-import GalleryAddPhotosModal from "./GalleryAddPhotosModal";
 import { CampusGallery } from "@/types/campus";
 import { campusService, VERIFIED_CAMPUS_GALLERIES } from "@/services/campus.service";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useToastStore } from "@/store/useToastStore";
-import { appConfirm } from "@/store/useConfirmStore";
-import { Camera, ImageOff, RefreshCw } from "lucide-react";
+import { Camera, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CampusGalleryClientProps {
@@ -26,30 +22,23 @@ export default function CampusGalleryClient({
   const [galleries, setGalleries] = useState<CampusGallery[]>(initialGalleries);
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [, startTransition] = useTransition();
 
-  // Modals state
+  // Lightbox viewer state
   const [selectedAlbum, setSelectedAlbum] = useState<CampusGallery | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [albumForAddPhotos, setAlbumForAddPhotos] = useState<CampusGallery | null>(null);
 
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
-  const toast = useToastStore();
 
   const fetchGalleries = async () => {
     try {
-      setIsLoading(true);
       const data = await campusService.getGalleries();
       startTransition(() => {
         setGalleries(data);
       });
     } catch {
       // Keep existing data on error
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -89,62 +78,6 @@ export default function CampusGalleryClient({
     setSelectedAlbum(null);
   };
 
-  const handleAlbumCreated = (newAlbum: CampusGallery) => {
-    setGalleries((prev) => [newAlbum, ...prev]);
-  };
-
-  const handlePhotosAdded = (updatedAlbum: CampusGallery) => {
-    setGalleries((prev) =>
-      prev.map((a) => (a.id === updatedAlbum.id ? updatedAlbum : a))
-    );
-    if (selectedAlbum?.id === updatedAlbum.id) {
-      setSelectedAlbum(updatedAlbum);
-    }
-  };
-
-  const handleImageDeleted = (albumId: string, imageId: string) => {
-    setGalleries((prev) =>
-      prev.map((a) => {
-        if (a.id === albumId) {
-          return {
-            ...a,
-            images: a.images.filter((img) => img.id !== imageId),
-          };
-        }
-        return a;
-      })
-    );
-    if (selectedAlbum?.id === albumId) {
-      setSelectedAlbum((prev) =>
-        prev
-          ? {
-              ...prev,
-              images: prev.images.filter((img) => img.id !== imageId),
-            }
-          : null
-      );
-    }
-  };
-
-  const handleDeleteAlbum = async (album: CampusGallery) => {
-    const confirmed = await appConfirm({
-      title: "Delete Album",
-      message: `Are you sure you want to permanently delete the album "${album.title}"?`,
-      confirmText: "Delete Album",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      await campusService.deleteGallery(album.id);
-      toast.success("Gallery album deleted successfully");
-      setGalleries((prev) => prev.filter((a) => a.id !== album.id));
-    } catch {
-      toast.error("Failed to delete album");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#fafbfa] pb-16 sm:pb-24">
       {/* Hero Section */}
@@ -152,7 +85,6 @@ export default function CampusGalleryClient({
         totalAlbums={galleries.length}
         totalPhotos={totalPhotosCount}
         isAdmin={isAdmin}
-        onUploadClick={() => setIsUploadModalOpen(true)}
       />
 
       <Container size="wide" className="pt-8 sm:pt-10 space-y-8">
@@ -173,9 +105,6 @@ export default function CampusGalleryClient({
                 key={album.id}
                 album={album}
                 onExplore={handleOpenLightbox}
-                isAdmin={isAdmin}
-                onAddPhotos={(alb) => setAlbumForAddPhotos(alb)}
-                onDeleteAlbum={handleDeleteAlbum}
               />
             ))}
           </div>
@@ -211,28 +140,12 @@ export default function CampusGalleryClient({
         )}
       </Container>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal (Public Viewer Mode) */}
       <GalleryLightboxModal
         album={selectedAlbum}
         isOpen={isLightboxOpen}
         onClose={handleCloseLightbox}
-        isAdmin={isAdmin}
-        onImageDeleted={handleImageDeleted}
-      />
-
-      {/* Admin Upload Album Modal */}
-      <GalleryUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        onAlbumCreated={handleAlbumCreated}
-      />
-
-      {/* Admin Add Photos to Existing Album Modal */}
-      <GalleryAddPhotosModal
-        album={albumForAddPhotos}
-        isOpen={!!albumForAddPhotos}
-        onClose={() => setAlbumForAddPhotos(null)}
-        onPhotosAdded={handlePhotosAdded}
+        isAdmin={false}
       />
     </div>
   );

@@ -5,12 +5,9 @@ import Container from "@/components/shared/Container";
 import CampusLifeHero from "./CampusLifeHero";
 import CampusLifeFilterBar from "./CampusLifeFilterBar";
 import CampusLifeCard from "./CampusLifeCard";
-import CampusLifeFormModal from "./CampusLifeFormModal";
 import { CampusLife } from "@/types/campus";
 import { campusService, VERIFIED_CAMPUS_LIVES } from "@/services/campus.service";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useToastStore } from "@/store/useToastStore";
-import { appConfirm } from "@/store/useConfirmStore";
 import { Users, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,13 +23,8 @@ export default function CampusLifeClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [, startTransition] = useTransition();
 
-  // Modals state
-  const [formItem, setFormItem] = useState<CampusLife | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
-  const toast = useToastStore();
 
   const fetchCampusLife = async () => {
     try {
@@ -64,45 +56,12 @@ export default function CampusLifeClient({
     });
   }, [items, activeCategory, searchQuery]);
 
-  const handleItemSaved = (saved: CampusLife) => {
-    setItems((prev) => {
-      const exists = prev.some((i) => i.id === saved.id);
-      if (exists) {
-        return prev.map((i) => (i.id === saved.id ? saved : i));
-      }
-      return [saved, ...prev];
-    });
-  };
-
-  const handleDeleteItem = async (item: CampusLife) => {
-    const confirmed = await appConfirm({
-      title: "Delete Student Organization",
-      message: `Are you sure you want to permanently delete "${item.title}"?`,
-      confirmText: "Delete Organization",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      await campusService.deleteCampusLife(item.id);
-      toast.success("Organization removed successfully");
-      setItems((prev) => prev.filter((i) => i.id !== item.id));
-    } catch {
-      toast.error("Failed to delete organization");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#fafbfa] pb-16 sm:pb-24">
       {/* Hero Section */}
       <CampusLifeHero
         totalOrganizations={items.length}
         isAdmin={isAdmin}
-        onAddClick={() => {
-          setFormItem(null);
-          setIsFormOpen(true);
-        }}
       />
 
       <Container size="wide" className="pt-8 sm:pt-10 space-y-8">
@@ -122,12 +81,6 @@ export default function CampusLifeClient({
               <CampusLifeCard
                 key={item.id}
                 item={item}
-                isAdmin={isAdmin}
-                onEdit={(it) => {
-                  setFormItem(it);
-                  setIsFormOpen(true);
-                }}
-                onDelete={handleDeleteItem}
               />
             ))}
           </div>
@@ -162,17 +115,6 @@ export default function CampusLifeClient({
           </div>
         )}
       </Container>
-
-      {/* Admin Form Modal */}
-      <CampusLifeFormModal
-        item={formItem}
-        isOpen={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setFormItem(null);
-        }}
-        onSaved={handleItemSaved}
-      />
     </div>
   );
 }

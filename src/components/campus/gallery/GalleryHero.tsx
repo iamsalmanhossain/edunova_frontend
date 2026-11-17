@@ -1,26 +1,24 @@
 "use client";
 
 import React from "react";
-import { Camera, Sparkles, Image as ImageIcon, Layers, Plus } from "lucide-react";
+import Link from "next/link";
+import { Camera, Sparkles, Image as ImageIcon, Layers, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
-import { Button } from "@/components/ui/button";
 
 interface GalleryHeroProps {
   totalAlbums: number;
   totalPhotos: number;
   isAdmin?: boolean;
-  onUploadClick?: () => void;
 }
 
 export default function GalleryHero({
   totalAlbums,
   totalPhotos,
   isAdmin,
-  onUploadClick,
 }: GalleryHeroProps) {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-[#0a4b32]/10 via-[#0a4b32]/5 to-transparent pt-12 pb-10 sm:pt-16 sm:pb-12 border-b border-[#e2e8e4]">
-      {/* Decorative background glows */}
+      {/* Decorative Glows */}
       <div className="absolute top-0 left-1/4 -translate-x-1/2 w-96 h-96 bg-[#0a4b32]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -62,16 +60,16 @@ export default function GalleryHero({
             </div>
           </div>
 
-          {/* Admin Action Button */}
+          {/* Admin Quick Link */}
           {isAdmin && (
             <div className="shrink-0 pt-2 md:pt-0">
-              <Button
-                onClick={onUploadClick}
-                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-[#0a4b32] hover:bg-[#073624] text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+              <Link
+                href="/dashboard/admin/campus"
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white hover:bg-emerald-50 text-[#0a4b32] border border-emerald-200 text-xs font-bold shadow-xs transition"
               >
-                <Plus className="w-4 h-4" />
-                <span>Upload New Album</span>
-              </Button>
+                <span>Admin Campus Console</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
             </div>
           )}
         </div>

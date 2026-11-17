@@ -1,20 +1,18 @@
 "use client";
 
 import React from "react";
-import { Wrench, Sparkles, Cpu, Layers, Plus } from "lucide-react";
+import Link from "next/link";
+import { Wrench, Sparkles, Cpu, Layers, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
-import { Button } from "@/components/ui/button";
 
 interface FacilitiesHeroProps {
   totalFacilities: number;
   isAdmin?: boolean;
-  onAddClick?: () => void;
 }
 
 export default function FacilitiesHero({
   totalFacilities,
   isAdmin,
-  onAddClick,
 }: FacilitiesHeroProps) {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-[#0a4b32]/10 via-[#0a4b32]/5 to-transparent pt-12 pb-10 sm:pt-16 sm:pb-12 border-b border-[#e2e8e4]">
@@ -39,37 +37,37 @@ export default function FacilitiesHero({
             </h1>
 
             <p className="text-sm sm:text-base text-[#5a6b62] leading-relaxed">
-              Equipped with industrial-grade equipment, specialized computing centers,
-              air-conditioning testing rigs, and modern food processing laboratories to bridge theory with practical expertise.
+              Equipped with industrial-grade machinery, computing labs,
+              air-conditioning testing rigs, and modern food processing suites to prepare industry-ready engineers.
             </p>
 
             {/* Quick Stats Pill Strip */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/80 border border-emerald-100 text-xs font-medium text-[#1c2e24] shadow-2xs backdrop-blur-xs">
                 <Layers className="w-3.5 h-3.5 text-emerald-600" />
-                <span><strong className="font-bold text-[#0a4b32]">{totalFacilities}+</strong> Special Labs & Workshops</span>
+                <span><strong className="font-bold text-[#0a4b32]">{totalFacilities}+</strong> Laboratories & Workshops</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/80 border border-emerald-100 text-xs font-medium text-[#1c2e24] shadow-2xs backdrop-blur-xs">
                 <Cpu className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Dual Shift Practical Instruction</span>
+                <span>Dual-Shift Practical Instruction</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/80 border border-emerald-100 text-xs font-medium text-[#1c2e24] shadow-2xs backdrop-blur-xs">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>BTEB & DTE Standard Compliance</span>
+                <span>BTEB Standard Curriculums</span>
               </div>
             </div>
           </div>
 
-          {/* Admin Action Button */}
+          {/* Admin Quick Link */}
           {isAdmin && (
             <div className="shrink-0 pt-2 md:pt-0">
-              <Button
-                onClick={onAddClick}
-                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-[#0a4b32] hover:bg-[#073624] text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+              <Link
+                href="/dashboard/admin/campus"
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white hover:bg-emerald-50 text-[#0a4b32] border border-emerald-200 text-xs font-bold shadow-xs transition"
               >
-                <Plus className="w-4 h-4" />
-                <span>Add New Facility</span>
-              </Button>
+                <span>Admin Campus Console</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
             </div>
           )}
         </div>

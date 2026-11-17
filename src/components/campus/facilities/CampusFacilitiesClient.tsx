@@ -6,12 +6,9 @@ import FacilitiesHero from "./FacilitiesHero";
 import FacilitiesFilterBar from "./FacilitiesFilterBar";
 import FacilityCard from "./FacilityCard";
 import FacilityDetailModal from "./FacilityDetailModal";
-import FacilityFormModal from "./FacilityFormModal";
 import { CampusFacility } from "@/types/campus";
 import { campusService, VERIFIED_CAMPUS_FACILITIES } from "@/services/campus.service";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useToastStore } from "@/store/useToastStore";
-import { appConfirm } from "@/store/useConfirmStore";
 import { Wrench, FolderSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -27,14 +24,11 @@ export default function CampusFacilitiesClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [, startTransition] = useTransition();
 
-  // Modals state
+  // Detail Modal state
   const [selectedDetailFacility, setSelectedDetailFacility] = useState<CampusFacility | null>(null);
-  const [formFacility, setFormFacility] = useState<CampusFacility | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
-  const toast = useToastStore();
 
   const fetchFacilities = async () => {
     try {
@@ -66,45 +60,12 @@ export default function CampusFacilitiesClient({
     });
   }, [facilities, activeCategory, searchQuery]);
 
-  const handleFacilitySaved = (saved: CampusFacility) => {
-    setFacilities((prev) => {
-      const exists = prev.some((f) => f.id === saved.id);
-      if (exists) {
-        return prev.map((f) => (f.id === saved.id ? saved : f));
-      }
-      return [saved, ...prev];
-    });
-  };
-
-  const handleDeleteFacility = async (fac: CampusFacility) => {
-    const confirmed = await appConfirm({
-      title: "Delete Facility",
-      message: `Are you sure you want to permanently delete "${fac.title}"?`,
-      confirmText: "Delete Facility",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      await campusService.deleteFacility(fac.id);
-      toast.success("Facility deleted successfully");
-      setFacilities((prev) => prev.filter((f) => f.id !== fac.id));
-    } catch {
-      toast.error("Failed to delete facility");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#fafbfa] pb-16 sm:pb-24">
       {/* Hero Section */}
       <FacilitiesHero
         totalFacilities={facilities.length}
         isAdmin={isAdmin}
-        onAddClick={() => {
-          setFormFacility(null);
-          setIsFormOpen(true);
-        }}
       />
 
       <Container size="wide" className="pt-8 sm:pt-10 space-y-8">
@@ -125,12 +86,6 @@ export default function CampusFacilitiesClient({
                 key={fac.id}
                 facility={fac}
                 onViewDetails={(f) => setSelectedDetailFacility(f)}
-                isAdmin={isAdmin}
-                onEdit={(f) => {
-                  setFormFacility(f);
-                  setIsFormOpen(true);
-                }}
-                onDelete={handleDeleteFacility}
               />
             ))}
           </div>
@@ -171,17 +126,6 @@ export default function CampusFacilitiesClient({
         facility={selectedDetailFacility}
         isOpen={!!selectedDetailFacility}
         onClose={() => setSelectedDetailFacility(null)}
-      />
-
-      {/* Admin Form Modal */}
-      <FacilityFormModal
-        facility={formFacility}
-        isOpen={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setFormFacility(null);
-        }}
-        onSaved={handleFacilitySaved}
       />
     </div>
   );

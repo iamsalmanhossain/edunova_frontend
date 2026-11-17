@@ -1,20 +1,18 @@
 "use client";
 
 import React from "react";
-import { Users, Sparkles, HeartHandshake, Compass, Plus } from "lucide-react";
+import Link from "next/link";
+import { Users, Sparkles, HeartHandshake, Compass, ExternalLink } from "lucide-react";
 import Container from "@/components/shared/Container";
-import { Button } from "@/components/ui/button";
 
 interface CampusLifeHeroProps {
   totalOrganizations: number;
   isAdmin?: boolean;
-  onAddClick?: () => void;
 }
 
 export default function CampusLifeHero({
   totalOrganizations,
   isAdmin,
-  onAddClick,
 }: CampusLifeHeroProps) {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-[#0a4b32]/10 via-[#0a4b32]/5 to-transparent pt-12 pb-10 sm:pt-16 sm:pb-12 border-b border-[#e2e8e4]">
@@ -60,16 +58,16 @@ export default function CampusLifeHero({
             </div>
           </div>
 
-          {/* Admin Action Button */}
+          {/* Admin Quick Link */}
           {isAdmin && (
             <div className="shrink-0 pt-2 md:pt-0">
-              <Button
-                onClick={onAddClick}
-                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-[#0a4b32] hover:bg-[#073624] text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+              <Link
+                href="/dashboard/admin/campus"
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white hover:bg-emerald-50 text-[#0a4b32] border border-emerald-200 text-xs font-bold shadow-xs transition"
               >
-                <Plus className="w-4 h-4" />
-                <span>Register New Club</span>
-              </Button>
+                <span>Admin Campus Console</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
             </div>
           )}
         </div>
